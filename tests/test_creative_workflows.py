@@ -118,6 +118,35 @@ class CreativeWorkflowTests(unittest.TestCase):
                                 },
                             )
 
+    def test_customer_results_show_prompt_or_safe_error_without_debug_dump(self):
+        for kind in ["preview", "image", "edit", "video"]:
+            with self.subTest(kind=kind):
+                workflow = self.workflow(kind)
+                nodes = self.nodes(workflow)
+                result = nodes["creative_result" if kind == "preview" else "result"]
+                outputs = result["data"]["outputs"]
+                self.assertFalse(
+                    any(
+                        output["value_selector"]
+                        in [
+                            ["creative_compose", "sections"],
+                            ["creative_compose", "applied_tools"],
+                            ["creative_compose", "changed"],
+                        ]
+                        for output in outputs
+                    )
+                )
+                if kind == "preview":
+                    self.assertEqual([item["variable"] for item in outputs], ["final_prompt"])
+                    ready = nodes["creative_ready"]["data"]["cases"][0]["conditions"][0]
+                    self.assertEqual(ready["variable_selector"], ["creative_compose", "success"])
+                    self.assertIs(ready["value"], True)
+                    error = nodes["creative_error"]["data"]["outputs"]
+                    self.assertEqual(
+                        [item["value_selector"] for item in error],
+                        [["creative_compose", "error"]],
+                    )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -694,14 +694,14 @@ def build_creative_workflow(
         id="creative_compose", position={"x": 340, "y": 260}, positionAbsolute={"x": 340, "y": 260}
     )
     composer["data"].update(
-        title="Free prompt preview · 免费提示词预览",
+        title="Creative prompt",
         provider_id=f"{AUTHOR}/apixly_creative/apixly_creative",
         provider_name=f"{AUTHOR}/apixly_creative/apixly_creative",
         plugin_id=f"{AUTHOR}/apixly_creative",
         plugin_unique_identifier=creative_identifier,
         tool_name="compose_creative_prompt",
         tool_label="Preview creative prompt",
-        tool_description="Local composition only; no key or generation. Controls default OFF.",
+        tool_description="Free preview inside Dify. No key or generation. Controls default OFF.",
         tool_parameters=parameters,
     )
 
@@ -741,33 +741,58 @@ def build_creative_workflow(
             },
         }
 
-    preview_fields = [
-        ("final_prompt", "string"),
-        ("sections", "array[object]"),
-        ("applied_tools", "array[string]"),
-        ("changed", "boolean"),
-        ("success", "boolean"),
-        ("result_state", "string"),
-        ("error_path", "string"),
-        ("error", "string"),
-    ]
+    ready = make_node(
+        "creative_ready",
+        "if-else",
+        "Valid prompt?",
+        650,
+        260,
+        cases=[
+            {
+                "id": "true",
+                "case_id": "true",
+                "logical_operator": "and",
+                "conditions": [
+                    {
+                        "id": "composition-valid",
+                        "varType": "boolean",
+                        "variable_selector": ["creative_compose", "success"],
+                        "comparison_operator": "is",
+                        "value": True,
+                    }
+                ],
+            }
+        ],
+    )
+    stop = make_node(
+        "creative_error",
+        "end",
+        "Check controls",
+        970,
+        80,
+        outputs=[
+            output("creative_error_message", ["creative_compose", "error"]),
+        ],
+    )
     if kind == "preview":
         end = make_node(
             "creative_result",
             "end",
-            "Prompt only · 仅预览不生成",
-            650,
+            "Prompt",
+            970,
             260,
-            outputs=[output(name, ["creative_compose", name], typ) for name, typ in preview_fields],
+            outputs=[output("final_prompt", ["creative_compose", "final_prompt"])],
         )
-        graph["nodes"] = [start, composer, end]
+        graph["nodes"] = [start, composer, ready, end, stop]
         graph["edges"] = [
             edge("start", "creative_compose"),
-            edge("creative_compose", "creative_result"),
+            edge("creative_compose", "creative_ready"),
+            edge("creative_ready", "creative_result", "true"),
+            edge("creative_ready", "creative_error", "false"),
         ]
         document["app"].update(
-            name="Apixly · FREE creative preview · 免费创作预览",
-            description="FREE offline prompt preview: no API key, generation or network call. All three control groups default OFF. Enable a group in the compose node, choose its preset/values, and inspect final_prompt. https://apixly.ai",
+            name="Apixly · Free creative preview",
+            description="Free prompt preview inside Dify: no API key, generation or network call. All three control groups default OFF. Enable a group in the compose node, choose its preset/values, and inspect final_prompt. https://apixly.ai",
         )
     else:
         # Keep the existing safe submit/poll/file phase intact, shifting it right.
@@ -785,41 +810,6 @@ def build_creative_workflow(
         lookup["submit"]["data"]["tool_parameters"]["prompt"] = string_binding(
             ["creative_compose", "final_prompt"]
         )
-        ready = make_node(
-            "creative_ready",
-            "if-else",
-            "Valid creative prompt? · 创作指令有效？",
-            650,
-            260,
-            cases=[
-                {
-                    "id": "true",
-                    "case_id": "true",
-                    "logical_operator": "and",
-                    "conditions": [
-                        {
-                            "id": "composition-valid",
-                            "varType": "boolean",
-                            "variable_selector": ["creative_compose", "success"],
-                            "comparison_operator": "is",
-                            "value": True,
-                        }
-                    ],
-                }
-            ],
-        )
-        stop = make_node(
-            "creative_error",
-            "end",
-            "STOP: fix controls · 修正控制项",
-            970,
-            80,
-            outputs=[
-                output("creative_error_state", ["creative_compose", "result_state"]),
-                output("creative_error_path", ["creative_compose", "error_path"]),
-                output("creative_error_message", ["creative_compose", "error"]),
-            ],
-        )
         graph["nodes"] += [composer, ready, stop]
         graph["edges"] = [
             e for e in graph["edges"] if not (e["source"] == "start" and e["target"] == "submit")
@@ -832,11 +822,6 @@ def build_creative_workflow(
         ]
         lookup["result"]["data"]["outputs"] += [
             output("final_prompt", ["creative_compose", "final_prompt"]),
-            output("creative_sections", ["creative_compose", "sections"], "array[object]"),
-            output(
-                "creative_applied_tools", ["creative_compose", "applied_tools"], "array[string]"
-            ),
-            output("creative_changed", ["creative_compose", "changed"], "boolean"),
         ]
         lookup["submit_error"]["data"]["outputs"] += [
             output("submission_final_prompt", ["creative_compose", "final_prompt"])
@@ -844,7 +829,7 @@ def build_creative_workflow(
         label = {"image": "image generation", "edit": "reference edit", "video": "text video"}[kind]
         document["app"].update(
             name=f"Apixly · Creative {label} · controls OFF",
-            description=f"Preview typed creative controls locally, then explicitly submit one billed {label} task with your own key. Controls default OFF. Invalid composition stops before submission. Original task polling/files are reused. https://apixly.ai",
+            description=f"Preview typed creative controls inside Dify, then explicitly submit one billed {label} task with your own key. Controls default OFF. Invalid composition stops before submission. Original task polling/files are reused. https://apixly.ai",
         )
     companion_dependency = {
         "current_identifier": None,
