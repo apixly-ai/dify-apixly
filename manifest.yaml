@@ -1,4 +1,4 @@
-version: 0.1.1
+version: 0.2.0
 type: plugin
 author: apixly-ai
 name: apixly_media
@@ -6,9 +6,9 @@ label:
   en_US: Apixly Media
   zh_Hans: Apixly 媒体
 description:
-  en_US: Generate and edit images, create videos, and retrieve asynchronous Apixly
-    media tasks with explicit terminal states.
-  zh_Hans: 通过自带 Apixly API Key 生成/编辑图片、创建视频，并查询原任务与下载素材。插件免费，API 按量计费。
+  en_US: Preview creative prompts locally for free, then generate or edit images and
+    create videos with your Apixly API key.
+  zh_Hans: 无需 Key 免费本地预览创作提示词；使用自己的 Apixly API Key 生成或编辑图片、创建视频，API 按量计费。
 icon: icon.png
 created_at: '2026-10-23T00:00:00Z'
 privacy: PRIVACY.md
