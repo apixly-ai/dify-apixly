@@ -6,16 +6,17 @@ identity:
     zh_Hans: 生成视频
 description:
   human:
-    en_US: Submit one asynchronous video task. The default grok-imagine-video is text-only.
-      For grok-imagine-video-1.5-preview references, images must be public HTTPS URLs,
-      not inline base64. Models and URLs are sent unchanged; never automatically retry
-      a paid submission.
-    zh_Hans: 一次提交异步视频。默认 grok-imagine-video 只支持文生视频；grok-imagine-video-1.5-preview
-      参考图必须使用公开 HTTPS URL，不支持内联 base64。模型与链接原样发送，不自动重试收费提交。
-  llm: Submit one asynchronous video task. The default grok-imagine-video is text-only.
-    For grok-imagine-video-1.5-preview references, images must be public HTTPS URLs,
-    not inline base64. Models and URLs are sent unchanged; never automatically retry
-    a paid submission.
+    en_US: Submit one asynchronous video task. Default grok-imagine-video is text-only.
+      Grok 1.5 preview references require public HTTPS URLs; inline base64 and explicit
+      geometry controls are rejected. Reference-video dimensions follow the source
+      image; inspect the result. Models and URLs are sent unchanged; never retry a
+      paid submission automatically.
+    zh_Hans: 一次提交异步视频。默认 Grok 仅文生视频；1.5 preview 参考图须用公开 HTTPS URL，不接收内联 base64 或显式几何控制。参考视频尺寸跟随源图，以成品为准。模型与链接原样发送，不自动重试收费提交。
+  llm: Submit one asynchronous video task. Default grok-imagine-video is text-only.
+    Grok 1.5 preview references require public HTTPS URLs; inline base64 and explicit
+    geometry controls are rejected. Reference-video dimensions follow the source image;
+    inspect the result. Models and URLs are sent unchanged; never retry a paid submission
+    automatically.
 parameters:
 - name: model
   type: string
@@ -64,13 +65,13 @@ parameters:
     en_US: Resolution
     zh_Hans: 视频分辨率
   human_description:
-    en_US: Exact model resolution, for example 720p. Inspect delivered file dimensions
-      as providers may return different dimensions.
-    zh_Hans: 按模型能力填写，如 720p；下载后核验实际尺寸，供应商实际输出可能不同。
-  llm_description: Exact model resolution, for example 720p. Inspect delivered file
-    dimensions as providers may return different dimensions.
+    en_US: Optional geometry control for models that support it. Leave empty for Grok
+      1.5 preview reference video, whose output follows the source image.
+    zh_Hans: 仅支持该控制的型号可填写。Grok 1.5 preview 参考视频跟随源图，请留空；显式填写会在提交前报错。
+  llm_description: Optional geometry control for models that support it. Leave empty
+    for Grok 1.5 preview reference video, whose output follows the source image.
   form: llm
-  default: 720p
+  default: ''
 - name: aspect_ratio
   type: string
   required: false
@@ -78,11 +79,13 @@ parameters:
     en_US: Aspect ratio
     zh_Hans: 画面比例
   human_description:
-    en_US: Exact model aspect ratio, for example 16:9 or 9:16.
-    zh_Hans: 按模型能力填写，如 16:9 或 9:16。
-  llm_description: Exact model aspect ratio, for example 16:9 or 9:16.
+    en_US: Optional geometry control for models that support it. Leave empty for Grok
+      1.5 preview reference video, whose output follows the source image.
+    zh_Hans: 仅支持该控制的型号可填写。Grok 1.5 preview 参考视频跟随源图，请留空；显式填写会在提交前报错。
+  llm_description: Optional geometry control for models that support it. Leave empty
+    for Grok 1.5 preview reference video, whose output follows the source image.
   form: llm
-  default: '16:9'
+  default: ''
 - name: parameters_json
   type: string
   required: false

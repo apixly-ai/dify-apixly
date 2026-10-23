@@ -273,6 +273,12 @@ class ToolRuntimeTests(unittest.TestCase):
         declaration = yaml.safe_load(Path("tools/edit_image.yaml").read_text())
         self.assertFalse(any(p["name"] in {"mask", "mask_url"} for p in declaration["parameters"]))
 
+    def test_video_geometry_has_no_implicit_global_default(self):
+        declaration = yaml.safe_load(Path("tools/create_video.yaml").read_text())
+        parameters = {p["name"]: p for p in declaration["parameters"]}
+        self.assertFalse(parameters["resolution"].get("default"))
+        self.assertFalse(parameters["aspect_ratio"].get("default"))
+
 
 if __name__ == "__main__":
     unittest.main()

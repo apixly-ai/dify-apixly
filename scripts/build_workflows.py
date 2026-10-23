@@ -460,8 +460,6 @@ def build_image_to_video(plugin_checksum: str, version: str = "0.1.0") -> dict:
             "paragraph",
         ),
         variable("video_seconds", "Video seconds / 视频秒数", 3, True, "number"),
-        variable("video_resolution", "Video resolution / 视频分辨率", "720p"),
-        variable("video_aspect_ratio", "Video aspect ratio / 视频画幅", "16:9"),
     ]
     lookup["image_submit"]["data"]["tool_parameters"] = {
         "model": binding(["image_start", "image_model"]),
@@ -475,8 +473,6 @@ def build_image_to_video(plugin_checksum: str, version: str = "0.1.0") -> dict:
         "prompt": binding(["image_start", "video_prompt"]),
         "parameters_json": binding(["video_reference", "output"]),
         "seconds": binding(["image_start", "video_seconds"]),
-        "resolution": binding(["image_start", "video_resolution"]),
-        "aspect_ratio": binding(["image_start", "video_aspect_ratio"]),
     }
 
     def ordinary(node_id, typ, label, x, y, **data):
@@ -525,7 +521,7 @@ def build_image_to_video(plugin_checksum: str, version: str = "0.1.0") -> dict:
         2600,
         260,
         variables=[{"variable": "image_urls", "value_selector": ["image_final_query", "urls"]}],
-        template='{"images": {{ image_urls[:1] | tojson }}, "mode": "image2video"}',
+        template='{"images": {{ image_urls[:1] | tojson }}}',
     )
     ordinary(
         "image_not_ready",

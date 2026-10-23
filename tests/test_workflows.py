@@ -105,6 +105,10 @@ class WorkflowSafetyTests(unittest.TestCase):
         defaults = {v["variable"]: v["default"] for v in nodes["image_start"]["data"]["variables"]}
         self.assertEqual(defaults["video_model"], "grok-imagine-video-1.5-preview")
         self.assertEqual(defaults["video_seconds"], 3)
+        self.assertNotIn("video_resolution", defaults)
+        self.assertNotIn("video_aspect_ratio", defaults)
+        self.assertNotIn("resolution", nodes["video_submit"]["data"]["tool_parameters"])
+        self.assertNotIn("aspect_ratio", nodes["video_submit"]["data"]["tool_parameters"])
         self.assertEqual(len([n for n in nodes.values() if n["data"]["type"] == "loop"]), 2)
 
 

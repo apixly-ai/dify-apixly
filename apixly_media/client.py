@@ -253,6 +253,14 @@ class MediaClient:
                 "grok-imagine-video-1.5-preview requires public HTTPS reference image URLs. "
                 "Inline base64 data URLs are not supported on this route."
             )
+        if model == "grok-imagine-video-1.5-preview" and any(
+            field in payload for field in ("resolution", "aspect_ratio", "size")
+        ):
+            raise MediaError(
+                "grok-imagine-video-1.5-preview reference-video geometry follows the source "
+                "image. Explicit resolution/aspect_ratio/size controls are not qualified on "
+                "this route; inspect actual output dimensions instead."
+            )
         return self._submit("/videos", payload, "video")
 
     def query_task(self, kind: str, task_id: str) -> dict[str, Any]:

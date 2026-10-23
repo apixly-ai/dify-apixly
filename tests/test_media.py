@@ -318,9 +318,24 @@ class MediaContractTests(unittest.TestCase):
         client.create_video(
             "grok-imagine-video-1.5-preview",
             "Move",
-            {"images": [url], "mode": "image2video", "seconds": 3, "resolution": "720p"},
+            {"images": [url], "seconds": 3},
         )
         self.assertEqual(json.loads(self.calls[0].content)["images"], [url])
+
+    def test_grok_preview_unqualified_geometry_is_rejected_before_post(self):
+        client = self.client(lambda _: httpx.Response(200, json={"id": "unexpected"}))
+        for field, value in [
+            ("resolution", "720p"),
+            ("aspect_ratio", "16:9"),
+            ("size", "1280x720"),
+        ]:
+            with self.subTest(field=field), self.assertRaisesRegex(MediaError, "geometry"):
+                client.create_video(
+                    "grok-imagine-video-1.5-preview",
+                    "Move",
+                    {"images": ["https://apixly.ai/v1/images/content?ref=x"], field: value},
+                )
+        self.assertEqual(len(self.calls), 0)
 
 
 if __name__ == "__main__":
