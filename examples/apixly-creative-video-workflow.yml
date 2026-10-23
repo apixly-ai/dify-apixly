@@ -14,12 +14,12 @@ dependencies:
 - current_identifier: null
   type: package
   value:
-    plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@82a2247b3602e9d6c83252efbf8e27e6f87ea55bc5e47be4b0c1c66cef707908
+    plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@44954e4bc1010ba37d17c4a65ec67090f8de68f0e6640713f1378397d0977958
     version: null
 - current_identifier: null
   type: package
   value:
-    plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
+    plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@58af19ca0d28c57e6308fb3cd43390604e6feac0e4100ab522ef9f3c201d89da
     version: null
 workflow:
   conversation_variables: []
@@ -125,7 +125,7 @@ workflow:
         provider_name: apixly-ai/apixly_media/apixly_media
         provider_type: builtin
         plugin_id: apixly-ai/apixly_media
-        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@82a2247b3602e9d6c83252efbf8e27e6f87ea55bc5e47be4b0c1c66cef707908
+        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@44954e4bc1010ba37d17c4a65ec67090f8de68f0e6640713f1378397d0977958
         tool_name: create_video
         tool_label: Submit ONCE · 仅提交一次
         tool_description: Apixly media API tool; use the provider's secret credential.
@@ -278,7 +278,7 @@ workflow:
         provider_name: apixly-ai/apixly_media/apixly_media
         provider_type: builtin
         plugin_id: apixly-ai/apixly_media
-        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@82a2247b3602e9d6c83252efbf8e27e6f87ea55bc5e47be4b0c1c66cef707908
+        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@44954e4bc1010ba37d17c4a65ec67090f8de68f0e6640713f1378397d0977958
         tool_name: query_task
         tool_label: Wait 5s + query · 等待后只读查询
         tool_description: Apixly media API tool; use the provider's secret credential.
@@ -372,7 +372,7 @@ workflow:
         provider_name: apixly-ai/apixly_media/apixly_media
         provider_type: builtin
         plugin_id: apixly-ai/apixly_media
-        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@82a2247b3602e9d6c83252efbf8e27e6f87ea55bc5e47be4b0c1c66cef707908
+        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@44954e4bc1010ba37d17c4a65ec67090f8de68f0e6640713f1378397d0977958
         tool_name: query_task
         tool_label: Retrieve existing task · 下载原任务素材
         tool_description: Apixly media API tool; use the provider's secret credential.
@@ -526,7 +526,7 @@ workflow:
         provider_name: apixly-ai/apixly_creative/apixly_creative
         provider_type: builtin
         plugin_id: apixly-ai/apixly_creative
-        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@58af19ca0d28c57e6308fb3cd43390604e6feac0e4100ab522ef9f3c201d89da
         tool_name: compose_creative_prompt
         tool_label: Preview creative prompt
         tool_description: Free preview inside Dify. No key or generation. Controls
