@@ -121,30 +121,20 @@ workflow:
         tool_configurations: {}
         tool_parameters:
           model:
-            type: variable
-            value:
-            - start
-            - model
+            type: mixed
+            value: '{{#start.model#}}'
           prompt:
-            type: variable
-            value:
-            - start
-            - prompt
+            type: mixed
+            value: '{{#start.prompt#}}'
           parameters_json:
-            type: variable
-            value:
-            - start
-            - advanced_parameters
+            type: mixed
+            value: '{{#start.advanced_parameters#}}'
           reference_image:
-            type: variable
-            value:
-            - start
-            - reference_image
+            type: mixed
+            value: '{{#start.reference_image#}}'
           reference_images:
-            type: variable
-            value:
-            - start
-            - additional_images
+            type: mixed
+            value: '{{#start.additional_images#}}'
           n:
             type: constant
             value: 1
@@ -285,10 +275,8 @@ workflow:
             type: constant
             value: image
           task_id:
-            type: variable
-            value:
-            - submit
-            - task_id
+            type: mixed
+            value: '{{#submit.task_id#}}'
           download:
             type: constant
             value: false
@@ -381,10 +369,8 @@ workflow:
             type: constant
             value: image
           task_id:
-            type: variable
-            value:
-            - submit
-            - task_id
+            type: mixed
+            value: '{{#submit.task_id#}}'
           download:
             type: constant
             value: true

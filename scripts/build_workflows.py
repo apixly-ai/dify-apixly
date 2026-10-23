@@ -35,6 +35,10 @@ def binding(selector):
     return {"type": "variable", "value": selector}
 
 
+def string_binding(selector):
+    return {"type": "mixed", "value": "{{#" + ".".join(selector) + "#}}"}
+
+
 def constant(value):
     return {"type": "constant", "value": value}
 
@@ -136,6 +140,20 @@ def build_workflow(kind: str, plugin_checksum: str, version: str = "0.1.0") -> d
         return result
 
     def tool(node_id, name, label, params, x, y, *, parent=None):
+        params = copy.deepcopy(params)
+        for field in (
+            "model",
+            "prompt",
+            "parameters_json",
+            "reference_image",
+            "reference_images",
+            "resolution",
+            "aspect_ratio",
+            "task_id",
+        ):
+            value = params.get(field)
+            if value and value["type"] == "variable":
+                params[field] = string_binding(value["value"])
         return node(
             node_id,
             "tool",
@@ -411,6 +429,11 @@ def build_image_to_video(plugin_checksum: str, version: str = "0.1.0") -> dict:
                     selector = value.get("value")
                     if isinstance(selector, list) and selector and selector[0] in ids:
                         selector[0] = ids[selector[0]]
+                if value.get("type") == "mixed" and isinstance(value.get("value"), str):
+                    for old, new in ids.items():
+                        value["value"] = value["value"].replace(
+                            "{{#" + old + ".", "{{#" + new + "."
+                        )
                 for item in value.values():
                     selectors(item)
 
@@ -474,15 +497,15 @@ def build_image_to_video(plugin_checksum: str, version: str = "0.1.0") -> dict:
         variable("video_seconds", "Video seconds / 视频秒数", 3, True, "number"),
     ]
     lookup["image_submit"]["data"]["tool_parameters"] = {
-        "model": binding(["image_start", "image_model"]),
-        "prompt": binding(["image_start", "image_prompt"]),
-        "parameters_json": binding(["image_start", "image_parameters"]),
+        "model": string_binding(["image_start", "image_model"]),
+        "prompt": string_binding(["image_start", "image_prompt"]),
+        "parameters_json": string_binding(["image_start", "image_parameters"]),
         "aspect_ratio": constant("1:1"),
         "n": constant(1),
     }
     lookup["video_submit"]["data"]["tool_parameters"] = {
-        "model": binding(["image_start", "video_model"]),
-        "prompt": binding(["image_start", "video_prompt"]),
+        "model": string_binding(["image_start", "video_model"]),
+        "prompt": string_binding(["image_start", "video_prompt"]),
         "parameters_json": {"type": "mixed", "value": "{{#video_reference.output#}}"},
         "seconds": binding(["image_start", "video_seconds"]),
     }

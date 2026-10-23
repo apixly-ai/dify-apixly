@@ -129,20 +129,14 @@ workflow:
         tool_configurations: {}
         tool_parameters:
           model:
-            type: variable
-            value:
-            - image_start
-            - image_model
+            type: mixed
+            value: '{{#image_start.image_model#}}'
           prompt:
-            type: variable
-            value:
-            - image_start
-            - image_prompt
+            type: mixed
+            value: '{{#image_start.image_prompt#}}'
           parameters_json:
-            type: variable
-            value:
-            - image_start
-            - image_parameters
+            type: mixed
+            value: '{{#image_start.image_parameters#}}'
           aspect_ratio:
             type: constant
             value: '1:1'
@@ -286,10 +280,8 @@ workflow:
             type: constant
             value: image
           task_id:
-            type: variable
-            value:
-            - image_submit
-            - task_id
+            type: mixed
+            value: '{{#image_submit.task_id#}}'
           download:
             type: constant
             value: false
@@ -382,10 +374,8 @@ workflow:
             type: constant
             value: image
           task_id:
-            type: variable
-            value:
-            - image_submit
-            - task_id
+            type: mixed
+            value: '{{#image_submit.task_id#}}'
           download:
             type: constant
             value: true
@@ -461,15 +451,11 @@ workflow:
         tool_configurations: {}
         tool_parameters:
           model:
-            type: variable
-            value:
-            - image_start
-            - video_model
+            type: mixed
+            value: '{{#image_start.video_model#}}'
           prompt:
-            type: variable
-            value:
-            - image_start
-            - video_prompt
+            type: mixed
+            value: '{{#image_start.video_prompt#}}'
           parameters_json:
             type: mixed
             value: '{{#video_reference.output#}}'
@@ -615,10 +601,8 @@ workflow:
             type: constant
             value: video
           task_id:
-            type: variable
-            value:
-            - video_submit
-            - task_id
+            type: mixed
+            value: '{{#video_submit.task_id#}}'
           download:
             type: constant
             value: false
@@ -711,10 +695,8 @@ workflow:
             type: constant
             value: video
           task_id:
-            type: variable
-            value:
-            - video_submit
-            - task_id
+            type: mixed
+            value: '{{#video_submit.task_id#}}'
           download:
             type: constant
             value: true

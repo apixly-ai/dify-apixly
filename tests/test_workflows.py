@@ -35,6 +35,28 @@ class WorkflowSafetyTests(unittest.TestCase):
                 ]
                 self.assertEqual(len(names), len(set(names)))
 
+    def test_all_string_bindings_use_native_v2_mixed_inputs_to_survive_ui_mount(self):
+        names = {
+            "model",
+            "prompt",
+            "parameters_json",
+            "reference_image",
+            "reference_images",
+            "resolution",
+            "aspect_ratio",
+            "task_id",
+        }
+        workflows = [build_workflow(kind, self.checksum) for kind in ("image", "edit", "video")]
+        workflows.append(build_image_to_video(self.checksum))
+        for workflow in workflows:
+            for node in self.nodes(workflow).values():
+                for name, value in node["data"].get("tool_parameters", {}).items():
+                    if name in names and value["type"] != "constant":
+                        with self.subTest(app=workflow["app"]["name"], node=node["id"], field=name):
+                            self.assertEqual(value["type"], "mixed")
+                            self.assertIsInstance(value["value"], str)
+                            self.assertTrue(value["value"].startswith("{{#"))
+
     def test_each_workflow_submits_once_outside_bounded_loop(self):
         for kind, submit_name in [
             ("image", "generate_image"),
@@ -57,7 +79,7 @@ class WorkflowSafetyTests(unittest.TestCase):
                         self.assertEqual(n["data"]["tool_name"], "query_task")
                         self.assertEqual(
                             n["data"]["tool_parameters"]["task_id"]["value"],
-                            [submit[0]["id"], "task_id"],
+                            "{{#" + submit[0]["id"] + ".task_id#}}",
                         )
 
     def test_final_query_returns_dify_files_and_preserves_task_id(self):

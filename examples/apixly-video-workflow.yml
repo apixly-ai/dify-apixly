@@ -128,35 +128,25 @@ workflow:
         tool_configurations: {}
         tool_parameters:
           model:
-            type: variable
-            value:
-            - start
-            - model
+            type: mixed
+            value: '{{#start.model#}}'
           prompt:
-            type: variable
-            value:
-            - start
-            - prompt
+            type: mixed
+            value: '{{#start.prompt#}}'
           parameters_json:
-            type: variable
-            value:
-            - start
-            - advanced_parameters
+            type: mixed
+            value: '{{#start.advanced_parameters#}}'
           seconds:
             type: variable
             value:
             - start
             - seconds
           resolution:
-            type: variable
-            value:
-            - start
-            - resolution
+            type: mixed
+            value: '{{#start.resolution#}}'
           aspect_ratio:
-            type: variable
-            value:
-            - start
-            - aspect_ratio
+            type: mixed
+            value: '{{#start.aspect_ratio#}}'
         is_team_authorization: true
         retry_config:
           retry_enabled: false
@@ -294,10 +284,8 @@ workflow:
             type: constant
             value: video
           task_id:
-            type: variable
-            value:
-            - submit
-            - task_id
+            type: mixed
+            value: '{{#submit.task_id#}}'
           download:
             type: constant
             value: false
@@ -390,10 +378,8 @@ workflow:
             type: constant
             value: video
           task_id:
-            type: variable
-            value:
-            - submit
-            - task_id
+            type: mixed
+            value: '{{#submit.task_id#}}'
           download:
             type: constant
             value: true
