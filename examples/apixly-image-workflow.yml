@@ -14,7 +14,7 @@ dependencies:
 - current_identifier: null
   type: package
   value:
-    plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@aa571aaefcd8c808e6fbcff15d4655a230dcb9a037338848627be40c78f55cbb
+    plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@fc789aeb4a55e4c9d9685ddae107ee586f165c336011dc20ecf9d8c87f3af6c2
     version: null
 workflow:
   conversation_variables: []
@@ -106,7 +106,7 @@ workflow:
         provider_name: apixly-ai/apixly_media/apixly_media
         provider_type: builtin
         plugin_id: apixly-ai/apixly_media
-        plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@aa571aaefcd8c808e6fbcff15d4655a230dcb9a037338848627be40c78f55cbb
+        plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@fc789aeb4a55e4c9d9685ddae107ee586f165c336011dc20ecf9d8c87f3af6c2
         tool_name: generate_image
         tool_label: Submit ONCE · 仅提交一次
         tool_description: Apixly media API tool; use the provider's secret credential.
@@ -262,7 +262,7 @@ workflow:
         provider_name: apixly-ai/apixly_media/apixly_media
         provider_type: builtin
         plugin_id: apixly-ai/apixly_media
-        plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@aa571aaefcd8c808e6fbcff15d4655a230dcb9a037338848627be40c78f55cbb
+        plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@fc789aeb4a55e4c9d9685ddae107ee586f165c336011dc20ecf9d8c87f3af6c2
         tool_name: query_task
         tool_label: Wait 5s + query · 等待后只读查询
         tool_description: Apixly media API tool; use the provider's secret credential.
@@ -358,7 +358,7 @@ workflow:
         provider_name: apixly-ai/apixly_media/apixly_media
         provider_type: builtin
         plugin_id: apixly-ai/apixly_media
-        plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@aa571aaefcd8c808e6fbcff15d4655a230dcb9a037338848627be40c78f55cbb
+        plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@fc789aeb4a55e4c9d9685ddae107ee586f165c336011dc20ecf9d8c87f3af6c2
         tool_name: query_task
         tool_label: Retrieve existing task · 下载原任务素材
         tool_description: Apixly media API tool; use the provider's secret credential.
