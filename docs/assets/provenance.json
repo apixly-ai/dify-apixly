@@ -1,0 +1,104 @@
+{
+  "observed_on": "2026-10-23",
+  "verification_host": "official self-hosted Dify Community1.17.1",
+  "cloud_verification": false,
+  "assets": [
+    {
+      "file": "reference-cup.jpg",
+      "kind": "image",
+      "bytes": 145811,
+      "sha256": "58dc707de5e615c27f2a8b1cc7a25ea48ca4190d4326f4510b005d6566e68237",
+      "origin": "Unmodified text-to-image output from the authorized native Dify verification.",
+      "model": "grok-imagine-image"
+    },
+    {
+      "file": "edited-cup.png",
+      "kind": "image",
+      "bytes": 1053054,
+      "sha256": "c1cec64912cebdc27553e7f2a8d6205757dda7132675be0d3172d446b2518818",
+      "origin": "Unmodified single-reference edit of reference-cup.jpg; gray studio background. Original content/provenance metadata is retained.",
+      "model": "gemini-3.1-flash-image"
+    },
+    {
+      "file": "text-video.mp4",
+      "kind": "video",
+      "bytes": 1528401,
+      "sha256": "b4643b681baa0ecc0e21a7e418793cd62b9ff96ba024d3df4b3b6e7a31a62dc1",
+      "origin": "Unmodified text-to-video output; 1280x720, 1.041667 seconds.",
+      "model": "grok-imagine-video"
+    },
+    {
+      "file": "image-video.mp4",
+      "kind": "video",
+      "bytes": 770697,
+      "sha256": "4a6960f3d007a3a496a60cc3e0c3ca3bc9baa11e2afdcdf885bb198bd92e7d18",
+      "origin": "Unmodified reference-video output; 960x960, 3.041667 seconds. Source image geometry retained.",
+      "model": "grok-imagine-video-1.5-preview"
+    },
+    {
+      "file": "text-video-still.png",
+      "kind": "video still",
+      "bytes": 1010812,
+      "sha256": "7f0944a25259e40afbe73284b29c4e35cb67a508b3ee542513dfd8e3d9323ef8",
+      "origin": "Frame extracted from text-video.mp4 for documentation.",
+      "model": "grok-imagine-video"
+    },
+    {
+      "file": "image-video-still.png",
+      "kind": "video still",
+      "bytes": 327513,
+      "sha256": "a1ae6c21b1abec7b69a0643c1e27dbccea6f61ef4945cdb3a2a531b3b2900623",
+      "origin": "Frame extracted from image-video.mp4 for documentation.",
+      "model": "grok-imagine-video-1.5-preview"
+    },
+    {
+      "file": "dify-reference-editor-en.png",
+      "kind": "screenshot",
+      "bytes": 287704,
+      "sha256": "655725d5404166a5c018a935d8356885c23d538797fd6e5e58af0ce055aa036c",
+      "origin": "Unmodified native English tool panel in self-hosted Dify Community1.17.1."
+    },
+    {
+      "file": "dify-reference-editor-zh-Hans.png",
+      "kind": "screenshot",
+      "bytes": 282215,
+      "sha256": "4d94bea69d93e4fc701bdb169e46129d8f71f32b49b0d73766d04e42532f13d6",
+      "origin": "Unmodified native Chinese tool panel in self-hosted Dify Community1.17.1."
+    },
+    {
+      "file": "dify-image-video-workflow.png",
+      "kind": "screenshot",
+      "bytes": 201117,
+      "sha256": "4289c9647abd7891f6599d64674a8610af8e8162ff1d260246e77ea42bb589fe",
+      "origin": "Unmodified native connected-workflow editor in self-hosted Dify Community1.17.1."
+    },
+    {
+      "file": "cover.svg",
+      "kind": "original vector artwork",
+      "bytes": 29885,
+      "sha256": "cfe4217b83a7be0bed36a8d35e2bdfdcb2184ace60aac2d610427127840fa24b",
+      "origin": "Code-native Apixly branding, using the existing official Apixly icon. An illustration, not product UI."
+    },
+    {
+      "file": "workflow-map.svg",
+      "kind": "original vector diagram",
+      "bytes": 7692,
+      "sha256": "3d4af8f7f26715d73acfb5c661e8e55c8ed4771dd399a7d3d454d3cbd6309e9f",
+      "origin": "Illustrated overview of the four included DSLs, not product UI."
+    },
+    {
+      "file": "cover.png",
+      "kind": "raster render",
+      "bytes": 293334,
+      "sha256": "9c762cc4189d7ddd51f4c556561f505b1bfc34ab7f3bdfe1e678970a93145510",
+      "origin": "Exact Camofox browser render of cover.svg at1600x840."
+    },
+    {
+      "file": "workflow-map.png",
+      "kind": "raster render",
+      "bytes": 139274,
+      "sha256": "fca41c130a42e42319b053cfd4a24606f4f96b17124c16c6355653fda0127ef8",
+      "origin": "Exact Camofox browser render of workflow-map.svg at1600x810."
+    }
+  ]
+}

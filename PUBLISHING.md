@@ -9,9 +9,9 @@ uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python -r requirements-dev.txt
 .venv/bin/python -m unittest discover -s tests -v
 mkdir -p dist
-dify plugin package . -o dist/apixly_media-0.1.0.difypkg
+dify plugin package . -o dist/apixly_media-0.1.1.difypkg
 python3 /path/to/dify-marketplace-toolkit/validator/validate-difypkg.py \
-  dist/apixly_media-0.1.0.difypkg --offline --output-dir validation/offline
+  dist/apixly_media-0.1.1.difypkg --offline --output-dir validation/offline
 ```
 
 The package must exclude development state according to `.difyignore`. Inspect the archive before publication. A package generated on 2026-10-23 passed all blocking official local checks using CLI `v0.6.11`, SDK `0.10.2`, and Marketplace Toolkit commit `57a21d1304b1108df3e6b90a15a4f5dd9f0915f9`. Rebuild and rerun after any edit; only the final package hash identifies the release being reviewed.

@@ -16,7 +16,7 @@ class WorkflowSafetyTests(unittest.TestCase):
         self.assertEqual(dependency["type"], "package")
         self.assertEqual(
             dependency["value"]["plugin_unique_identifier"],
-            f"apixly-ai/apixly_media:0.1.0@{self.checksum}",
+            f"apixly-ai/apixly_media:0.1.1@{self.checksum}",
         )
         for node in self.nodes(workflow).values():
             if node["data"]["type"] == "tool":

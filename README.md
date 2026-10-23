@@ -1,10 +1,44 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/cover.png" alt="Apixly Media for Dify: generate images, edit references, create video and retrieve task files" width="1200" />
+</p>
+
 # Apixly Media for Dify
 
-Generate and edit images, submit videos, and retrieve asynchronous media tasks using your own Apixly API key. Installation is free; API usage is billed to your Apixly account. This is an Apixly integration, maintained by Apixly, and is not affiliated with the underlying model developers.
+Generate images, edit references and create videos inside Dify. Bring your own Apixly API key, submit a task once, and retrieve its result as a native Dify file.
 
-Source repository: [apixly-ai/dify-apixly](https://github.com/apixly-ai/dify-apixly). [Chinese documentation](readme/README_zh_Hans.md). Support: [support@apixly.ai](mailto:support@apixly.ai).
+**[Download plugin and workflows](https://github.com/apixly-ai/dify-apixly/releases/tag/v0.1.1)** · **[Create an API key](https://platform.apixly.ai/keys)** · **[Models and prices](https://platform.apixly.ai/models)** · **[Open the console](https://platform.apixly.ai/)**
 
-Useful links: [Website](https://apixly.ai/) · [API console](https://platform.apixly.ai/) · [Create/manage API keys](https://platform.apixly.ai/keys) · [Models and prices](https://platform.apixly.ai/models) · [API documentation](https://apixly.ai/docs) · [Usage logs](https://platform.apixly.ai/usage/logs).
+[Website](https://apixly.ai/) · [API documentation](https://apixly.ai/docs) · [Chinese documentation](readme/README_zh_Hans.md) · [Support](mailto:support@apixly.ai) · [Marketplace submission](https://github.com/langgenius/dify-plugins/pull/3481)
+
+The plugin is free. API usage is billed to your Apixly account. Maintained by Apixly; this integration is not affiliated with the underlying model developers.
+
+## From a product photo to a finished asset
+
+These are actual results from the authorized API verification, not interface mockups. In this reference edit, `gemini-3.1-flash-image` retained the blue cup and handle while changing the background to a neutral gray studio setting.
+
+| Reference image | Edited result |
+| --- | --- |
+| <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/reference-cup.jpg" alt="Original blue ceramic cup on a light table" width="420" /> | <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/edited-cup.png" alt="Actual reference edit: blue ceramic cup retained against a gray studio background" width="420" /> |
+
+| Text to video | Image to video |
+| --- | --- |
+| <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/text-video-still.png" alt="Still from the verified text-to-video clip: lighthouse at sunset" width="420" /> | <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/image-video-still.png" alt="Still from the verified image-to-video clip retaining the source blue glass vase" width="420" /> |
+| [Watch the actual text-to-video clip](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/assets/text-video.mp4) · 1280 × 720, about 1 second | [Watch the actual reference-video clip](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/assets/image-video.mp4) · 960 × 960, about 3 seconds |
+
+Video images above are still frames from the linked generated clips. Results depend on the selected model, prompt and supported parameters. The reference-video example follows the source image geometry. [Asset sources and SHA256 hashes](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/assets/provenance.json).
+
+## Pick one of four starting workflows
+
+<img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/workflow-map.png" alt="Illustrated overview of the four importable workflows: text to image, reference editing, text to video and connected image to video" width="1200" />
+
+| Workflow | Start with | Billable submissions per run |
+| --- | --- | --- |
+| [Text to image](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-image-workflow.yml) | A product or creative brief | 1 image generation |
+| [Reference edit](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-edit-workflow.yml) | One image, optional extra references, and an edit instruction | 1 image edit |
+| [Text to video](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-video-workflow.yml) | A scene and its supported duration | 1 video generation |
+| [Image to video](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-image-to-video-workflow.yml) | An image brief connected to a video instruction | 1 image + 1 video generation |
+
+Each DSL submits once per stage, checks the returned task ID, polls within a limit, and returns the original task's files. Read-only queries and download recovery do not create another generation. Check the current model catalog for API prices.
 
 ## Setup and connection requirements
 
@@ -17,6 +51,12 @@ Useful links: [Website](https://apixly.ai/) · [API console](https://platform.ap
 For a checked price example, `gemini-3.1-flash-image` 1K image generation was US$0.02 per image on 2026-10-23. Consult the [current model catalog](https://platform.apixly.ai/models) for your selected model and parameters.
 
 Runtime: Python 3.12, `dify-plugin==0.10.2`. The plugin and example workflows were installed and exercised on self-hosted Dify Community 1.17.1. Other versions and Dify Cloud remain unverified. See `PUBLISHING.md` for the bounded verification record.
+
+## Inside the native Dify editor
+
+<img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/dify-reference-editor-en.png" alt="Actual Dify Community workflow editor showing the Apixly reference-edit tool and its fields" width="1200" />
+
+The fields above are the actual installed plugin UI. English and Chinese labels are included. The plugin and four DSLs were installed, run and published in self-hosted Dify Community 1.17.1; Dify Cloud remains unverified. [View the connected workflow screenshot](https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/dify-image-video-workflow.png).
 
 ## Tools and usage
 
@@ -109,7 +149,7 @@ The plugin collects no independent analytics and writes no user data to local fi
 uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python -r requirements-dev.txt
 .venv/bin/python -m unittest discover -s tests -v
-dify plugin package . -o dist/apixly_media-0.1.0.difypkg
+dify plugin package . -o dist/apixly_media-0.1.1.difypkg
 ```
 
 Use the official [Dify Marketplace Toolkit](https://github.com/langgenius/dify-marketplace-toolkit) to validate the package. Offline checks do not query dependency vulnerability databases and do not constitute Marketplace approval or production API E2E verification. Full release instructions and outstanding gates are in `PUBLISHING.md` in the source repository.

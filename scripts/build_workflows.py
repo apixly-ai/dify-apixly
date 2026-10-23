@@ -43,7 +43,7 @@ def constant(value):
     return {"type": "constant", "value": value}
 
 
-def build_workflow(kind: str, plugin_checksum: str, version: str = "0.1.0") -> dict:
+def build_workflow(kind: str, plugin_checksum: str, version: str = "0.1.1") -> dict:
     if kind not in {"image", "edit", "video"}:
         raise ValueError("kind must be image, edit, or video")
     if not re.fullmatch(r"[a-f0-9]{64}", plugin_checksum):
@@ -407,7 +407,7 @@ def build_workflow(kind: str, plugin_checksum: str, version: str = "0.1.0") -> d
     }
 
 
-def build_image_to_video(plugin_checksum: str, version: str = "0.1.0") -> dict:
+def build_image_to_video(plugin_checksum: str, version: str = "0.1.1") -> dict:
     """Connect two existing safe phases without replaying either submission."""
     document = build_workflow("image", plugin_checksum, version)
     video = build_workflow("video", plugin_checksum, version)
@@ -635,7 +635,7 @@ def main():
     parser.add_argument(
         "--checksum", required=True, help="Exact dify plugin checksum output, not the ZIP SHA256"
     )
-    parser.add_argument("--version", default="0.1.0")
+    parser.add_argument("--version", default="0.1.1")
     parser.add_argument("--output", type=Path, default=Path("examples"))
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)

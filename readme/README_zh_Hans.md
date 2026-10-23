@@ -1,8 +1,44 @@
-# Apixly 媒体插件：在 Dify 中生成图片和视频
+<p align="center">
+  <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/cover.png" alt="Apixly 媒体插件：在 Dify 中生成图片、编辑参考图、创建视频并下载原任务文件" width="1200" />
+</p>
 
-用自己的 Apixly API Key 在 Dify 工作流、Chatflow 或 Agent 中生成图片、编辑参考图、创建视频和查询任务。**插件免费，API 调用按 Apixly 账号实际用量计费。** 本插件由 Apixly 维护，不代表底层模型开发商。
+# Apixly Media：把图片和视频接进 Dify 工作流
 
-[官网](https://apixly.ai/) · [控制台](https://platform.apixly.ai/) · [创建和管理 Key](https://platform.apixly.ai/keys) · [模型与价格](https://platform.apixly.ai/models) · [API 文档](https://apixly.ai/docs) · [调用明细](https://platform.apixly.ai/usage/logs) · [源码](https://github.com/apixly-ai/dify-apixly)
+用自己的 Apixly API Key 在 Dify 中生图、编辑参考图和生成视频。每个生成阶段只提交一次，再查询原任务，将成品作为 Dify 文件交给后续节点。
+
+**[下载插件与工作流](https://github.com/apixly-ai/dify-apixly/releases/tag/v0.1.1)** · **[创建 API Key](https://platform.apixly.ai/keys)** · **[模型与价格](https://platform.apixly.ai/models)** · **[打开控制台](https://platform.apixly.ai/)**
+
+[官网](https://apixly.ai/) · [API 文档](https://apixly.ai/docs) · [English](../README.md) · [支持邮箱](mailto:support@apixly.ai) · [Marketplace 提交记录](https://github.com/langgenius/dify-plugins/pull/3481)
+
+**插件免费，API 按 Apixly 账号实际用量计费。** 本插件由 Apixly 维护，不代表底层模型开发商。
+
+## 看实际效果
+
+下面是已授权 API 验收的真实产物。在这次 `gemini-3.1-flash-image` 参考图编辑中，蓝杯的颜色、形状和把手得到保留，背景改为灰色摄影棚场景。
+
+| 参考图 | 编辑结果 |
+| --- | --- |
+| <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/reference-cup.jpg" alt="原始蓝色陶瓷杯，浅色桌面背景" width="420" /> | <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/edited-cup.png" alt="真实编辑结果：保留蓝杯与把手，替换为灰色摄影棚背景" width="420" /> |
+
+| 文生视频 | 图生视频 |
+| --- | --- |
+| <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/text-video-still.png" alt="真实文生视频的静帧：落日中的海边灯塔" width="420" /> | <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/image-video-still.png" alt="真实图生视频的静帧：保留源图中的蓝色玻璃花瓶" width="420" /> |
+| [查看真实文生视频](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/assets/text-video.mp4) · 1280 × 720，约 1 秒 | [查看真实图生视频](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/assets/image-video.mp4) · 960 × 960，约 3 秒 |
+
+上方视频图片是对应成品的静帧；实际效果取决于所选模型、提示词与支持的参数。该图生视频模式跟随参考图尺寸。[素材来源与 SHA256](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/assets/provenance.json)。
+
+## 选择一份入门工作流
+
+<img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/workflow-map.png" alt="四份可导入工作流示意图：文生图、参考图编辑、文生视频、图片衔接图生视频" width="1200" />
+
+| 工作流 | 准备什么 | 每次运行的生成提交 |
+| --- | --- | --- |
+| [文生图](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-image-workflow.yml) | 产品或创意描述 | 1 次图片生成 |
+| [参考图编辑](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-edit-workflow.yml) | 一张图、可选更多参考图、修改要求 | 1 次图片编辑 |
+| [文生视频](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-video-workflow.yml) | 场景描述与模型支持的时长 | 1 次视频生成 |
+| [图片衔接图生视频](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-image-to-video-workflow.yml) | 图片描述与后续视频要求 | 1 次图片 + 1 次视频生成 |
+
+每阶段均为：只提交一次 → 得到任务 ID → 有界查询 → 返回原任务文件。只读查询与恢复下载不会重新生成；API 费用以当前模型价格为准。
 
 ## 安装和连接
 
@@ -14,6 +50,12 @@
 价格示例：2026-10-23 核验的 `gemini-3.1-flash-image` 1K 生图为每张 US$0.02。请按所选模型与参数查看[当前模型价格](https://platform.apixly.ai/models)。
 
 本插件与示例工作流已在自托管 Dify Community 1.17.1 安装运行；其他版本和 Dify Cloud 尚未完成验收。运行时为 Python 3.12、`dify-plugin==0.10.2`。
+
+## 原生 Dify 界面
+
+<img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/dify-reference-editor-zh-Hans.png" alt="真实 Dify Community 中文工作流编辑器，展示 Apixly 参考图编辑字段" width="1200" />
+
+截图来自实际安装的插件，包含中英文字段名称。插件与四份 DSL 已在自托管 Dify Community 1.17.1 安装、运行和发布；Dify Cloud 尚未完成验收。[查看图片衔接视频的真实工作流截图](https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/dify-image-video-workflow.png)。
 
 ## 四个工具
 
