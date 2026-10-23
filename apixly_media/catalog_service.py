@@ -11,7 +11,13 @@ from typing import Any
 import httpx
 
 from apixly_media.catalog import CatalogCache, build_catalog_snapshot, catalog_identity
-from apixly_media.client import ACCOUNT_API_BASE, API_BASE, MediaError, connection_error_message
+from apixly_media.client import (
+    ACCOUNT_API_BASE,
+    API_BASE,
+    MediaError,
+    connection_error_code,
+    connection_error_message,
+)
 from apixly_media.connection import media_credentials
 
 _CACHE = CatalogCache()
@@ -66,9 +72,7 @@ class ModelCatalogService:
             raise _FetchError() from None
         if response.status_code != 200:
             try:
-                body = response.json()
-                error = body.get("error") if isinstance(body, dict) else None
-                code = error.get("code") or error.get("type") if isinstance(error, dict) else None
+                code = connection_error_code(response.json())
             except ValueError:
                 code = None
             raise _FetchError(response.status_code, code)
@@ -138,7 +142,11 @@ class ModelCatalogService:
                 identity, selected = self._account_identity()
             except _FetchError as error:
                 previous = self._binding()
-                if previous and error.status not in (401, 403):
+                if (
+                    previous
+                    and error.status not in (401, 403)
+                    and not (error.status == 409 and error.code == "selected_key_unavailable")
+                ):
 
                     def fail() -> dict:
                         raise _FetchError()
@@ -159,6 +167,7 @@ class ModelCatalogService:
                     "error": connection_error_message(error.code)
                     or "Could not read the account or selected Key. Check Apixly connection settings.",
                     "error_code": error.code,
+                    "http_status": error.status,
                     "selection_confirmed": False,
                 }
         else:

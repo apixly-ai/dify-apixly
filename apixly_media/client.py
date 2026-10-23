@@ -43,10 +43,23 @@ class UnknownOutcome(MediaError):
 
 def connection_error_message(code: str | None) -> str | None:
     if code == "selected_key_rejected":
-        return "The selected Key was rejected. Check its access or choose another active owned Key in Apixly connection settings. Your saved account connection was not removed."
+        return "The selected Key was rejected. Check its access or select another saved connection in Dify. To bind another Key, authorize a new connection on Apixly. Your existing connection was not removed."
     if code == "invalid_connection":
-        return "The Apixly account connection is invalid or expired. Authorize again."
+        return "The Apixly account connection is invalid, expired or revoked. Authorize again."
+    if code == "selected_key_unavailable":
+        return "The selected Key is unavailable. Select another saved connection in Dify. To bind another Key, authorize a new connection on Apixly. Your existing connection was not removed."
     return None
+
+
+def connection_error_code(body: Any) -> str | None:
+    """Recognize only public connection codes in flat or relay envelopes."""
+    if not isinstance(body, dict):
+        return None
+    error = body.get("error")
+    code = error if isinstance(error, str) else None
+    if isinstance(error, dict):
+        code = error.get("code") or error.get("type")
+    return code if isinstance(code, str) and connection_error_message(code) else None
 
 
 def required_text(value: Any, name: str) -> str:
@@ -209,7 +222,7 @@ class MediaClient:
                 f"Submission outcome is unknown (HTTP {response.status_code}). No automatic retry was made. Check Apixly task history before submitting again."
             )
         if not 200 <= response.status_code < 300:
-            code = error.get("code") or error.get("type") if isinstance(error, dict) else None
+            code = connection_error_code(envelope)
             guidance = connection_error_message(code) if self.api_base == ACCOUNT_API_BASE else None
             if guidance:
                 raise MediaError(guidance + " No automatic retry was made.")
@@ -319,11 +332,20 @@ class MediaClient:
                 "error": "Status query timed out or failed to connect. Query this same task ID again; do not create another generation.",
             }
         if not 200 <= response.status_code < 300:
-            return {
+            result = {
                 **base,
                 "http_status": response.status_code,
                 "error": f"Status query returned HTTP {response.status_code}. The task outcome was not established. Check key ownership/access or query the same ID later.",
             }
+            if self.api_base == ACCOUNT_API_BASE:
+                try:
+                    code = connection_error_code(response.json())
+                except ValueError:
+                    code = None
+                guidance = connection_error_message(code)
+                if guidance:
+                    result.update(error_code=code, error=guidance)
+            return result
         try:
             data = response.json()
         except ValueError:

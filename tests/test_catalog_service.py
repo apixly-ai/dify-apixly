@@ -30,7 +30,12 @@ class CatalogServiceTests(unittest.TestCase):
         if request.url.path.endswith("/account"):
             if self.account_status != 200:
                 return httpx.Response(
-                    self.account_status, json={"error": {"code": self.account_error_code}}
+                    self.account_status,
+                    json={
+                        "error": self.account_error_code
+                        if getattr(self, "flat_account_error", False)
+                        else {"code": self.account_error_code}
+                    },
                 )
             return httpx.Response(
                 self.account_status,
@@ -115,6 +120,32 @@ class CatalogServiceTests(unittest.TestCase):
         self.assertFalse(self.cache.peek(first["identity"])["available"])
         self.assertIn("Authorize again", failed["error"])
         self.assertNotIn(self.token, json.dumps(failed))
+
+    def test_live_flat_revocation_code_clears_catalog_and_requires_authorization(self):
+        service = self.service({"connection_token": self.token})
+        first = service.read()
+        self.account_status = 401
+        self.flat_account_error = True
+        failed = service.read()
+        self.assertFalse(failed["available"])
+        self.assertEqual(failed["error_code"], "invalid_connection")
+        self.assertEqual(failed["http_status"], 401)
+        self.assertIn("Authorize again", failed["error"])
+        self.assertFalse(self.cache.peek(first["identity"])["available"])
+        self.assertTrue(all(request.method == "GET" for request in self.calls))
+
+    def test_flat_unavailable_key_is_not_treated_as_transient_saved_catalog(self):
+        service = self.service({"connection_token": self.token})
+        first = service.read()
+        self.account_status = 409
+        self.account_error_code = "selected_key_unavailable"
+        self.flat_account_error = True
+        failed = service.read()
+        self.assertFalse(failed["available"])
+        self.assertEqual(failed["error_code"], "selected_key_unavailable")
+        self.assertIn("selected Key is unavailable", failed["error"])
+        self.assertNotIn("Authorize again", failed["error"])
+        self.assertFalse(self.cache.peek(first["identity"])["available"])
 
     def test_selected_key_rejection_keeps_saved_connection_and_does_not_request_reauthorization(
         self,

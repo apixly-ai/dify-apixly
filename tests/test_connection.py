@@ -303,6 +303,54 @@ class ConnectionTests(unittest.TestCase):
                 self.assertNotIn(self.token, str(raised.exception))
                 self.assertEqual([request.method for request in calls], ["POST"])
 
+    def test_flat_and_nested_connection_failures_have_safe_submit_and_query_guidance(self):
+        for code, status, expected in [
+            ("invalid_connection", 401, "Authorize again"),
+            ("selected_key_rejected", 401, "selected Key was rejected"),
+            ("selected_key_unavailable", 409, "selected Key is unavailable"),
+        ]:
+            for error in [code, {"code": code, "message": self.token}]:
+                with self.subTest(code=code, error_type=type(error).__name__):
+                    calls = []
+
+                    def handler(request):
+                        calls.append(request)
+                        return httpx.Response(status, json={"error": error})
+
+                    client = MediaClient(
+                        self.token, account_mode=True, transport=httpx.MockTransport(handler)
+                    )
+                    with self.assertRaises(MediaError) as raised:
+                        client.generate_image("EXACT-model", "Draw")
+                    self.assertIn(expected, str(raised.exception))
+                    result = client.query_task("image", "original-id")
+                    self.assertEqual(result["id"], "original-id")
+                    self.assertEqual(result["http_status"], status)
+                    self.assertEqual(result["error_code"], code)
+                    self.assertIn(expected, result["error"])
+                    self.assertNotIn(self.token, json.dumps(result))
+                    if code != "invalid_connection":
+                        self.assertNotIn("Authorize again", result["error"])
+                        self.assertIn("saved connection in Dify", result["error"])
+                        self.assertIn("authorize a new connection on Apixly", result["error"])
+                        self.assertNotIn("connection settings", result["error"])
+                    else:
+                        self.assertIn("revoked", result["error"])
+                    self.assertEqual([r.method for r in calls], ["POST", "GET"])
+
+    def test_unknown_401_is_not_labeled_as_a_revoked_connection(self):
+        client = MediaClient(
+            self.token,
+            account_mode=True,
+            transport=httpx.MockTransport(
+                lambda request: httpx.Response(401, json={"error": "private unknown " + self.token})
+            ),
+        )
+        result = client.query_task("image", "original-id")
+        self.assertNotIn("Authorize again", result["error"])
+        self.assertNotIn("error_code", result)
+        self.assertNotIn(self.token, json.dumps(result))
+
 
 if __name__ == "__main__":
     unittest.main()
