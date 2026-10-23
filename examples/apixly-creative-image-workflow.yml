@@ -14,7 +14,12 @@ dependencies:
 - current_identifier: null
   type: package
   value:
-    plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@7b87a1e1957680672bd77ee225537e07fda7473fb51fffdcaaa28e4967b7ef33
+    plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@df1fb32b82ecb720d4abcd19d2923f0571961dece741d6633362c59ca289dd59
+    version: null
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@b49f728080d62147c89241cd87dae587834c0c2a9120c28b37db468c7c43011a
     version: null
 workflow:
   conversation_variables: []
@@ -106,7 +111,7 @@ workflow:
         provider_name: apixly-ai/apixly_media/apixly_media
         provider_type: builtin
         plugin_id: apixly-ai/apixly_media
-        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@7b87a1e1957680672bd77ee225537e07fda7473fb51fffdcaaa28e4967b7ef33
+        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@df1fb32b82ecb720d4abcd19d2923f0571961dece741d6633362c59ca289dd59
         tool_name: generate_image
         tool_label: Submit ONCE · 仅提交一次
         tool_description: Apixly media API tool; use the provider's secret credential.
@@ -254,7 +259,7 @@ workflow:
         provider_name: apixly-ai/apixly_media/apixly_media
         provider_type: builtin
         plugin_id: apixly-ai/apixly_media
-        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@7b87a1e1957680672bd77ee225537e07fda7473fb51fffdcaaa28e4967b7ef33
+        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@df1fb32b82ecb720d4abcd19d2923f0571961dece741d6633362c59ca289dd59
         tool_name: query_task
         tool_label: Wait 5s + query · 等待后只读查询
         tool_description: Apixly media API tool; use the provider's secret credential.
@@ -348,7 +353,7 @@ workflow:
         provider_name: apixly-ai/apixly_media/apixly_media
         provider_type: builtin
         plugin_id: apixly-ai/apixly_media
-        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@7b87a1e1957680672bd77ee225537e07fda7473fb51fffdcaaa28e4967b7ef33
+        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@df1fb32b82ecb720d4abcd19d2923f0571961dece741d6633362c59ca289dd59
         tool_name: query_task
         tool_label: Retrieve existing task · 下载原任务素材
         tool_description: Apixly media API tool; use the provider's secret credential.
@@ -513,11 +518,11 @@ workflow:
         title: Free prompt preview · 免费提示词预览
         desc: ''
         selected: false
-        provider_id: apixly-ai/apixly_media/apixly_creative
-        provider_name: apixly-ai/apixly_media/apixly_creative
+        provider_id: apixly-ai/apixly_creative/apixly_creative
+        provider_name: apixly-ai/apixly_creative/apixly_creative
         provider_type: builtin
-        plugin_id: apixly-ai/apixly_media
-        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@7b87a1e1957680672bd77ee225537e07fda7473fb51fffdcaaa28e4967b7ef33
+        plugin_id: apixly-ai/apixly_creative
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@b49f728080d62147c89241cd87dae587834c0c2a9120c28b37db468c7c43011a
         tool_name: compose_creative_prompt
         tool_label: Preview creative prompt
         tool_description: Local composition only; no key or generation. Controls default
@@ -525,12 +530,6 @@ workflow:
         tool_node_version: '2'
         tool_configurations: {}
         tool_parameters:
-          prompt:
-            type: mixed
-            value: '{{#start.prompt#}}'
-          mode:
-            type: constant
-            value: generate
           angle_enabled:
             type: constant
             value: false
@@ -579,6 +578,12 @@ workflow:
           camera_aperture:
             type: constant
             value: ''
+          prompt:
+            type: mixed
+            value: '{{#start.prompt#}}'
+          mode:
+            type: constant
+            value: generate
         is_team_authorization: true
         retry_config:
           retry_enabled: false

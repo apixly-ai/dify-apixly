@@ -14,7 +14,7 @@ dependencies:
 - current_identifier: null
   type: package
   value:
-    plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@7b87a1e1957680672bd77ee225537e07fda7473fb51fffdcaaa28e4967b7ef33
+    plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@b49f728080d62147c89241cd87dae587834c0c2a9120c28b37db468c7c43011a
     version: null
 workflow:
   conversation_variables: []
@@ -80,11 +80,11 @@ workflow:
         title: Free prompt preview · 免费提示词预览
         desc: ''
         selected: false
-        provider_id: apixly-ai/apixly_media/apixly_creative
-        provider_name: apixly-ai/apixly_media/apixly_creative
+        provider_id: apixly-ai/apixly_creative/apixly_creative
+        provider_name: apixly-ai/apixly_creative/apixly_creative
         provider_type: builtin
-        plugin_id: apixly-ai/apixly_media
-        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@7b87a1e1957680672bd77ee225537e07fda7473fb51fffdcaaa28e4967b7ef33
+        plugin_id: apixly-ai/apixly_creative
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@b49f728080d62147c89241cd87dae587834c0c2a9120c28b37db468c7c43011a
         tool_name: compose_creative_prompt
         tool_label: Preview creative prompt
         tool_description: Local composition only; no key or generation. Controls default
@@ -92,12 +92,6 @@ workflow:
         tool_node_version: '2'
         tool_configurations: {}
         tool_parameters:
-          prompt:
-            type: mixed
-            value: '{{#start.prompt#}}'
-          mode:
-            type: constant
-            value: generate
           angle_enabled:
             type: constant
             value: false
@@ -146,6 +140,12 @@ workflow:
           camera_aperture:
             type: constant
             value: ''
+          prompt:
+            type: mixed
+            value: '{{#start.prompt#}}'
+          mode:
+            type: constant
+            value: generate
         is_team_authorization: true
         retry_config:
           retry_enabled: false
