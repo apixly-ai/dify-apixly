@@ -70,7 +70,7 @@
 
 当前开发候选版包含 OAuth 账号连接；部署和真实授权验收仍是发布门槛。工作区管理员先在 [Apixly 连接设置](https://apixly.ai/integrations) 注册 Dify 应用，填写 **Dify 显示的精确回调地址**，再把客户端 ID 与一次性密钥填入 Dify 的私有 OAuth 客户端设置。插件不内置共享密钥。
 
-用户点击 **Authorize**，通过 Apixly 正常网站登录，选择 **Studixly Key（默认）** 或自己已有的其他有效 Key。插件只接收可撤销的连接凭据，不保存网站密码、完整登录 JWT 或底层裸 Key。完整 Key 下拉在网站授权页；Dify 原生凭据选择器用于切换已保存的连接。Dify 会自动命名 OAuth 凭据，可手动改为 `Apixly · studixly-key`，账号与脱敏 Key 信息保留在详情中。
+用户点击 **Authorize**，通过 Apixly 正常网站登录，选择 **Studixly Key（默认）** 或自己已有的其他有效 Key。插件只接收可撤销的连接凭据，不保存网站密码、完整登录 JWT 或底层裸 Key。完整 Key 下拉在网站授权页；Dify 原生凭据选择器用于切换已保存的连接。要绑定不同或新的 Key，请重新授权，在 Apixly 中选择该 Key，然后在 Dify 中选择对应的已保存连接。Dify 会自动命名 OAuth 凭据，可手动改为 `Apixly · studixly-key`，账号与脱敏 Key 信息保留在详情中。
 
 ### 选模型与刷新
 

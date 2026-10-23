@@ -71,7 +71,7 @@ The original all-in-one creative tool and its four earlier creative workflows re
 
 This development candidate includes OAuth account connection; deployment and real authorization acceptance remain release gates. A workspace administrator registers a Dify application in [Apixly connection settings](https://apixly.ai/integrations), using the **exact callback URI shown by Dify**, then enters the issued client ID and one-time secret in Dify's private OAuth client settings. No shared client secret is bundled.
 
-Users choose **Authorize**, sign in through the normal Apixly website and select **Studixly Key (default)** or another existing active Key. The plugin receives a revocable scoped connection token, rather than a website password, login JWT or raw API key. The website authorization page provides the complete Key dropdown. Dify's credential selector switches saved connections. Dify initially names OAuth credentials automatically; you can rename one to `Apixly · studixly-key`. Account and masked Key details are stored with the connection.
+Users choose **Authorize**, sign in through the normal Apixly website and select **Studixly Key (default)** or another existing active Key. The plugin receives a revocable scoped connection token, rather than a website password, login JWT or raw API key. The website authorization page provides the complete Key dropdown. Dify's credential selector switches saved connections. To bind a different or new Key, authorize again, choose it in Apixly, then select the corresponding saved connection in Dify. Dify initially names OAuth credentials automatically; you can rename one to `Apixly · studixly-key`. Account and masked Key details are stored with the connection.
 
 ### Choose and refresh models
 
