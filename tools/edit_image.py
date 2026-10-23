@@ -9,7 +9,7 @@ class EditImageTool(base.MediaTool):
         if parameters.get("reference_image"):
             references = [parameters["reference_image"], *references]
         return client.edit_image(
-            parameters.get("model"),
+            base.selected_model(parameters),
             parameters.get("prompt"),
             references,
             base.model_parameters(parameters, ("aspect_ratio", "size", "quality", "n")),

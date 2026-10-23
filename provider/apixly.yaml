@@ -5,9 +5,9 @@ identity:
     en_US: Apixly Media
     zh_Hans: Apixly 媒体
   description:
-    en_US: Generate images, edit references, submit videos and query Apixly media
-      tasks.
-    zh_Hans: 使用自己的 Apixly API Key 生成/编辑图片、创建视频和查询任务。插件免费，API 按量计费。
+    en_US: Generate images, edit references, create videos, query tasks and refresh
+      your credential-scoped model catalog.
+    zh_Hans: 使用账号授权或自己的 API Key 生成/编辑图片、创建视频、查询任务和刷新模型目录。插件免费，API 按量计费。
   icon: icon.png
   tags:
   - image
@@ -27,11 +27,57 @@ credentials_for_provider:
         installation is free.
       zh_Hans: 在 platform.apixly.ai/keys 创建 Key。插件免费，模型 API 调用按 Apixly 账号实际用量计费。
     url: https://platform.apixly.ai/keys
+oauth_schema:
+  client_schema:
+  - name: client_id
+    type: text-input
+    required: true
+    label:
+      en_US: Registered Dify client ID
+      zh_Hans: 已注册的 Dify 客户端 ID
+    help:
+      en_US: A workspace administrator registers the exact callback URI in Apixly
+        connection settings, then configures this client once.
+      zh_Hans: 工作区管理员在 Apixly 连接设置中登记此处显示的精确回调地址，再配置一次客户端。
+    url: https://apixly.ai
+  - name: client_secret
+    type: secret-input
+    required: true
+    label:
+      en_US: Dify client secret
+      zh_Hans: Dify 客户端密钥
+    help:
+      en_US: The one-time secret issued when registering your own Dify application.
+        Never enter your website password here.
+      zh_Hans: 注册自己的 Dify 应用时一次性显示的客户端密钥。请勿填写网站密码。
+  credentials_schema:
+  - name: connection_token
+    type: secret-input
+    required: true
+    label:
+      en_US: Apixly connection token
+      zh_Hans: Apixly 连接凭据
+  - name: account_name
+    type: text-input
+    label:
+      en_US: Connected account
+      zh_Hans: 已连接账号
+  - name: key_name
+    type: text-input
+    label:
+      en_US: Selected API Key
+      zh_Hans: 所选 API Key
+  - name: key_masked
+    type: text-input
+    label:
+      en_US: Masked Key
+      zh_Hans: Key 脱敏标识
 tools:
 - tools/generate_image.yaml
 - tools/edit_image.yaml
 - tools/create_video.yaml
 - tools/query_task.yaml
+- tools/refresh_model_catalog.yaml
 extra:
   python:
     source: provider/apixly.py

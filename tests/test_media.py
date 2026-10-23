@@ -102,6 +102,29 @@ class MediaContractTests(unittest.TestCase):
             client.create_video("EXACT-video", "Move")
         self.assertEqual(len(self.calls), 1)
 
+    def test_relay_submission_unknown_code_is_explicit_and_never_retried(self):
+        client = self.client(
+            lambda _: httpx.Response(
+                502,
+                json={
+                    "error": {
+                        "code": "submission_unknown",
+                        "type": "submission_unknown",
+                        "message": "Bearer test-secret",
+                    },
+                    "submission_outcome": "unknown",
+                    "automatic_retry": False,
+                },
+            )
+        )
+        with self.assertRaises(UnknownOutcome) as raised:
+            client.generate_image("EXACT-model", "  Exact prompt\n", {"n": 1})
+        self.assertIn("submission_unknown", str(raised.exception))
+        self.assertIn("task history", str(raised.exception))
+        self.assertNotIn("test-secret", str(raised.exception))
+        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(json.loads(self.calls[0].content)["prompt"], "  Exact prompt\n")
+
     def test_parameters_cannot_override_model_prompt_async_or_inject_key(self):
         client = self.client(lambda _: httpx.Response(200, json={"id": "14"}))
         for field in [

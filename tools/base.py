@@ -3,9 +3,13 @@ from collections.abc import Generator
 from typing import Any
 
 from dify_plugin import Tool
+from dify_plugin.entities import ParameterOption
 from dify_plugin.entities.tool import ToolInvokeMessage
 
-from apixly_media.client import MediaClient, MediaError, UnknownOutcome
+from apixly_media.catalog import build_model_options
+from apixly_media.catalog_service import ModelCatalogService
+from apixly_media.client import MediaClient, MediaError, UnknownOutcome, required_text
+from apixly_media.connection import media_credentials
 
 
 def json_value(value: Any, expected: type, name: str) -> Any:
@@ -34,7 +38,44 @@ def model_parameters(parameters: dict[str, Any], names: tuple[str, ...]) -> dict
     return result
 
 
+def selected_model(parameters: dict[str, Any]) -> str:
+    manual = parameters.get("model")
+    if manual not in (None, ""):
+        return required_text(manual, "Manual exact model ID")
+    return required_text(
+        parameters.get("catalog_model"), "Choose a catalog model or enter a manual exact model ID"
+    )
+
+
 class MediaTool(Tool):
+    catalog_kind = "image"
+
+    def _fetch_parameter_options(self, parameter: str) -> list[ParameterOption]:
+        if parameter != "catalog_model":
+            return []
+        try:
+            snapshot = ModelCatalogService(self.runtime.credentials).read()
+        except MediaError:
+            return []
+        rows = build_model_options(
+            snapshot.get("models", []), snapshot.get("videos", []), self.catalog_kind
+        )
+        saved = snapshot.get("error") or (
+            snapshot.get("stale") and not snapshot.get("capabilitiesError")
+        )
+        options = []
+        for row in rows:
+            name = row.get("name") or row["id"]
+            label = name if name == row["id"] else f"{name} · {row['id']}"
+            if saved:
+                label = "Saved · " + label
+            if self.catalog_kind == "video" and row.get("videoCapability") is None:
+                label += " · capabilities unavailable"
+            options.append(
+                ParameterOption(value=row["id"], label={"en_US": label, "zh_Hans": label})
+            )
+        return options
+
     def execute(self, client: MediaClient, parameters: dict[str, Any]) -> dict[str, Any]:
         raise NotImplementedError
 
@@ -65,7 +106,8 @@ class MediaTool(Tool):
                     "Masked inpainting is not enabled in this release because no model passed "
                     "its quality checks. Use ordinary reference-image editing without mask fields."
                 )
-            client = MediaClient(self.runtime.credentials.get("api_key", ""))
+            token, account_mode = media_credentials(self.runtime.credentials)
+            client = MediaClient(token, account_mode=account_mode)
             result = dict(self.execute(client, tool_parameters))
             result["generation_success"] = result.get("success", False)
             if result.get("success"):

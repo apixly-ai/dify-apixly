@@ -9,4 +9,4 @@ These assets illustrate the real Apixly Media for Dify integration. They are rep
 
 The example prompts/assets were created for authorized testing and contain no customer uploads. Screenshots were visually reviewed for secrets and signed URLs; source task IDs, request IDs, private paths and billing receipts remain outside the repository. Generic public filenames are used here. Model IDs, source descriptions and SHA256 hashes are listed in `provenance.json`; private job/request IDs are deliberately omitted. Do not add raw workflow run events, private receipts, credentials or signed content links.
 
-The published `v0.1.0` package, runtime, manifest, plugin icon and exact workflow dependencies remain unchanged by this documentation update. README changes can be included in a later reviewed package release.
+The original branding-only refresh preserved its previously released runtime. Later creative controls, account connection and catalog work are separate functional changes; review their exact source, package checksums and acceptance evidence independently. Documentation images do not establish new feature compatibility.

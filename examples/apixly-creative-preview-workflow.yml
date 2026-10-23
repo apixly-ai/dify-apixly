@@ -1,8 +1,8 @@
 app:
-  name: Apixly · FREE creative preview · 免费创作预览
-  description: 'FREE offline prompt preview: no API key, generation or network call.
-    All three control groups default OFF. Enable a group in the compose node, choose
-    its preset/values, and inspect final_prompt. https://apixly.ai'
+  name: Apixly · Free creative preview
+  description: 'Free prompt preview inside Dify: no API key, generation or network
+    call. All three control groups default OFF. Enable a group in the compose node,
+    choose its preset/values, and inspect final_prompt. https://apixly.ai'
   icon: 🎨
   icon_background: '#2e8fff'
   icon_type: emoji
@@ -77,7 +77,7 @@ workflow:
       selected: false
       data:
         type: tool
-        title: Free prompt preview · 免费提示词预览
+        title: Creative prompt
         desc: ''
         selected: false
         provider_id: apixly-ai/apixly_creative/apixly_creative
@@ -87,8 +87,8 @@ workflow:
         plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@b49f728080d62147c89241cd87dae587834c0c2a9120c28b37db468c7c43011a
         tool_name: compose_creative_prompt
         tool_label: Preview creative prompt
-        tool_description: Local composition only; no key or generation. Controls default
-          OFF.
+        tool_description: Free preview inside Dify. No key or generation. Controls
+          default OFF.
         tool_node_version: '2'
         tool_configurations: {}
         tool_parameters:
@@ -151,7 +151,7 @@ workflow:
           retry_enabled: false
           max_retries: 1
           retry_interval: 1000
-    - id: creative_result
+    - id: creative_ready
       type: custom
       width: 244
       height: 110
@@ -165,8 +165,38 @@ workflow:
       targetPosition: left
       selected: false
       data:
+        type: if-else
+        title: Valid prompt?
+        desc: ''
+        selected: false
+        cases:
+        - id: 'true'
+          case_id: 'true'
+          logical_operator: and
+          conditions:
+          - id: composition-valid
+            varType: boolean
+            variable_selector:
+            - creative_compose
+            - success
+            comparison_operator: is
+            value: true
+    - id: creative_result
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 970
+        y: 260
+      positionAbsolute:
+        x: 970
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
         type: end
-        title: Prompt only · 仅预览不生成
+        title: Prompt
         desc: ''
         selected: false
         outputs:
@@ -175,37 +205,26 @@ workflow:
           - creative_compose
           - final_prompt
           value_type: string
-        - variable: sections
-          value_selector:
-          - creative_compose
-          - sections
-          value_type: array[object]
-        - variable: applied_tools
-          value_selector:
-          - creative_compose
-          - applied_tools
-          value_type: array[string]
-        - variable: changed
-          value_selector:
-          - creative_compose
-          - changed
-          value_type: boolean
-        - variable: success
-          value_selector:
-          - creative_compose
-          - success
-          value_type: boolean
-        - variable: result_state
-          value_selector:
-          - creative_compose
-          - result_state
-          value_type: string
-        - variable: error_path
-          value_selector:
-          - creative_compose
-          - error_path
-          value_type: string
-        - variable: error
+    - id: creative_error
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 970
+        y: 80
+      positionAbsolute:
+        x: 970
+        y: 80
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: end
+        title: Check controls
+        desc: ''
+        selected: false
+        outputs:
+        - variable: creative_error_message
           value_selector:
           - creative_compose
           - error
@@ -223,15 +242,39 @@ workflow:
         targetType: tool
         isInLoop: false
         isInIteration: false
-    - id: creative_compose-source-creative_result
+    - id: creative_compose-source-creative_ready
       type: custom
       source: creative_compose
       sourceHandle: source
-      target: creative_result
+      target: creative_ready
       targetHandle: target
       zIndex: 0
       data:
         sourceType: tool
+        targetType: if-else
+        isInLoop: false
+        isInIteration: false
+    - id: creative_ready-true-creative_result
+      type: custom
+      source: creative_ready
+      sourceHandle: 'true'
+      target: creative_result
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
+        targetType: end
+        isInLoop: false
+        isInIteration: false
+    - id: creative_ready-false-creative_error
+      type: custom
+      source: creative_ready
+      sourceHandle: 'false'
+      target: creative_error
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
         targetType: end
         isInLoop: false
         isInIteration: false

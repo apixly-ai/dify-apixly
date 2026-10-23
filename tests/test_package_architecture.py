@@ -16,7 +16,10 @@ class SingleProviderArchitectureTests(unittest.TestCase):
         self.assertTrue(
             next(x for x in provider.credentials_schema if x.name == "api_key").required
         )
-        self.assertEqual(set(tools), {"generate_image", "edit_image", "create_video", "query_task"})
+        self.assertEqual(
+            set(tools),
+            {"generate_image", "edit_image", "create_video", "query_task", "refresh_model_catalog"},
+        )
 
     def test_unused_creative_runtime_is_not_present_in_media_package(self):
         for path in [

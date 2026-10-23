@@ -12,20 +12,33 @@ description:
   llm: Submit one asynchronous image generation. Returns a task ID, not a finished
     image. Never automatically retry this paid action.
 parameters:
+- name: catalog_model
+  type: dynamic-select
+  required: false
+  label:
+    en_US: Model catalog
+    zh_Hans: 模型目录
+  human_description:
+    en_US: Models available to the credential selected above. Choose a model or enter
+      a manual exact ID below. Use Refresh model catalog for current status or an
+      immediate refresh.
+    zh_Hans: 使用上方凭据所选 Key 的可见模型。选择型号或在下方手填精确 ID；“刷新模型目录”工具可立即更新并查看状态。
+  llm_description: Choose an exact available model from the current credential catalog;
+    the manual exact ID field takes explicit precedence.
+  form: llm
 - name: model
   type: string
-  required: true
+  required: false
   label:
-    en_US: Exact model ID
-    zh_Hans: 精确模型 ID
+    en_US: Manual exact ID (overrides picker)
+    zh_Hans: 手填精确 ID（优先于下拉）
   human_description:
-    en_US: Exact Apixly model ID available to your key. Sent unchanged. The plugin
-      never substitutes another model.
-    zh_Hans: 使用当前 API Key 可用的完整模型 ID。原样发送，不自动替换。
-  llm_description: Exact Apixly model ID available to your key. Sent unchanged. The
-    plugin never substitutes another model.
+    en_US: Optional exact ID, sent unchanged. A nonempty manual ID explicitly overrides
+      the catalog picker. Leave blank to use the picker.
+    zh_Hans: 可选，原样发送。填写后明确优先于目录选择；使用下拉时请留空。
+  llm_description: Optional exact ID, sent unchanged. A nonempty manual ID explicitly
+    overrides the catalog picker. Leave blank to use the picker.
   form: llm
-  default: grok-imagine-image
 - name: prompt
   type: string
   required: true

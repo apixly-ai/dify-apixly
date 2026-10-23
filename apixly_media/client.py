@@ -13,6 +13,7 @@ from urllib.parse import urlsplit
 import httpx
 
 API_BASE = "https://apixly.ai/v1"
+ACCOUNT_API_BASE = "https://apixly.ai/api/integrations/v1"
 MAX_ASSET_BYTES = 32 * 1024 * 1024
 MAX_REFERENCE_BYTES = 20 * 1024 * 1024
 SUPPORTED_MIMES = {"image/png", "image/jpeg", "image/webp", "video/mp4", "video/webm"}
@@ -93,8 +94,15 @@ def validate_reference(value: Any, *, image: bool = True) -> str:
 
 
 class MediaClient:
-    def __init__(self, api_key: str, *, transport: httpx.BaseTransport | None = None):
+    def __init__(
+        self,
+        api_key: str,
+        *,
+        account_mode: bool = False,
+        transport: httpx.BaseTransport | None = None,
+    ):
         self.api_key = required_text(api_key, "Apixly API key")
+        self.api_base = ACCOUNT_API_BASE if account_mode else API_BASE
         self.http = httpx.Client(
             transport=transport,
             follow_redirects=False,
@@ -114,12 +122,12 @@ class MediaClient:
         return {
             "Authorization": f"Bearer {self.api_key}",
             "Accept": "application/json",
-            "User-Agent": "apixly-dify-media/0.1.0",
+            "User-Agent": "apixly-dify-media/0.2.0",
         }
 
     def validate_credentials(self) -> None:
         try:
-            response = self.http.get(f"{API_BASE}/models", headers=self._headers())
+            response = self.http.get(f"{self.api_base}/models", headers=self._headers())
         except httpx.HTTPError as exc:
             raise MediaError(
                 "Could not connect to Apixly. Check connectivity and try credential validation again."
@@ -166,11 +174,24 @@ class MediaClient:
 
     def _submit(self, path: str, payload: dict[str, Any], kind: str) -> dict[str, Any]:
         try:
-            response = self.http.post(f"{API_BASE}{path}", json=payload, headers=self._headers())
+            response = self.http.post(
+                f"{self.api_base}{path}", json=payload, headers=self._headers()
+            )
         except httpx.HTTPError as exc:
             raise UnknownOutcome(
                 "Submission outcome is unknown after a connection error or timeout. No automatic retry was made. Check Apixly task history before submitting again."
             ) from exc
+        try:
+            envelope = response.json()
+        except ValueError:
+            envelope = None
+        error = envelope.get("error") if isinstance(envelope, dict) else None
+        if isinstance(error, dict) and (
+            error.get("code") == "submission_unknown" or error.get("type") == "submission_unknown"
+        ):
+            raise UnknownOutcome(
+                "Apixly could not confirm the submission outcome (submission_unknown). The gateway may already have received it. No automatic retry was made. Check Apixly task history before submitting again."
+            )
         if (
             response.status_code >= 500
             or response.status_code == 408
@@ -279,7 +300,7 @@ class MediaClient:
             "urls": [],
         }
         try:
-            response = self.http.get(f"{API_BASE}{path}{task_id}", headers=self._headers())
+            response = self.http.get(f"{self.api_base}{path}{task_id}", headers=self._headers())
         except httpx.HTTPError:
             return {
                 **base,

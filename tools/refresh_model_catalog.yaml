@@ -1,0 +1,34 @@
+identity:
+  name: refresh_model_catalog
+  author: apixly-ai
+  label:
+    en_US: Refresh model catalog
+    zh_Hans: 刷新模型目录
+description:
+  human:
+    en_US: Read the connected Key's latest image/video models and capabilities. Forces a read-only refresh; never submits generation. Reopen a media node to see refreshed picker options. Cache is scoped to credentials within each plugin process.
+    zh_Hans: 只读刷新当前凭据可见的图片/视频模型与能力，不创建生成任务。刷新后重新打开媒体节点可查看新选项；缓存按凭据隔离，每个插件进程独立维护。
+  llm: Read-only model catalog refresh. Reports stale/error state and preserves exact model IDs. Does not select a model or submit inference.
+parameters: []
+output_schema:
+  type: object
+  properties:
+    success:
+      type: boolean
+    stale:
+      type: boolean
+    error:
+      type: string
+    image_models:
+      type: array
+      items:
+        type: object
+    video_models:
+      type: array
+      items:
+        type: object
+    catalog:
+      type: object
+extra:
+  python:
+    source: tools/refresh_model_catalog.py

@@ -1,0 +1,407 @@
+{
+  "observed_at": "2026-10-23",
+  "description": "Sanitized public model names/types and video capabilities only. No authentication, account, provider-routing or procurement data. Test fixture; runtime options are fetched live.",
+  "models": {
+    "object": "list",
+    "data": [
+      {
+        "id": "gemini-2.5-flash",
+        "name": "gemini-2.5-flash",
+        "type": "chat"
+      },
+      {
+        "id": "gemini-3-flash-preview",
+        "name": "gemini-3-flash-preview",
+        "type": "chat"
+      },
+      {
+        "id": "gemini-3-pro-image",
+        "name": "gemini-3-pro-image",
+        "type": "image"
+      },
+      {
+        "id": "gemini-3-pro-image-preview",
+        "name": "gemini-3-pro-image-preview",
+        "type": "image"
+      },
+      {
+        "id": "gemini-3.0-pro-image",
+        "name": "gemini-3.0-pro-image",
+        "type": "image"
+      },
+      {
+        "id": "gemini-3.0-pro-image-preview",
+        "name": "gemini-3.0-pro-image-preview",
+        "type": "image"
+      },
+      {
+        "id": "gemini-3.1-flash-image",
+        "name": "gemini-3.1-flash-image",
+        "type": "image"
+      },
+      {
+        "id": "gemini-3.1-flash-image-preview",
+        "name": "gemini-3.1-flash-image-preview",
+        "type": "image"
+      },
+      {
+        "id": "gemini-3.5-flash",
+        "name": "gemini-3.5-flash",
+        "type": "chat"
+      },
+      {
+        "id": "gemini-3.6-flash",
+        "name": "gemini-3.6-flash",
+        "type": "chat"
+      },
+      {
+        "id": "gemini-nano-banana-2.1",
+        "name": "gemini-nano-banana-2.1",
+        "type": "image"
+      },
+      {
+        "id": "gpt-image-2",
+        "name": "GPT Image 2",
+        "type": "image"
+      },
+      {
+        "id": "gpt-image-2.5-flare",
+        "name": "gpt-image-2.5-flare",
+        "type": "image"
+      },
+      {
+        "id": "gpt-image-2.5-sunburst",
+        "name": "gpt-image-2.5-sunburst",
+        "type": "image"
+      },
+      {
+        "id": "grok-imagine-image",
+        "name": "grok-imagine-image",
+        "type": "image"
+      },
+      {
+        "id": "grok-imagine-image-2.0",
+        "name": "grok-imagine-image-2.0",
+        "type": "image"
+      },
+      {
+        "id": "seedream-5-0",
+        "name": "seedream-5-0",
+        "type": "image"
+      },
+      {
+        "id": "seedream-5-0-pro",
+        "name": "seedream-5-0-pro",
+        "type": "image"
+      },
+      {
+        "id": "grok-imagine-video",
+        "name": "grok-imagine-video",
+        "type": "video"
+      },
+      {
+        "id": "grok-imagine-video-1.5-preview",
+        "name": "grok-imagine-video-1.5-preview",
+        "type": "video"
+      },
+      {
+        "id": "minimax-h3",
+        "name": "minimax-h3",
+        "type": "video"
+      },
+      {
+        "id": "minimax-h3-discount",
+        "name": "minimax-h3-discount",
+        "type": "video"
+      },
+      {
+        "id": "minimax-h3-max",
+        "name": "minimax-h3-max",
+        "type": "video"
+      },
+      {
+        "id": "minimax-h3-max-turbo",
+        "name": "minimax-h3-max-turbo",
+        "type": "video"
+      },
+      {
+        "id": "seedance-2.0",
+        "name": "seedance-2.0",
+        "type": "video"
+      },
+      {
+        "id": "seedance-2.0-mini",
+        "name": "seedance-2.0-mini",
+        "type": "video"
+      },
+      {
+        "id": "seedance-2.5",
+        "name": "seedance-2.5",
+        "type": "video"
+      },
+      {
+        "id": "wan3.0-video",
+        "name": "wan3.0-video",
+        "type": "video"
+      },
+      {
+        "id": "wan3.0-video-prime",
+        "name": "wan3.0-video-prime",
+        "type": "video"
+      }
+    ]
+  },
+  "videos": {
+    "data": [
+      {
+        "aspect_ratios": [
+          "16:9",
+          "9:16"
+        ],
+        "max_input_images": 1,
+        "model": "grok-imagine-video",
+        "modes": [
+          "text2video"
+        ],
+        "resolutions": [
+          "480p",
+          "720p"
+        ],
+        "seconds": {
+          "max": 15,
+          "min": 1
+        },
+        "supports_reference_audio": false,
+        "supports_reference_video": false
+      },
+      {
+        "aspect_ratios": [
+          "16:9",
+          "9:16"
+        ],
+        "max_input_images": 1,
+        "model": "grok-imagine-video-1.5-preview",
+        "modes": [
+          "image2video"
+        ],
+        "resolutions": [
+          "480p",
+          "720p"
+        ],
+        "seconds": {
+          "max": 15,
+          "min": 1
+        },
+        "supports_reference_audio": false,
+        "supports_reference_video": false
+      },
+      {
+        "max_input_images": 9,
+        "model": "minimax-h3",
+        "modes": [
+          "frames2video",
+          "image2video",
+          "text2video"
+        ],
+        "resolutions": [
+          "1440p",
+          "768p"
+        ],
+        "seconds": {
+          "max": 15,
+          "min": 4
+        },
+        "supports_reference_audio": true,
+        "supports_reference_video": true
+      },
+      {
+        "max_input_images": 9,
+        "model": "minimax-h3-discount",
+        "modes": [
+          "image2video",
+          "text2video"
+        ],
+        "resolutions": [
+          "1080p",
+          "720p",
+          "768p"
+        ],
+        "seconds": {
+          "max": 15,
+          "min": 5
+        },
+        "supports_reference_audio": true,
+        "supports_reference_video": false
+      },
+      {
+        "aspect_ratios": [
+          "16:9",
+          "1:1",
+          "21:9",
+          "3:4",
+          "4:3",
+          "9:16",
+          "adaptive"
+        ],
+        "max_input_images": 9,
+        "model": "minimax-h3-max",
+        "modes": [
+          "frames2video",
+          "image2video",
+          "text2video"
+        ],
+        "resolutions": [
+          "480p",
+          "768p"
+        ],
+        "seconds": {
+          "max": 15,
+          "min": 5
+        },
+        "supports_reference_audio": true,
+        "supports_reference_video": true
+      },
+      {
+        "aspect_ratios": [
+          "16:9",
+          "1:1",
+          "21:9",
+          "3:4",
+          "4:3",
+          "9:16",
+          "adaptive"
+        ],
+        "max_input_images": 2,
+        "model": "minimax-h3-max-turbo",
+        "modes": [
+          "frames2video",
+          "image2video",
+          "text2video"
+        ],
+        "resolutions": [
+          "480p",
+          "768p"
+        ],
+        "seconds": {
+          "max": 15,
+          "min": 5
+        },
+        "supports_reference_audio": false,
+        "supports_reference_video": false
+      },
+      {
+        "max_input_images": 9,
+        "model": "seedance-2.0",
+        "modes": [
+          "image2video",
+          "text2video"
+        ],
+        "resolutions": [
+          "1080p",
+          "4k",
+          "480p",
+          "720p"
+        ],
+        "seconds": {
+          "max": 15,
+          "min": 4
+        },
+        "supports_reference_audio": true,
+        "supports_reference_video": true
+      },
+      {
+        "max_input_images": 9,
+        "model": "seedance-2.0-mini",
+        "modes": [
+          "image2video",
+          "text2video"
+        ],
+        "resolutions": [
+          "480p",
+          "720p"
+        ],
+        "seconds": {
+          "max": 15,
+          "min": 4
+        },
+        "supports_reference_audio": true,
+        "supports_reference_video": true
+      },
+      {
+        "max_input_images": 30,
+        "model": "seedance-2.5",
+        "modes": [
+          "image2video",
+          "text2video"
+        ],
+        "resolutions": [
+          "1080p",
+          "480p",
+          "720p"
+        ],
+        "seconds": {
+          "max": 30,
+          "min": 4
+        },
+        "supports_reference_audio": true,
+        "supports_reference_video": true
+      },
+      {
+        "aspect_ratios": [
+          "16:9",
+          "1:1",
+          "3:4",
+          "4:3",
+          "9:16",
+          "adaptive"
+        ],
+        "max_input_images": 10,
+        "model": "wan3.0-video",
+        "modes": [
+          "frames2video",
+          "image2video",
+          "text2video"
+        ],
+        "resolutions": [
+          "1080p",
+          "480p",
+          "720p"
+        ],
+        "seconds": {
+          "max": 30,
+          "min": 2
+        },
+        "supports_reference_audio": true,
+        "supports_reference_video": true
+      },
+      {
+        "aspect_ratios": [
+          "16:9",
+          "1:1",
+          "3:4",
+          "4:3",
+          "9:16",
+          "adaptive"
+        ],
+        "max_input_images": 10,
+        "model": "wan3.0-video-prime",
+        "modes": [
+          "frames2video",
+          "image2video",
+          "text2video"
+        ],
+        "resolutions": [
+          "1080p",
+          "480p",
+          "720p"
+        ],
+        "seconds": {
+          "max": 30,
+          "min": 2
+        },
+        "supports_reference_audio": true,
+        "supports_reference_video": true
+      }
+    ]
+  }
+}

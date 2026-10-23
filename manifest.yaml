@@ -6,9 +6,9 @@ label:
   en_US: Apixly Media
   zh_Hans: Apixly 媒体
 description:
-  en_US: Generate or edit images and create videos using your Apixly API key. Pair
-    with Creative Controls for free prompt preview.
-  zh_Hans: 使用 Apixly API Key 生成或编辑图片、创建视频；可搭配独立 Creative Controls 免费预览提示词。
+  en_US: Generate or edit images, create videos and read current model options with
+    your Apixly account or API key. Pair with Creative Controls for free prompt previews.
+  zh_Hans: 使用 Apixly 账号授权或 API Key 生成/编辑图片、创建视频、查看当前模型目录；可搭配独立创作指令插件免费预览提示词。
 icon: icon.png
 created_at: '2026-10-23T00:00:00Z'
 privacy: PRIVACY.md

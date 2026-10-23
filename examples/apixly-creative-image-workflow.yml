@@ -1,7 +1,7 @@
 app:
   name: Apixly · Creative image generation · controls OFF
-  description: Preview typed creative controls locally, then explicitly submit one
-    billed image generation task with your own key. Controls default OFF. Invalid
+  description: Preview typed creative controls inside Dify, then explicitly submit
+    one billed image generation task with your own key. Controls default OFF. Invalid
     composition stops before submission. Original task polling/files are reused. https://apixly.ai
   icon: 🎨
   icon_background: '#2e8fff'
@@ -446,21 +446,6 @@ workflow:
           - creative_compose
           - final_prompt
           value_type: string
-        - variable: creative_sections
-          value_selector:
-          - creative_compose
-          - sections
-          value_type: array[object]
-        - variable: creative_applied_tools
-          value_selector:
-          - creative_compose
-          - applied_tools
-          value_type: array[string]
-        - variable: creative_changed
-          value_selector:
-          - creative_compose
-          - changed
-          value_type: boolean
     - id: submit_error
       type: custom
       width: 244
@@ -515,7 +500,7 @@ workflow:
       selected: false
       data:
         type: tool
-        title: Free prompt preview · 免费提示词预览
+        title: Creative prompt
         desc: ''
         selected: false
         provider_id: apixly-ai/apixly_creative/apixly_creative
@@ -525,8 +510,8 @@ workflow:
         plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@b49f728080d62147c89241cd87dae587834c0c2a9120c28b37db468c7c43011a
         tool_name: compose_creative_prompt
         tool_label: Preview creative prompt
-        tool_description: Local composition only; no key or generation. Controls default
-          OFF.
+        tool_description: Free preview inside Dify. No key or generation. Controls
+          default OFF.
         tool_node_version: '2'
         tool_configurations: {}
         tool_parameters:
@@ -604,7 +589,7 @@ workflow:
       selected: false
       data:
         type: if-else
-        title: Valid creative prompt? · 创作指令有效？
+        title: Valid prompt?
         desc: ''
         selected: false
         cases:
@@ -634,20 +619,10 @@ workflow:
       selected: false
       data:
         type: end
-        title: 'STOP: fix controls · 修正控制项'
+        title: Check controls
         desc: ''
         selected: false
         outputs:
-        - variable: creative_error_state
-          value_selector:
-          - creative_compose
-          - result_state
-          value_type: string
-        - variable: creative_error_path
-          value_selector:
-          - creative_compose
-          - error_path
-          value_type: string
         - variable: creative_error_message
           value_selector:
           - creative_compose

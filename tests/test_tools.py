@@ -30,7 +30,13 @@ class ToolRuntimeTests(unittest.TestCase):
             yaml.safe_load(Path("provider/apixly.yaml").read_text())
         )
         self.assertEqual(provider.identity.name, "apixly_media")
-        for name in ["generate_image", "edit_image", "create_video", "query_task"]:
+        for name in [
+            "generate_image",
+            "edit_image",
+            "create_video",
+            "query_task",
+            "refresh_model_catalog",
+        ]:
             with self.subTest(name=name):
                 entity = ToolConfiguration.model_validate(
                     yaml.safe_load(Path(f"tools/{name}.yaml").read_text())
@@ -41,7 +47,10 @@ class ToolRuntimeTests(unittest.TestCase):
         plugin = PluginRegistration(DifyPluginEnv())
         self.assertEqual(set(plugin.tools_mapping), {"apixly_media"})
         _, _, tools = plugin.tools_mapping["apixly_media"]
-        self.assertEqual(set(tools), {"generate_image", "edit_image", "create_video", "query_task"})
+        self.assertEqual(
+            set(tools),
+            {"generate_image", "edit_image", "create_video", "query_task", "refresh_model_catalog"},
+        )
 
     def test_invalid_json_stops_before_api_calls(self):
         client, messages = self.invoke(
