@@ -2,7 +2,7 @@
 
 Generate and edit images, submit videos, and retrieve asynchronous media tasks using your own Apixly API key. Installation is free; API usage is billed to your Apixly account. This is an Apixly integration, maintained by Apixly, and is not affiliated with the underlying model developers.
 
-Source repository: [apixly-ai/dify-apixly](https://github.com/apixly-ai/dify-apixly). [中文说明](README.zh_Hans.md). Support: [support@apixly.ai](mailto:support@apixly.ai).
+Source repository: [apixly-ai/dify-apixly](https://github.com/apixly-ai/dify-apixly). [Chinese documentation](README.zh_Hans.md). Support: [support@apixly.ai](mailto:support@apixly.ai).
 
 Useful links: [Website](https://apixly.ai/) · [API console](https://platform.apixly.ai/) · [Create/manage API keys](https://platform.apixly.ai/keys) · [Models and prices](https://platform.apixly.ai/models) · [API documentation](https://apixly.ai/docs) · [Usage logs](https://platform.apixly.ai/usage/logs).
 
@@ -13,6 +13,8 @@ Useful links: [Website](https://apixly.ai/) · [API console](https://platform.ap
 3. Add **Apixly API key** to the provider's secret credential. Do not put it in prompts, tool parameters, exported workflows, URLs, or JSON model parameters. Validation only performs `GET https://apixly.ai/v1/models`; it does not submit a generation. This endpoint may reject keys whose account balance or group does not allow access.
 4. Allow outbound HTTPS to `apixly.ai:443` for API calls and `platform.apixly.ai:443` for signed media downloads. There is no custom API base URL. The plugin does not call MCP endpoints or accept signed MCP credentials. It uses API-key authentication directly against `https://apixly.ai/v1`.
 5. Add the tools to a Workflow, Chatflow or Agent. Set exact model IDs from the catalog available to your key. Names are forwarded unchanged; there is no automatic model substitution.
+
+For a checked price example, `gemini-3.1-flash-image` 1K image generation was US$0.02 per image on 2026-10-23. Consult the [current model catalog](https://platform.apixly.ai/models) for your selected model and parameters.
 
 Runtime: Python 3.12, `dify-plugin==0.10.2`. The plugin and example workflows were installed and exercised on self-hosted Dify Community 1.17.1. Other versions and Dify Cloud remain unverified. See `PUBLISHING.md` for the bounded verification record.
 

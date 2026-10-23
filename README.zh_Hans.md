@@ -11,6 +11,8 @@
 3. 在 Apixly 媒体提供商中填写 **Apixly API Key**。这是 secret credential，不要放进提示词、JSON 参数或公开 DSL。验证只查询模型列表，不会生成收费素材。
 4. 允许访问 `apixly.ai:443`；签名素材下载还可能访问 `platform.apixly.ai:443`。插件直连 `https://apixly.ai/v1`，不需要 MCP 凭证。
 
+价格示例：2026-10-23 核验的 `gemini-3.1-flash-image` 1K 生图为每张 US$0.02。请按所选模型与参数查看[当前模型价格](https://platform.apixly.ai/models)。
+
 本插件与示例工作流已在自托管 Dify Community 1.17.1 安装运行；其他版本和 Dify Cloud 尚未完成验收。运行时为 Python 3.12、`dify-plugin==0.10.2`。
 
 ## 四个工具

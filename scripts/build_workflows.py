@@ -319,17 +319,17 @@ def build_workflow(kind: str, plugin_checksum: str, version: str = "0.1.0") -> d
         620,
         outputs=[
             {
-                "variable": "task_id",
+                "variable": "submission_task_id",
                 "value_type": "string",
                 "value_selector": ["submit", "task_id"],
             },
             {
-                "variable": "result_state",
+                "variable": "submission_result_state",
                 "value_type": "string",
                 "value_selector": ["submit", "result_state"],
             },
             {
-                "variable": "details",
+                "variable": "submission_details",
                 "value_type": "array[object]",
                 "value_selector": ["submit", "json"],
             },
@@ -416,6 +416,9 @@ def build_image_to_video(plugin_checksum: str, version: str = "0.1.0") -> dict:
                 if node["data"].get(name) in ids:
                     node["data"][name] = ids[node["data"][name]]
             selectors(node["data"])
+            if node["id"] == prefix + "submit_error":
+                for output in node["data"]["outputs"]:
+                    output["variable"] = prefix + output["variable"]
         lookup = {node["id"]: node for node in graph["nodes"]}
         for node in graph["nodes"]:
             if node.get("parentId"):
@@ -531,17 +534,17 @@ def build_image_to_video(plugin_checksum: str, version: str = "0.1.0") -> dict:
         620,
         outputs=[
             {
-                "variable": "task_id",
+                "variable": "undelivered_image_task_id",
                 "value_type": "string",
                 "value_selector": ["image_submit", "task_id"],
             },
             {
-                "variable": "result_state",
+                "variable": "undelivered_image_result_state",
                 "value_type": "string",
                 "value_selector": ["image_final_query", "result_state"],
             },
             {
-                "variable": "details",
+                "variable": "undelivered_image_details",
                 "value_type": "array[object]",
                 "value_selector": ["image_final_query", "json"],
             },

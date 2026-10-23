@@ -22,6 +22,19 @@ class WorkflowSafetyTests(unittest.TestCase):
             if node["data"]["type"] == "tool":
                 self.assertEqual(node["data"]["provider_id"], "apixly-ai/apixly_media/apixly_media")
 
+    def test_end_output_names_are_unique_across_all_branches_for_native_publish(self):
+        workflows = [build_workflow(kind, self.checksum) for kind in ("image", "edit", "video")]
+        workflows.append(build_image_to_video(self.checksum))
+        for workflow in workflows:
+            with self.subTest(app=workflow["app"]["name"]):
+                names = [
+                    output["variable"]
+                    for node in self.nodes(workflow).values()
+                    if node["data"]["type"] == "end"
+                    for output in node["data"]["outputs"]
+                ]
+                self.assertEqual(len(names), len(set(names)))
+
     def test_each_workflow_submits_once_outside_bounded_loop(self):
         for kind, submit_name in [
             ("image", "generate_image"),
