@@ -1,8 +1,8 @@
-# Publishing and verification handoff
+# Publishing Apixly Media
 
-This repository is maintained on branch `apixly`, with SSH origin `git@github.com:apixly-ai/dify-apixly.git`. Publish reviewed source commits only. Keep virtual environments, validation reports, build packages, screenshots, signed URLs, private fixtures and API keys outside Git. The release owner handles Marketplace submissions and credential cleanup.
+Maintain source on `apixly` and push through the SSH origin. Build from an immutable source commit, inspect its package, then identify the exact ZIP SHA256 and Dify content checksum in the release. README and privacy edits change the checksum even when behavior is unchanged.
 
-## Build and checks
+## Build and package checks
 
 ```sh
 uv venv --python 3.12 .venv
@@ -11,65 +11,31 @@ uv pip install --python .venv/bin/python -r requirements-dev.txt
 mkdir -p dist
 dify plugin package . -o dist/apixly_media-0.2.0.difypkg
 python3 /path/to/dify-marketplace-toolkit/validator/validate-difypkg.py \
-  dist/apixly_media-0.2.0.difypkg --offline --output-dir validation/offline
+  dist/apixly_media-0.2.0.difypkg --output-dir validation/online
 ```
 
-The package must exclude development state according to `.difyignore`. Inspect the archive before publication. A package generated on 2026-10-23 passed all blocking official local checks using CLI `v0.6.11`, SDK `0.10.2`, and Marketplace Toolkit commit `57a21d1304b1108df3e6b90a15a4f5dd9f0915f9`. Rebuild and rerun after any edit; only the final package hash identifies the release being reviewed.
+Use `.difyignore` to exclude virtual environments, tests, documentation assets, caches, local settings and generated packages. The distribution contains the runtime, manifest, dependency pins, Apixly icon, English/Chinese READMEs and privacy notice. Do not bundle keys, connection tokens, client secrets, local workflow runs or signed URLs.
 
-## Review scope and warnings
+The verified toolchain is Dify CLI 0.6.11, SDK 0.10.2 and Marketplace Toolkit `57a21d1304b1108df3e6b90a15a4f5dd9f0915f9`. The serial runtime suites passed 107 media tests and 29 companion tests. A documentation-only repack uses byte comparisons against that tested runtime; repeat the relevant tests when runtime behavior changes. Run the official package, secrets, binaries, metadata, Python and dependency checks on the final package. Online OSV results cover the pinned requirements set, not a fully resolved transitive audit.
 
-- Proposed review risk: **High**. Optional OAuth handles confidential-client proof and a scoped account connection token in Dify-managed private credentials, so the authentication-data classification applies. User prompts and media references are transmitted to Apixly. Optional result bytes are downloaded from signed Apixly content endpoints. The plugin does not execute commands, access a filesystem/database, crawl arbitrary URLs, or fetch arbitrary input URLs.
-- Manual API-key headers and OAuth connection-token headers are created internally and sent only to their fixed Apixly API/relay routes. OAuth client proof is sent only to the fixed token endpoint; credentials are never emitted as tool outputs. The static Python safety check may flag `_headers()` returning an Authorization dictionary; this return value is not emitted as a Dify tool result. Tests assert no Authorization on content downloads, no third-party destinations, and no redirects.
-- Expected domains: `apixly.ai`, `platform.apixly.ai`. The latter was observed in real image result URLs and is only allowed for signed content downloads.
-- `meta.minimum_dify_version` remains unset: Community 1.17.1 was tested, but this does not establish the oldest supported release. The official validator treats the missing minimum as a recommendation warning.
-- Offline vulnerability checking does not query OSV. Run the online dependency vulnerability check before publication. Local validator success does not cover real plugin installation, remote debugging, PR metadata/language, namespace ownership, duplicate versions, or Marketplace approval.
-- Only an actual installed-plugin Dify workflow run establishes Dify-host compatibility. Local SDK tool execution is a separate, narrower result.
+## Installed-host qualification
 
-## Release gates
+[QA.md](docs/QA.md) records the bounded observations: official Community 1.17.1 installation, five media/catalog plus five independent creative tools, twelve workflow imports and 53 native editor panels, real confidential OAuth consent, default Studixly and explicitly selected owned Keys, saved-connection selection/rename, current model options, and real image/edit/video files.
 
-1. Run tests and inspect the final `.difypkg`; verify no credentials or development assets.
-2. Publish the public source, English README, MIT license, Apixly icon and privacy notice under the authorized organization. Confirm support@apixly.ai is monitored and the organization's publisher identity is controlled by the owner.
-3. Install/remote-debug the exact package in a real Dify Cloud or current Community Edition workspace. Confirm credential validation, tool discovery, task ID variable output, bounded polling and result file output. Disable Dify retries on every submit node.
-4. Reconcile the authorized real API probes to unique usage/billing records and revoke the temporary test key. Keep billing/cleanup evidence in private release records.
-5. Complete the **current** `langgenius/dify-plugins` PR template from the official repository, declare High risk and authentication/data flow, provide source and validation evidence, and submit one `.difypkg` per PR. Do not claim a signed/verified Marketplace release until approval/merge and installation are confirmed.
-6. Register a Creator Center publisher organization and monitor feedback, failures and API changes. Plugin installation remains free; Apixly API usage follows the customer's own account billing.
+Each paid stage submitted once with retries disabled. Terminal task success, native Dify file delivery, downloaded bytes, decoded media and unique billing were verified separately. Image results are temporary: current service observations show approximately ten minutes after completion. Save the files promptly. A later `expired` response is a retention outcome; it does not justify another generation.
 
-## Released 0.1.x verification baseline on 2026-10-23
+Paid runs used an installed candidate before the final README/privacy update. Final distribution qualification compares Python, YAML, dependency and icon bytes, installs the final packages, reimports the twelve pinned DSLs, reads back their 53 original tool-parameter bindings, and queries the existing test tasks without paid replay. Images that have expired are checked as explicit terminal negatives; the retained video supplies the positive query/download check. Release notes distinguish the paid-tested candidate from the final document-only package.
 
-Three authorized paid SDK probes used `grok-imagine-image` for generation, `gemini-3.1-flash-image` for reference editing, and `grok-imagine-video` for text-to-video. All three reached a successful terminal state and produced downloadable media that decoded correctly. The image and reference edit were compared visually; the original blue cup was retained and the requested background change was visible. These are bounded probes of those exact routes and parameters, not qualification of every model exposed by the gateway.
+## Marketplace submission
 
-One video probe requested exactly `seconds: 1`, `resolution: 480p`, `aspect_ratio: 16:9`. Capabilities advertised 480p/720p, but the resulting H264 file was 1280×720 and the public task query did not supply adjustment metadata. This is a documented service capability discrepancy. The plugin forwards parameters unchanged and preserves public `effective_parameters` / `parameter_adjustments` when available; inspect downloaded media rather than assuming dimensions from a successful task state.
+Apixly Media is **High risk** under the current authentication-data classification: it handles manual secrets, confidential-client proof and a scoped connection token in Dify-managed credentials. Requests use fixed Apixly HTTPS destinations. It provides no shell, SQL, filesystem, arbitrary URL proxy or payment action. The separate Creative Controls plugin is **Low risk** and works without Apixly API/auth access; its formatter is useful independently of Media.
 
-The first image probe exposed the production signed-content hostname `platform.apixly.ai`. An initial strict download rejection was fixed by an explicit allowlist regression test; the existing task was downloaded without replaying its generation. SDK registration also has a regression test for the single-subclass-per-entrypoint requirement.
+Use the current official [PR template](https://github.com/langgenius/dify-plugins/blob/main/.github/pull_request_template.md), [submission requirements](https://github.com/langgenius/dify-plugins/blob/main/docs/plugin-submission-requirements.md), [Marketplace Agreement](https://dify.ai/legal/marketplace-agreement), [Development Guidelines](https://docs.dify.ai/en/develop-plugin/publishing/standards/contributor-covenant-code-of-conduct), and [Privacy Guidelines](https://docs.dify.ai/en/develop-plugin/publishing/standards/privacy-protection-guidelines). Describe the observed Community result and the Cloud limitation accurately.
 
-Detailed task/request IDs, billing evidence, signed URLs, raw queries, media hashes and screenshots remain in private verification receipts outside the repository. Do not publish them in Marketplace descriptions or PRs. Native self-hosted verification is recorded below. Successful SDK or Community probes do not establish a Dify Cloud result.
+The existing unmerged new-plugin PR [#3481](https://github.com/langgenius/dify-plugins/pull/3481) should contain only `apixly-ai/apixly_media/apixly_media-0.2.0.difypkg` in its final diff. Replace its earlier candidate, rewrite its title/body around this release and declare High risk. Submit the free companion in a separate new-plugin PR containing only `apixly-ai/apixly_creative/apixly_creative-0.1.0.difypkg` and declare Low risk. One package per PR is required.
 
-## Released 0.1.x native Community verification on 2026-10-23
+Verify public source links, README PNGs and actual downloaded release bytes before submitting. A local package or GitHub release does not establish Marketplace signing, approval or listing. Dify Cloud installation remains unverified because its normal login security verification could not be completed. Support is provided through the source repository and support@apixly.ai.
 
-The exact released runtime was installed as a local package in official Dify Community 1.17.1, Python plugin daemon 0.6.10-local. All four example DSLs imported successfully. Provider credential validation, tool discovery, submit-once behavior, bounded delayed querying, task variables and native file output were exercised through Dify's installed-plugin workflow engine. The connected image-to-video example also requires Dify's standard sandbox service for its JSON-safe template node.
+## Warnings and limits
 
-Successful real API workflows covered `grok-imagine-image` text-to-image, `gemini-3.1-flash-image` editing with two references (one HTTPS image and one PNG data URL), `grok-imagine-video` text-to-video at 1 second / 720p / 16:9, and the connected image-to-video workflow with `grok-imagine-video-1.5-preview` at 3 seconds and a signed HTTPS source image. Native image/video files were downloaded, decoded and visually checked. The reference video retained the source product and its square geometry; no resolution/aspect controls were sent on that route. These are exact-model probes, not a guarantee of every model or parameter combination.
-
-A separate single-reference edit failed because its expired reference image URL returned 404 when the gateway tried to fetch it. The image provider was never called and the recorded final charge was zero. The plugin returned the original task as unsuccessful without resubmitting. The original failure remains in the private record. Two early connected-flow attempts stopped after successful image delivery because the test host's sandbox was missing or misconfigured; those images were retained, and no video was submitted by those failed runs. Correcting the standard sandbox configuration allowed the full connected workflow to complete.
-
-An expired Dify file link returned 403. A query-only native workflow recovered the same original image task and downloaded its file without another generation. Controlled HTTP fixtures, using the released runtime inside a separate private QA plugin, exercised submit/query timeouts, no-media success, unknown statuses, ID mismatch, download failure, same-ID download recovery and a bounded query stop. These fault cases made no real Apixly generation calls and are not evidence of natural supplier recovery. The released plugin also rejected unsupported masks, NaN JSON, inline Grok preview references and explicit preview geometry before submission.
-
-Dify Cloud installation was not completed: its normal login security verification failed. Marketplace approval/signing and Cloud compatibility remain release-owner checks. Detailed native run events, negative results, request IDs, media hashes, billing and cleanup records remain private outside Git.
-
-## First real Dify workflow setup
-
-Select **Generate image**, exact model `grok-imagine-image`, prompt `A single blue ceramic cup on a clean white table, studio product photograph, no text.`, and `parameters_json: {"n":1,"aspect_ratio":"1:1"}` as a JSON **string**. Submit once with retries disabled. Feed `task_id` to **Query media task**, `kind: image`, `download: true`, with bounded delayed querying of that same ID. This reproduces the tested model/parameter combination; changing a model requires its own capability and price check.
-
-For reference editing, the live SDK quality check used `gemini-3.1-flash-image`, one signed URL from the successful image, and empty model parameters. This is the recommended first edit example. It is an explicit user/developer selection, never a silent fallback from another model.
-
-## Creative/account/catalog candidate scope
-
-The free creative compiler is packaged independently as `apixly_creative:0.1.0`; the media provider remains a single credentialed provider at candidate version `0.2.0`. The tested daemon retained only the last tool provider when two were declared in one package; that candidate was rejected. Do not reuse its package/checksum. Each released DSL must reference the exact current content checksum of its one or two required packages.
-
-An independent companion-only installation on Community 1.17.1 discovered its compose tool with no credentials. The formal preview imported, ran all-off without changing whitespace, and ran an explicitly configured three-control preview through the native UI with a byte-exact canonical prompt. The preview was actually published and executed at a 375px viewport through Dify's native running page. The workflow editor itself remains desktop-oriented at that width. Both independent packages then coexisted with all original four API tools and the free compose tool; all eight candidate DSLs imported. Controlled installed-plugin cases covered active black lighting, invalid elevation, overlong composition, and UTF-16 emoji boundaries without an API key or inference.
-
-Subsequent clean-result UI, OAuth account connection, dynamic model picker and read-only catalog-refresh changes require their own final installed-package acceptance. Controlled unit tests and parser/cache differential checks do not establish live authorization, new paid creative output quality, or Cloud compatibility. Do not publish until the registered-client consent, Key choice, credential selector/rename, directory refresh, exact relay payload, terminal output and billing/cleanup gates are complete.
-
-The account/catalog candidate was subsequently installed as two exact independent packages in the same official Community 1.17.1 host. All five media/catalog tools and the free compatibility compose tool were discovered, and all eight then-current DSLs imported. The inline Studio lighting swatches actually decoded in the native picker. Using a temporary manual secret credential, the installed dynamic-option hooks and native pickers showed 14 image models and 11 video models; explicit selections persisted with blank manual override and intact prompt variable bindings. The read-only Refresh model catalog tool ran through the Dify workflow engine, succeeded, and returned fresh 14/11 options. No inference submission was made. The temporary credential was deleted and read back as empty; the owned host project and tabs were shut down.
-
-The later split Studio-node candidate adds Viewpoint, Lighting, Camera & Lens and a small Compose tool while retaining the compatibility tool and earlier eight examples. Its four additional workflows, packet failure guard, native direction-mode controls, option clearing and final package need independent installed-host acceptance. No new paid creative result, live OAuth authorization, Marketplace approval or Cloud result is implied by the prior catalog-only phase.
+The validator may report internal Authorization dictionary returns, the fixed token URL and an unset `minimum_dify_version`. Authorization is not a tool output; downloads receive no inference credential and follow no redirects. The oldest compatible Dify version is not inferred from one tested host. No camera/light physical simulation, complete model-wide qualification, browser-engine compatibility or mobile workflow-editor support is asserted. Detailed task/request identifiers, signed URLs, billing and owner-cleanup records stay private.

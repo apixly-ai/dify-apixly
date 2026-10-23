@@ -68,7 +68,7 @@
 
 ### 可选账号授权
 
-当前开发候选版包含 OAuth 账号连接；部署和真实授权验收仍是发布门槛。工作区管理员先在 [Apixly 连接设置](https://apixly.ai/integrations) 注册 Dify 应用，填写 **Dify 显示的精确回调地址**，再把客户端 ID 与一次性密钥填入 Dify 的私有 OAuth 客户端设置。插件不内置共享密钥。
+通过 Dify 标准 OAuth 客户端设置绑定已有 Apixly 账号。工作区管理员先在 [Apixly 连接设置](https://apixly.ai/integrations) 注册 Dify 应用，填写 **Dify 显示的精确回调地址**，再把客户端 ID 与一次性密钥填入 Dify 的私有 OAuth 客户端设置。插件不内置共享密钥。
 
 用户点击 **Authorize**，通过 Apixly 正常网站登录，选择 **Studixly Key（默认）** 或自己已有的其他有效 Key。插件只接收可撤销的连接凭据，不保存网站密码、完整登录 JWT 或底层裸 Key。完整 Key 下拉在网站授权页；Dify 原生凭据选择器用于切换已保存的连接。要绑定不同或新的 Key，请重新授权，在 Apixly 中选择该 Key，然后在 Dify 中选择对应的已保存连接。Dify 会自动命名 OAuth 凭据，可手动改为 `Apixly · studixly-key`，账号与脱敏 Key 信息保留在详情中。
 
@@ -80,13 +80,25 @@
 
 价格示例：2026-10-23 核验的 `gemini-3.1-flash-image` 1K 生图为每张 US$0.02。请按所选模型与参数查看[当前模型价格](https://platform.apixly.ai/models)。
 
-本插件与示例工作流已在自托管 Dify Community 1.17.1 安装运行；其他版本和 Dify Cloud 尚未完成验收。运行时为 Python 3.12、`dify-plugin==0.10.2`。
+Community 1.17.1 验收覆盖五个媒体/目录工具、五个独立创作工具、十二份示例导入、真实账号授权与自有 Key 选择，以及账号模式生图、参考图编辑和视频的实际文件交付。其他版本和 Dify Cloud 未验收。运行时为 Python 3.12、`dify-plugin==0.10.2`；详见 [QA 范围与限制](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/QA.md)。
 
 ## 原生 Dify 界面
 
 <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/dify-reference-editor-zh-Hans.png" alt="真实 Dify Community 中文工作流编辑器，展示 Apixly 参考图编辑字段" width="1200" />
 
 截图来自已验收的原媒体插件，包含中英文字段名称。原媒体插件与四份媒体 DSL 已在自托管 Dify Community 1.17.1 安装、运行和发布；Dify Cloud 尚未完成验收。[查看图片衔接视频的真实工作流截图](https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/dify-image-video-workflow.png)。
+
+## 真实创作工作流样例
+
+以下文件来自 Community 1.17.1 的真实账号连接工作流，每阶段各提交一次。参考编辑仅开启 **相机与镜头**；另一张新生图明确开启了三组控制。
+
+| 输入参考图 | 相机与镜头参考编辑 |
+| --- | --- |
+| ![参考图：红色玩具车、蓝顶和三色方块](https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/creative-reference.jpg) | ![实际镜头观感编辑，保留车与方块位置](https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/creative-lens-edit.jpg) |
+
+<img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/creative-all-controls.jpg" alt="三组创作控制开启后实际生成的新图片" width="640" />
+
+[播放实际 720p 文生视频样例](https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/creative-text-video.mp4)。[样例来源](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/assets/creative-samples.json)和 [QA 记录](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/QA.md)说明实际参数、模型效果与素材保留期限制。
 
 ## 媒体与目录工具
 
@@ -120,7 +132,7 @@
 - `query_error`：本次查询没有可靠状态，不代表原生成失败。
 - `unknown_submission`：提交超时、异常响应或没拿到 ID，远端可能已创建收费任务。先查 Apixly 记录，不能自动重发。
 
-文件输出支持 PNG、JPEG、WebP、MP4、WebM，每个最多 32 MiB。只下载 Apixly 签名素材地址，不附 API Key、不跟随重定向。链接有有效期，应及时保存到自己的素材库。
+文件输出支持 PNG、JPEG、WebP、MP4、WebM，每个最多 32 MiB。只下载 Apixly 签名素材地址，不附 API Key、不跟随重定向。当前图片临时结果约在终态后保留十分钟，请及时下载为 Dify 文件或保存到自己的存储；服务保留期可能调整。模型目录缓存与素材保留期各自独立。
 
 视频参数原样发送。一次真实测试请求 `480p`，实际给出 `1280×720`，且网关没有调整说明；应以下载文件解码结果核验交付，不以任务成功推断分辨率。网关返回 `effective_parameters` 或 `parameter_adjustments` 时，插件会保留。
 

@@ -69,7 +69,7 @@ The original all-in-one creative tool and its four earlier creative workflows re
 
 ### Optional account connection
 
-This development candidate includes OAuth account connection; deployment and real authorization acceptance remain release gates. A workspace administrator registers a Dify application in [Apixly connection settings](https://apixly.ai/integrations), using the **exact callback URI shown by Dify**, then enters the issued client ID and one-time secret in Dify's private OAuth client settings. No shared client secret is bundled.
+Connect your existing Apixly account through Dify's standard OAuth client settings. A workspace administrator registers a Dify application in [Apixly connection settings](https://apixly.ai/integrations), using the **exact callback URI shown by Dify**, then enters the issued client ID and one-time secret in Dify's private OAuth client settings. No shared client secret is bundled.
 
 Users choose **Authorize**, sign in through the normal Apixly website and select **Studixly Key (default)** or another existing active Key. The plugin receives a revocable scoped connection token, rather than a website password, login JWT or raw API key. The website authorization page provides the complete Key dropdown. Dify's credential selector switches saved connections. To bind a different or new Key, authorize again, choose it in Apixly, then select the corresponding saved connection in Dify. Dify initially names OAuth credentials automatically; you can rename one to `Apixly · studixly-key`. Account and masked Key details are stored with the connection.
 
@@ -81,13 +81,25 @@ Open a media node to load the catalog for its selected credential. Choose **Mode
 
 For a checked price example, `gemini-3.1-flash-image` 1K image generation was US$0.02 per image on 2026-10-23. Consult the [current model catalog](https://platform.apixly.ai/models) for your selected model and parameters.
 
-Runtime: Python 3.12, `dify-plugin==0.10.2`. The plugin and example workflows were installed and exercised on self-hosted Dify Community 1.17.1. Other versions and Dify Cloud remain unverified. See `PUBLISHING.md` for the bounded verification record.
+Runtime: Python 3.12, `dify-plugin==0.10.2`. Community 1.17.1 verification covered the five media/catalog tools, five independent creative tools, twelve imported examples, real account consent and owned-Key selection, and successful account-mode image, reference-edit and video files. Other versions and Dify Cloud remain unverified. See [QA scope and limits](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/QA.md).
 
 ## Inside the native Dify editor
 
 <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/dify-reference-editor-en.png" alt="Actual Dify Community workflow editor showing the Apixly reference-edit tool and its fields" width="1200" />
 
 The fields above are the actual installed plugin UI. English and Chinese labels are included. The original media plugin and four media DSLs were installed, run and published in self-hosted Dify Community 1.17.1; Dify Cloud remains unverified. [View the connected workflow screenshot](https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/dify-image-video-workflow.png).
+
+## Real creative workflow samples
+
+These files came from account-connected Community 1.17.1 workflows, with one submission per stage. The reference edit used only **Camera & Lens**; the separate new generation enabled all three control groups.
+
+| Reference input | Camera & Lens reference edit |
+| --- | --- |
+| ![Reference image: red toy car, blue roof and colored cubes](https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/creative-reference.jpg) | ![Actual camera-look edit retaining the car and cube positions](https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/creative-lens-edit.jpg) |
+
+<img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/creative-all-controls.jpg" alt="Actual new image generated with viewpoint, lighting and camera-look prompt directions enabled" width="640" />
+
+[Play the actual 720p text-video sample](https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/creative-text-video.mp4). [Sample provenance](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/assets/creative-samples.json) and [QA notes](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/QA.md) record the exact scope, model-dependent visual limits and media retention behavior.
 
 ## Tools and usage
 
@@ -105,7 +117,7 @@ Query is a single read, without an internal polling loop. Reuse the original tas
 
 Successful query outputs include the complete normalized JSON plus named workflow variables: `task_id`, `status`, `terminal`, `success`, `generation_success`, `result_state`, and `urls`. The submission output is not proof of completion or billing. `generation_success: true` requires a successful server status and at least one media URL. If file download is requested, `success` becomes true only after every requested download succeeds. A successful server status with no media is `result_unavailable`; retry the same query or contact support.
 
-`download: false` (default) emits signed media links. `download: true` additionally returns Dify file/blob outputs, limited to 32 MiB per file and PNG/JPEG/WebP/MP4/WebM formats. Downloads only accept signed Apixly image/video content URLs, follow no redirects, and send **no API key**. A download failure returns `download_error` and `success: false`, retaining `generation_success` and the original task ID/URL; it never regenerates. Save completed files in your own storage before their links expire. Query the same task for a fresh link while the task's media remains retained.
+`download: false` (default) emits signed media links. `download: true` additionally returns Dify file/blob outputs, limited to 32 MiB per file and PNG/JPEG/WebP/MP4/WebM formats. Downloads only accept signed Apixly image/video content URLs, follow no redirects, and send **no API key**. A download failure returns `download_error` and `success: false`, retaining `generation_success` and the original task ID/URL; it never regenerates. Current image results are temporary, approximately ten minutes after completion. Download them promptly as Dify files or save them in your own storage; service retention may change. Query the same task for a fresh link while its media remains retained. Catalog caching and media retention have separate lifetimes.
 
 ## Importable workflows
 
@@ -181,7 +193,7 @@ The plugin collects no independent analytics and writes no user data to local fi
 uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python -r requirements-dev.txt
 .venv/bin/python -m unittest discover -s tests -v
-dify plugin package . -o dist/apixly_media-0.1.1.difypkg
+dify plugin package . -o dist/apixly_media-0.2.0.difypkg
 ```
 
-Use the official [Dify Marketplace Toolkit](https://github.com/langgenius/dify-marketplace-toolkit) to validate the package. Offline checks do not query dependency vulnerability databases and do not constitute Marketplace approval or production API E2E verification. Full release instructions and outstanding gates are in `PUBLISHING.md` in the source repository.
+Use the official [Dify Marketplace Toolkit](https://github.com/langgenius/dify-marketplace-toolkit) to validate the package. Offline checks do not query dependency vulnerability databases and do not constitute Marketplace approval or production API E2E verification. Build and submission instructions are in `PUBLISHING.md`; [QA scope and limits](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/QA.md) distinguish real media delivery, package checks and Marketplace review.

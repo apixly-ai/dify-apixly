@@ -1,0 +1,38 @@
+{
+  "captured_on": "2026-10-23",
+  "origin": "Actual owned Dify Community 1.17.1 account-mode workflow outputs. Detailed job/request identifiers and signed URLs remain in private verification records.",
+  "samples": [
+    {
+      "file": "creative-reference.jpg",
+      "sha256": "68ecaefa656c4fbe2a5d041dfe8f28c4370582f85c21d09ef7a14f989d95f18e",
+      "bytes": 193108,
+      "description": "Reference generated with grok-imagine-image, 1:1, all creative groups off."
+    },
+    {
+      "file": "creative-all-controls.jpg",
+      "sha256": "482ca3e768eca6c9820b88d662de7f4b462bbf4f35fdf621d6ea4d71457c1b79",
+      "bytes": 171358,
+      "description": "New grok-imagine-image generation, 1:1, with Viewpoint, Lighting and Camera & Lens explicitly enabled."
+    },
+    {
+      "file": "creative-lens-edit.jpg",
+      "sha256": "f0cf2a1be067202a78808355cae7adfcc0082e59a14951f346041e7807756cfd",
+      "bytes": 561623,
+      "description": "gemini-3.1-flash-image reference edit, requested 1024x1024 / 1:1, one JPEG reference, only Camera & Lens enabled."
+    },
+    {
+      "file": "creative-video-poster.png",
+      "sha256": "33ba6e4d87ca60827e924a900790c5446a70594a0d25934bd483be8dd829e876",
+      "bytes": 294581,
+      "description": "First decoded frame of the real text-video workflow."
+    },
+    {
+      "file": "creative-text-video.mp4",
+      "sha256": "8ec53ff74cda3dd12f62043bea91137a72172ce56b7cb1e73f2db56421f6cb18",
+      "bytes": 374523,
+      "description": "grok-imagine-video, requested 1 second / 720p / 16:9, no references; delivered H264 1280x720, 25 frames, 1.041667 seconds."
+    }
+  ],
+  "quality_scope": "Lens edit retained the reference car and cube positions, with softer background focus. The all-controls generation showed shallow depth of field; the requested blue key light was not independently evident. Creative directions do not guarantee physical optical simulation.",
+  "retention": "These files were downloaded during the successful runs. Availability of the original gateway tasks or signed URLs is not guaranteed after service expiry."
+}
