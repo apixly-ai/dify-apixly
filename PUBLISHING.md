@@ -21,7 +21,7 @@ The package must exclude development state according to `.difyignore`. Inspect t
 - Proposed review risk: **Medium**. User prompts and media references are transmitted to Apixly. Optional result bytes are downloaded from signed Apixly content endpoints. The plugin does not execute commands, access a filesystem/database, crawl arbitrary URLs, or fetch arbitrary input URLs.
 - API-key headers are created internally and sent only to fixed `https://apixly.ai/v1` API routes. The static Python safety check may flag `_headers()` returning an Authorization dictionary; this return value is not emitted as a Dify tool result. Tests assert no Authorization on content downloads, no third-party destinations, and no redirects.
 - Expected domains: `apixly.ai`, `platform.apixly.ai`. The latter was observed in real image result URLs and is only allowed for signed content downloads.
-- `meta.minimum_dify_version` is intentionally not asserted from SDK-only testing. Establish a supported Dify server version through installation/import testing before promising compatibility. The official validator treats this as a recommendation warning.
+- `meta.minimum_dify_version` remains unset: Community 1.17.1 was tested, but this does not establish the oldest supported release. The official validator treats the missing minimum as a recommendation warning.
 - Offline vulnerability checking does not query OSV. Run the online dependency vulnerability check before publication. Local validator success does not cover real plugin installation, remote debugging, PR metadata/language, namespace ownership, duplicate versions, or Marketplace approval.
 - Only an actual installed-plugin Dify workflow run establishes Dify-host compatibility. Local SDK tool execution is a separate, narrower result.
 
@@ -42,7 +42,19 @@ One video probe requested exactly `seconds: 1`, `resolution: 480p`, `aspect_rati
 
 The first image probe exposed the production signed-content hostname `platform.apixly.ai`. An initial strict download rejection was fixed by an explicit allowlist regression test; the existing task was downloaded without replaying its generation. SDK registration also has a regression test for the single-subclass-per-entrypoint requirement.
 
-Detailed task/request IDs, billing evidence, signed URLs, raw queries, media hashes and screenshots remain in private verification receipts outside the repository. Do not publish them in Marketplace descriptions or PRs. Native Dify host import, workflow execution and file-delivery verification are separate release gates; successful SDK probes do not establish a Cloud-host result.
+Detailed task/request IDs, billing evidence, signed URLs, raw queries, media hashes and screenshots remain in private verification receipts outside the repository. Do not publish them in Marketplace descriptions or PRs. Native self-hosted verification is recorded below. Successful SDK or Community probes do not establish a Dify Cloud result.
+
+## Native Community host verification on 2026-10-23
+
+The exact released runtime was installed as a local package in official Dify Community 1.17.1, Python plugin daemon 0.6.10-local. All four example DSLs imported successfully. Provider credential validation, tool discovery, submit-once behavior, bounded delayed querying, task variables and native file output were exercised through Dify's installed-plugin workflow engine. The connected image-to-video example also requires Dify's standard sandbox service for its JSON-safe template node.
+
+Successful real API workflows covered `grok-imagine-image` text-to-image, `gemini-3.1-flash-image` editing with two references (one HTTPS image and one PNG data URL), `grok-imagine-video` text-to-video at 1 second / 720p / 16:9, and the connected image-to-video workflow with `grok-imagine-video-1.5-preview` at 3 seconds and a signed HTTPS source image. Native image/video files were downloaded, decoded and visually checked. The reference video retained the source product and its square geometry; no resolution/aspect controls were sent on that route. These are exact-model probes, not a guarantee of every model or parameter combination.
+
+A separate single-reference edit received an explicit upstream task failure, which the plugin returned as unsuccessful without resubmitting. Its successful two-reference sibling and earlier single-reference SDK probe do not erase that failure. Two early connected-flow attempts stopped after successful image delivery because the test host's sandbox was missing or misconfigured; those images were retained, and no video was submitted by those failed runs. Correcting the standard sandbox configuration allowed the full connected workflow to complete.
+
+An expired Dify file link returned 403. A query-only native workflow recovered the same original image task and downloaded its file without another generation. Controlled HTTP fixtures, using the released runtime inside a separate private QA plugin, exercised submit/query timeouts, no-media success, unknown statuses, ID mismatch, download failure, same-ID download recovery and a bounded query stop. These fault cases made no real Apixly generation calls and are not evidence of natural supplier recovery. The released plugin also rejected unsupported masks, NaN JSON, inline Grok preview references and explicit preview geometry before submission.
+
+Dify Cloud installation was not completed: its normal login security verification failed. Marketplace approval/signing and Cloud compatibility remain release-owner checks. Detailed native run events, negative results, request IDs, media hashes, billing and cleanup records remain private outside Git.
 
 ## First real Dify workflow setup
 

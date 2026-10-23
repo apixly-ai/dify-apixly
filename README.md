@@ -14,7 +14,7 @@ Useful links: [Website](https://apixly.ai/) · [API console](https://platform.ap
 4. Allow outbound HTTPS to `apixly.ai:443` for API calls and `platform.apixly.ai:443` for signed media downloads. There is no custom API base URL. The plugin does not call MCP endpoints or accept signed MCP credentials. It uses API-key authentication directly against `https://apixly.ai/v1`.
 5. Add the tools to a Workflow, Chatflow or Agent. Set exact model IDs from the catalog available to your key. Names are forwarded unchanged; there is no automatic model substitution.
 
-Runtime: Python 3.12, `dify-plugin==0.10.2`. Local SDK declaration tests and package checks do not establish successful installation in every Dify version. See the release's verification record for the Dify versions actually tested.
+Runtime: Python 3.12, `dify-plugin==0.10.2`. The plugin and example workflows were installed and exercised on self-hosted Dify Community 1.17.1. Other versions and Dify Cloud remain unverified. See `PUBLISHING.md` for the bounded verification record.
 
 ## Tools and usage
 
@@ -39,7 +39,7 @@ The source includes four workflows in `examples/`: image generation, reference e
 
 Examples reference the exact identifier produced by `dify plugin checksum`, which differs from ZIP SHA256. Regenerate them after package changes. Native host import/run status is recorded in `PUBLISHING.md`; parsing YAML or passing safety tests alone is not described as a successful host run.
 
-The connected image-to-video workflow generates an image, takes its signed HTTPS URL through a JSON-safe template, and explicitly submits `grok-imagine-video-1.5-preview` for 3 seconds, using the source image geometry. It stops if the image is not delivered. This workflow makes two billable generation calls, each attempted once; neither stage silently substitutes a model.
+The connected workflow requires Dify's standard code sandbox for its JSON-safe template node. The connected image-to-video workflow generates an image, takes its signed HTTPS URL through a JSON-safe template, and explicitly submits `grok-imagine-video-1.5-preview` for 3 seconds, using the source image geometry. It stops if the image is not delivered. This workflow makes two billable generation calls, each attempted once; neither stage silently substitutes a model.
 
 Named fields cover image count, aspect ratio, size and quality; video seconds, resolution and aspect ratio; a single reference image URL/data URL and additional references. Advanced JSON remains available for model-specific fields. Conflicting values stop before submission. Visible default model IDs are never substituted on failure. Query offers a 0–15 second delay before its single read for bounded loops.
 
@@ -49,9 +49,9 @@ Use **Generate image** with these tool parameters after confirming the exact mod
 
 ```json
 {
-  "model": "gpt-image-2",
+  "model": "grok-imagine-image",
   "prompt": "A single blue ceramic cup on a clean white table, studio product photograph, no text.",
-  "parameters_json": "{\"size\":\"1024x1024\",\"n\":1}"
+  "parameters_json": "{\"aspect_ratio\":\"1:1\",\"n\":1}"
 }
 ```
 
