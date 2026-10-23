@@ -44,6 +44,10 @@
 
 另行安装 [Apixly Creative Controls](https://github.com/apixly-ai/dify-apixly-creative)，即可在 Dify 中免费预览角度、打光和相机镜头观感，无需账号或 Key，不发起生成。**启用所需组 → 选择预设或数值 → 查看 final_prompt → 确认后连接生成/编辑。** 推荐 Studio 流程拆为 **视角、打光、相机与镜头** 三张小卡，再连接 **组合提示词**，每张卡只显示自身字段。三组默认关闭；没有有效指令时逐字保留原文。这些参数形成 AI 创作指令。
 
+<img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly-creative/apixly/docs/assets/studio-workflow-desktop.png" alt="真实 Dify 免费预览：视角、打光、相机镜头连接组合提示词与成功判断" width="1200" />
+
+*真实 Community 1.17.1 免费预览编辑器，控制组默认关闭。[原生 UI 验证与宿主限制](https://github.com/apixly-ai/dify-apixly-creative/blob/apixly/docs/QA.md)。此截图不代表账号授权或付费媒体效果已经通过。*
+
 | 新增工作流 | 作用 | 生成提交 |
 | --- | --- | --- |
 | [免费创作预览](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-studio-preview-workflow.yml) | 只展示最终提示词；仅依赖免费伴随插件 | 0 |

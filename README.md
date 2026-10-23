@@ -44,6 +44,10 @@ Each DSL submits once per stage, checks the returned task ID, polls within a lim
 
 Install the separate [Apixly Creative Controls companion](https://github.com/apixly-ai/dify-apixly-creative) to preview angle, lighting and camera/lens-look instructions inside Dify without an account, Key or generation call. **Enable a group → choose its preset or values → inspect `final_prompt` → connect Generate/Edit when ready.** The recommended Studio flows use separate **Viewpoint**, **Lighting**, **Camera & Lens**, and a small **Compose prompt** card. Each control card shows only its own fields. All groups default off; the original prompt is preserved exactly when no instruction is added. These are AI art-direction instructions.
 
+<img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly-creative/apixly/docs/assets/studio-workflow-desktop.png" alt="Actual native Dify free preview: Viewpoint, Lighting and Camera & Lens connect to Compose and a success check" width="1200" />
+
+*Actual Community 1.17.1 free-preview editor, with control defaults off. [Native UI verification and host limits](https://github.com/apixly-ai/dify-apixly-creative/blob/apixly/docs/QA.md). This screenshot makes no account-authorization or paid-media claim.*
+
 | Additional workflow | What it does | Billable submissions |
 | --- | --- | --- |
 | [Free creative preview](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-studio-preview-workflow.yml) | Compose and show the final prompt; companion only | 0 |
