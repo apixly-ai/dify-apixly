@@ -18,6 +18,7 @@ class CatalogServiceTests(unittest.TestCase):
         self.key_id = "19"
         self.cap_fail = False
         self.account_status = 200
+        self.account_error_code = "invalid_connection"
         self.models_fail = False
 
     def tearDown(self):
@@ -27,6 +28,10 @@ class CatalogServiceTests(unittest.TestCase):
         self.calls.append(request)
         self.assertEqual(request.method, "GET")
         if request.url.path.endswith("/account"):
+            if self.account_status != 200:
+                return httpx.Response(
+                    self.account_status, json={"error": {"code": self.account_error_code}}
+                )
             return httpx.Response(
                 self.account_status,
                 json={
@@ -110,6 +115,19 @@ class CatalogServiceTests(unittest.TestCase):
         self.assertFalse(self.cache.peek(first["identity"])["available"])
         self.assertIn("Authorize again", failed["error"])
         self.assertNotIn(self.token, json.dumps(failed))
+
+    def test_selected_key_rejection_keeps_saved_connection_and_does_not_request_reauthorization(
+        self,
+    ):
+        service = self.service({"connection_token": self.token})
+        first = service.read()
+        self.account_status, self.account_error_code = 401, "selected_key_rejected"
+        failed = service.read()
+        self.assertFalse(failed["available"])
+        self.assertFalse(self.cache.peek(first["identity"])["available"])
+        self.assertIn("selected Key", failed["error"])
+        self.assertNotIn("Authorize again", failed["error"])
+        self.assertTrue(all(request.method == "GET" for request in self.calls))
 
     def test_cap_failure_keeps_images_and_same_key_capabilities_with_warning(self):
         service = self.service({"api_key": "manual-fixture"})

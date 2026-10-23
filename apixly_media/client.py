@@ -41,6 +41,14 @@ class UnknownOutcome(MediaError):
     """A submit may have reached the server. Never replay it automatically."""
 
 
+def connection_error_message(code: str | None) -> str | None:
+    if code == "selected_key_rejected":
+        return "The selected Key was rejected. Check its access or choose another active owned Key in Apixly connection settings. Your saved account connection was not removed."
+    if code == "invalid_connection":
+        return "The Apixly account connection is invalid or expired. Authorize again."
+    return None
+
+
 def required_text(value: Any, name: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise MediaError(f"{name} is required.")
@@ -201,6 +209,10 @@ class MediaClient:
                 f"Submission outcome is unknown (HTTP {response.status_code}). No automatic retry was made. Check Apixly task history before submitting again."
             )
         if not 200 <= response.status_code < 300:
+            code = error.get("code") or error.get("type") if isinstance(error, dict) else None
+            guidance = connection_error_message(code) if self.api_base == ACCOUNT_API_BASE else None
+            if guidance:
+                raise MediaError(guidance + " No automatic retry was made.")
             raise MediaError(
                 f"Apixly rejected submission (HTTP {response.status_code}). Check key access, balance and model parameters. No automatic retry was made."
             )

@@ -279,6 +279,30 @@ class ConnectionTests(unittest.TestCase):
                 )
             network.assert_not_called()
 
+    def test_relay_key_rejection_and_invalid_connection_have_distinct_safe_guidance(self):
+        for code, expected, forbidden in [
+            ("selected_key_rejected", "selected Key", "Authorize again"),
+            ("invalid_connection", "Authorize again", "switches to"),
+        ]:
+            with self.subTest(code=code):
+                calls = []
+
+                def handler(request):
+                    calls.append(request)
+                    return httpx.Response(
+                        401, json={"error": {"code": code, "message": self.token}}
+                    )
+
+                client = MediaClient(
+                    self.token, account_mode=True, transport=httpx.MockTransport(handler)
+                )
+                with self.assertRaises(MediaError) as raised:
+                    client.generate_image("EXACT-model", "Draw")
+                self.assertIn(expected, str(raised.exception))
+                self.assertNotIn(forbidden, str(raised.exception))
+                self.assertNotIn(self.token, str(raised.exception))
+                self.assertEqual([request.method for request in calls], ["POST"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -11,7 +11,7 @@ from typing import Any
 import httpx
 
 from apixly_media.catalog import CatalogCache, build_catalog_snapshot, catalog_identity
-from apixly_media.client import ACCOUNT_API_BASE, API_BASE, MediaError
+from apixly_media.client import ACCOUNT_API_BASE, API_BASE, MediaError, connection_error_message
 from apixly_media.connection import media_credentials
 
 _CACHE = CatalogCache()
@@ -20,8 +20,9 @@ _BINDING_LOCK = threading.RLock()
 
 
 class _FetchError(MediaError):
-    def __init__(self, status: int | None = None):
+    def __init__(self, status: int | None = None, code: str | None = None):
         self.status = status
+        self.code = code if connection_error_message(code) else None
         super().__init__(
             "Could not read the Apixly catalog. No generation was submitted."
             if status is None
@@ -64,7 +65,13 @@ class ModelCatalogService:
         except httpx.HTTPError:
             raise _FetchError() from None
         if response.status_code != 200:
-            raise _FetchError(response.status_code)
+            try:
+                body = response.json()
+                error = body.get("error") if isinstance(body, dict) else None
+                code = error.get("code") or error.get("type") if isinstance(error, dict) else None
+            except ValueError:
+                code = None
+            raise _FetchError(response.status_code, code)
         try:
             data = response.json()
         except ValueError:
@@ -149,7 +156,9 @@ class ModelCatalogService:
                     "stale": True,
                     "refreshing": False,
                     "updatedAt": None,
-                    "error": "The Apixly connection is unavailable. Authorize again or check the selected Key.",
+                    "error": connection_error_message(error.code)
+                    or "Could not read the account or selected Key. Check Apixly connection settings.",
+                    "error_code": error.code,
                     "selection_confirmed": False,
                 }
         else:
