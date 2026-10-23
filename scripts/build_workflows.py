@@ -77,7 +77,13 @@ def build_workflow(kind: str, plugin_checksum: str, version: str = "0.1.0") -> d
         submit_params.update(aspect_ratio=binding(["start", "aspect_ratio"]), n=constant(1))
     elif kind == "edit":
         inputs += [
-            variable("reference_image", "Reference HTTPS URL / 参考图 URL", "", True, "paragraph"),
+            variable(
+                "reference_image",
+                "Reference URL or data URL / 参考图 URL 或 data URL",
+                "",
+                True,
+                "paragraph",
+            ),
             variable(
                 "additional_images",
                 "Additional reference JSON / 更多参考图数组",
@@ -86,6 +92,9 @@ def build_workflow(kind: str, plugin_checksum: str, version: str = "0.1.0") -> d
                 "paragraph",
             ),
         ]
+        for item in inputs:
+            if item["variable"] in {"reference_image", "additional_images"}:
+                item["max_length"] = 1_048_576
         submit_params.update(
             reference_image=binding(["start", "reference_image"]),
             reference_images=binding(["start", "additional_images"]),
@@ -474,7 +483,7 @@ def build_image_to_video(plugin_checksum: str, version: str = "0.1.0") -> dict:
     lookup["video_submit"]["data"]["tool_parameters"] = {
         "model": binding(["image_start", "video_model"]),
         "prompt": binding(["image_start", "video_prompt"]),
-        "parameters_json": binding(["video_reference", "output"]),
+        "parameters_json": {"type": "mixed", "value": "{{#video_reference.output#}}"},
         "seconds": binding(["image_start", "video_seconds"]),
     }
 

@@ -2,7 +2,7 @@
 
 Generate and edit images, submit videos, and retrieve asynchronous media tasks using your own Apixly API key. Installation is free; API usage is billed to your Apixly account. This is an Apixly integration, maintained by Apixly, and is not affiliated with the underlying model developers.
 
-Source repository: [apixly-ai/dify-apixly](https://github.com/apixly-ai/dify-apixly). [Chinese documentation](README.zh_Hans.md). Support: [support@apixly.ai](mailto:support@apixly.ai).
+Source repository: [apixly-ai/dify-apixly](https://github.com/apixly-ai/dify-apixly). [Chinese documentation](readme/README_zh_Hans.md). Support: [support@apixly.ai](mailto:support@apixly.ai).
 
 Useful links: [Website](https://apixly.ai/) · [API console](https://platform.apixly.ai/) · [Create/manage API keys](https://platform.apixly.ai/keys) · [Models and prices](https://platform.apixly.ai/models) · [API documentation](https://apixly.ai/docs) · [Usage logs](https://platform.apixly.ai/usage/logs).
 
@@ -72,7 +72,7 @@ Store its returned `task_id`. Use **Query media task** with `kind: image`, that 
 }
 ```
 
-Replace the illustrative URL/base64 with accessible image data. Raw base64 without a MIME-prefixed data URL, local paths, private-network URLs and embedded URL credentials are rejected. Each data URL is limited to 20 MiB; up to 16 references can be passed, with lower limits enforced by individual models. References are sent to Apixly; this plugin never fetches arbitrary reference URLs itself.
+Replace the illustrative URL/base64 with accessible image data. The starter edit DSL allows up to 1,048,576 characters per reference input field; use HTTPS references or upstream file/variable nodes for larger media. Raw base64 without a MIME-prefixed data URL, local paths, private-network URLs and embedded URL credentials are rejected. Each data URL is limited to 20 MiB; up to 16 references can be passed, with lower limits enforced by individual models. References are sent to Apixly; this plugin never fetches arbitrary reference URLs itself.
 
 For **Create video**, choose an exact enabled ID and supported parameters. For example, after verifying its capabilities:
 

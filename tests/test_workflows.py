@@ -87,6 +87,12 @@ class WorkflowSafetyTests(unittest.TestCase):
         )
         self.assertNotIn("api_key", json.dumps(workflow))
 
+    def test_edit_starter_accepts_a_normal_encoded_reference_image(self):
+        workflow = build_workflow("edit", self.checksum)
+        inputs = {v["variable"]: v for v in self.nodes(workflow)["start"]["data"]["variables"]}
+        self.assertGreaterEqual(inputs["reference_image"]["max_length"], 200_000)
+        self.assertGreaterEqual(inputs["additional_images"]["max_length"], 200_000)
+
     def test_released_edit_workflow_has_no_unqualified_mask_input(self):
         workflow = build_workflow("edit", self.checksum)
         nodes = self.nodes(workflow)
@@ -113,7 +119,11 @@ class WorkflowSafetyTests(unittest.TestCase):
         self.assertIn("tojson", nodes["video_reference"]["data"]["template"])
         self.assertEqual(
             nodes["video_submit"]["data"]["tool_parameters"]["parameters_json"]["value"],
-            ["video_reference", "output"],
+            "{{#video_reference.output#}}",
+        )
+        self.assertEqual(
+            nodes["video_submit"]["data"]["tool_parameters"]["parameters_json"]["type"],
+            "mixed",
         )
         defaults = {v["variable"]: v["default"] for v in nodes["image_start"]["data"]["variables"]}
         self.assertEqual(defaults["video_model"], "grok-imagine-video-1.5-preview")

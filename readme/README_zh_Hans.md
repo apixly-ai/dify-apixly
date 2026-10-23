@@ -26,7 +26,7 @@
 
 常用字段有中英文名称和默认值。默认模型在 UI 中可见；改变模型后，请根据该模型能力调整参数。模型 ID 原样发送，失败时不会自动换模型。高级 JSON 与界面同名字段如有冲突，会在收费提交前明确报错。
 
-编辑时，`reference_image` 可直接粘贴一张图；`reference_images` 是补充图片的 JSON 数组，如 `["https://example.com/second.png"]`。base64 必须带 MIME 前缀，例如 `data:image/png;base64,...`；不能填本地路径。每张 base64 图片最多 20 MiB，插件最多传 16 张，各模型可能支持更少。
+编辑时，`reference_image` 可直接粘贴一张图；`reference_images` 是补充图片的 JSON 数组，如 `["https://example.com/second.png"]`。base64 必须带 MIME 前缀，例如 `data:image/png;base64,...`；不能填本地路径。每张 base64 图片最多 20 MiB，插件最多传 16 张，各模型可能支持更少。入门编辑 DSL 的每个参考图输入字段最多 1,048,576 字符；更大素材请用 HTTPS URL，或从上游文件/变量节点传入。
 
 ## 导入工作流
 
@@ -52,6 +52,6 @@
 
 ## 数据与支持
 
-插件不增加独立统计、广告、遥测、数据库或本地持久化。Dify 与 Apixly 会按各自政策处理配置、任务、素材和账务。提示词和素材会发给 Apixly，并可能交给实际服务该模型的上游；详见 [隐私说明](PRIVACY.md)。不要提交无权分享的内容。
+插件不增加独立统计、广告、遥测、数据库或本地持久化。Dify 与 Apixly 会按各自政策处理配置、任务、素材和账务。提示词和素材会发给 Apixly，并可能交给实际服务该模型的上游；详见 [隐私说明](../PRIVACY.md)。不要提交无权分享的内容。
 
-支持：[support@apixly.ai](mailto:support@apixly.ai)。反馈请带原任务 ID、模型和时间，不要附 API Key。开发和发布步骤见 [英文说明](README.md) 与 `PUBLISHING.md`。
+支持：[support@apixly.ai](mailto:support@apixly.ai)。反馈请带原任务 ID、模型和时间，不要附 API Key。开发和发布步骤见 [英文说明](../README.md) 与 `PUBLISHING.md`。

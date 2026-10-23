@@ -471,10 +471,8 @@ workflow:
             - image_start
             - video_prompt
           parameters_json:
-            type: variable
-            value:
-            - video_reference
-            - output
+            type: mixed
+            value: '{{#video_reference.output#}}'
           seconds:
             type: variable
             value:

@@ -78,18 +78,18 @@ workflow:
           max_length: 12000
           options: []
         - variable: reference_image
-          label: Reference HTTPS URL / 参考图 URL
+          label: Reference URL or data URL / 参考图 URL 或 data URL
           type: paragraph
           required: true
           default: ''
-          max_length: 12000
+          max_length: 1048576
           options: []
         - variable: additional_images
           label: Additional reference JSON / 更多参考图数组
           type: paragraph
           required: false
           default: '[]'
-          max_length: 12000
+          max_length: 1048576
           options: []
     - id: submit
       type: custom
