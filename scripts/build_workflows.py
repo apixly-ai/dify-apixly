@@ -630,7 +630,14 @@ def build_image_to_video(plugin_checksum: str, version: str = "0.2.0") -> dict:
     return document
 
 
-def build_creative_workflow(kind: str, plugin_checksum: str, version: str = "0.2.0") -> dict:
+def build_creative_workflow(
+    kind: str,
+    plugin_checksum: str,
+    version: str = "0.2.0",
+    *,
+    creative_checksum: str,
+    creative_version: str = "0.1.0",
+) -> dict:
     """Add free, default-off composition before one existing media phase."""
     if kind not in {"preview", "image", "edit", "video"}:
         raise ValueError("kind must be preview, image, edit, or video")
@@ -649,29 +656,49 @@ def build_creative_workflow(kind: str, plugin_checksum: str, version: str = "0.2
             )
         ]
     next(v for v in start["data"]["variables"] if v["variable"] == "prompt")["max_length"] = 20000
-    definition = yaml.safe_load(
-        (Path(__file__).resolve().parents[1] / "tools/compose_creative_prompt.yaml").read_text()
+    if not re.fullmatch(r"[a-f0-9]{64}", creative_checksum):
+        raise ValueError("Use the exact companion package checksum")
+    creative_identifier = f"{AUTHOR}/apixly_creative:{creative_version}@{creative_checksum}"
+    # Contract 1.0.0 UI defaults; no sibling-repository runtime dependency.
+    defaults = {
+        "angle_enabled": False,
+        "angle_preset": "custom",
+        "angle_yaw": 0,
+        "angle_pitch": 0,
+        "angle_shot": "none",
+        "lighting_enabled": False,
+        "lighting_preset": "",
+        "lighting_brightness": 50,
+        "lighting_color": "",
+        "lighting_key_light": "",
+        "lighting_rim_light": False,
+        "lighting_smart_text": "",
+        "camera_enabled": False,
+        "camera_body": "",
+        "camera_lens": "",
+        "camera_aperture": "",
+    }
+    parameters = {
+        name: {
+            "type": "mixed" if name in {"lighting_color", "lighting_smart_text"} else "constant",
+            "value": value,
+        }
+        for name, value in defaults.items()
+    }
+    parameters.update(
+        prompt=string_binding(["start", "prompt"]),
+        mode=constant("edit" if kind == "edit" else "generate"),
     )
-    parameters = {}
-    for parameter in definition["parameters"]:
-        name = parameter["name"]
-        if name == "prompt":
-            parameters[name] = string_binding(["start", "prompt"])
-        elif name == "mode":
-            parameters[name] = constant("edit" if kind == "edit" else "generate")
-        elif "default" in parameter:
-            parameters[name] = {
-                "type": "mixed" if parameter["type"] == "string" else "constant",
-                "value": parameter["default"],
-            }
     composer = copy.deepcopy(lookup["submit"])
     composer.update(
         id="creative_compose", position={"x": 340, "y": 260}, positionAbsolute={"x": 340, "y": 260}
     )
     composer["data"].update(
         title="Free prompt preview · 免费提示词预览",
-        provider_id=f"{AUTHOR}/{PLUGIN}/apixly_creative",
-        provider_name=f"{AUTHOR}/{PLUGIN}/apixly_creative",
+        provider_id=f"{AUTHOR}/apixly_creative/apixly_creative",
+        provider_name=f"{AUTHOR}/apixly_creative/apixly_creative",
+        plugin_id=f"{AUTHOR}/apixly_creative",
+        plugin_unique_identifier=creative_identifier,
         tool_name="compose_creative_prompt",
         tool_label="Preview creative prompt",
         tool_description="Local composition only; no key or generation. Controls default OFF.",
@@ -819,6 +846,16 @@ def build_creative_workflow(kind: str, plugin_checksum: str, version: str = "0.2
             name=f"Apixly · Creative {label} · controls OFF",
             description=f"Preview typed creative controls locally, then explicitly submit one billed {label} task with your own key. Controls default OFF. Invalid composition stops before submission. Original task polling/files are reused. https://apixly.ai",
         )
+    companion_dependency = {
+        "current_identifier": None,
+        "type": "package",
+        "value": {"plugin_unique_identifier": creative_identifier, "version": None},
+    }
+    document["dependencies"] = (
+        [companion_dependency]
+        if kind == "preview"
+        else [*document["dependencies"], companion_dependency]
+    )
     graph["viewport"] = {"x": 0, "y": 0, "zoom": 0.4 if kind == "preview" else 0.3}
     return document
 
@@ -829,6 +866,10 @@ def main():
         "--checksum", required=True, help="Exact dify plugin checksum output, not the ZIP SHA256"
     )
     parser.add_argument("--version", default="0.2.0")
+    parser.add_argument(
+        "--creative-checksum", required=True, help="Exact independent companion package checksum"
+    )
+    parser.add_argument("--creative-version", default="0.1.0")
     parser.add_argument("--output", type=Path, default=Path("examples"))
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
@@ -845,7 +886,13 @@ def main():
     for kind in ("preview", "image", "edit", "video"):
         (args.output / f"apixly-creative-{kind}-workflow.yml").write_text(
             yaml.safe_dump(
-                build_creative_workflow(kind, args.checksum, args.version),
+                build_creative_workflow(
+                    kind,
+                    args.checksum,
+                    args.version,
+                    creative_checksum=args.creative_checksum,
+                    creative_version=args.creative_version,
+                ),
                 sort_keys=False,
                 allow_unicode=True,
             )

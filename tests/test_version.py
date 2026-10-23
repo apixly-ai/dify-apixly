@@ -33,6 +33,8 @@ class CandidateVersionTests(unittest.TestCase):
                     "scripts/build_workflows.py",
                     "--checksum",
                     "a" * 64,
+                    "--creative-checksum",
+                    "b" * 64,
                     "--output",
                     directory,
                 ],
@@ -44,7 +46,12 @@ class CandidateVersionTests(unittest.TestCase):
                 with self.subTest(file=file.name):
                     document = yaml.safe_load(file.read_text())
                     identifier = document["dependencies"][0]["value"]["plugin_unique_identifier"]
-                    self.assertEqual(identifier, "apixly-ai/apixly_media:0.2.0@" + "a" * 64)
+                    expected = (
+                        "apixly-ai/apixly_creative:0.1.0@" + "b" * 64
+                        if "creative-preview" in file.name
+                        else "apixly-ai/apixly_media:0.2.0@" + "a" * 64
+                    )
+                    self.assertEqual(identifier, expected)
 
 
 if __name__ == "__main__":

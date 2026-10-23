@@ -39,7 +39,7 @@ class ToolRuntimeTests(unittest.TestCase):
 
     def test_sdk_full_registration_resolves_exactly_one_class_per_entrypoint(self):
         plugin = PluginRegistration(DifyPluginEnv())
-        self.assertEqual(set(plugin.tools_mapping), {"apixly_media", "apixly_creative"})
+        self.assertEqual(set(plugin.tools_mapping), {"apixly_media"})
         _, _, tools = plugin.tools_mapping["apixly_media"]
         self.assertEqual(set(tools), {"generate_image", "edit_image", "create_video", "query_task"})
 

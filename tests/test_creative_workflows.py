@@ -1,8 +1,6 @@
 import unittest
 
-from apixly_media.creative import compose_creative_prompt
 from scripts import build_workflows
-from tools.compose_creative_prompt import creative_payload
 
 
 class CreativeWorkflowTests(unittest.TestCase):
@@ -11,7 +9,7 @@ class CreativeWorkflowTests(unittest.TestCase):
     def workflow(self, kind):
         builder = getattr(build_workflows, "build_creative_workflow", None)
         self.assertTrue(callable(builder), "Creative workflow builder is not implemented.")
-        return builder(kind, self.checksum)
+        return builder(kind, self.checksum, creative_checksum="b" * 64)
 
     def nodes(self, workflow):
         return {n["id"]: n for n in workflow["workflow"]["graph"]["nodes"]}
@@ -22,7 +20,7 @@ class CreativeWorkflowTests(unittest.TestCase):
         tool_nodes = [n for n in nodes.values() if n["data"]["type"] == "tool"]
         self.assertEqual(len(tool_nodes), 1)
         self.assertEqual(
-            tool_nodes[0]["data"]["provider_id"], "apixly-ai/apixly_media/apixly_creative"
+            tool_nodes[0]["data"]["provider_id"], "apixly-ai/apixly_creative/apixly_creative"
         )
         self.assertEqual(tool_nodes[0]["data"]["tool_name"], "compose_creative_prompt")
         self.assertNotIn("api_key", str(workflow))
@@ -38,14 +36,8 @@ class CreativeWorkflowTests(unittest.TestCase):
                 self.assertNotIn("lighting_yaw", compose)
                 self.assertNotIn("lighting_pitch", compose)
                 self.assertNotIn("camera_focal", compose)
-                start = {
-                    v["variable"]: v.get("default") for v in nodes["start"]["data"]["variables"]
-                }
-                values = {k: v["value"] for k, v in compose.items() if v["type"] == "constant"}
-                values["prompt"] = start["prompt"]
                 self.assertEqual(
-                    compose_creative_prompt(creative_payload(values))["final_prompt"],
-                    start["prompt"],
+                    compose["prompt"], {"type": "mixed", "value": "{{#start.prompt#}}"}
                 )
 
     def test_compose_failure_stops_before_any_paid_submission(self):

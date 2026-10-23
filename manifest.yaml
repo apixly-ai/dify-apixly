@@ -6,9 +6,9 @@ label:
   en_US: Apixly Media
   zh_Hans: Apixly 媒体
 description:
-  en_US: Preview creative prompts locally for free, then generate or edit images and
-    create videos with your Apixly API key.
-  zh_Hans: 无需 Key 免费本地预览创作提示词；使用自己的 Apixly API Key 生成或编辑图片、创建视频，API 按量计费。
+  en_US: Generate or edit images and create videos using your Apixly API key. Pair
+    with Creative Controls for free prompt preview.
+  zh_Hans: 使用 Apixly API Key 生成或编辑图片、创建视频；可搭配独立 Creative Controls 免费预览提示词。
 icon: icon.png
 created_at: '2026-10-23T00:00:00Z'
 privacy: PRIVACY.md
@@ -22,7 +22,6 @@ resource:
 plugins:
   tools:
   - provider/apixly.yaml
-  - provider/creative.yaml
 meta:
   version: 0.0.1
   arch:
