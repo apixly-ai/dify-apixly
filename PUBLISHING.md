@@ -18,7 +18,7 @@ The package must exclude development state according to `.difyignore`. Inspect t
 
 ## Review scope and warnings
 
-- Proposed review risk: **Medium**. User prompts and media references are transmitted to Apixly. Optional result bytes are downloaded from signed Apixly content endpoints. The plugin does not execute commands, access a filesystem/database, crawl arbitrary URLs, or fetch arbitrary input URLs.
+- Proposed review risk: **High**. Optional OAuth handles confidential-client proof and a scoped account connection token in Dify-managed private credentials, so the authentication-data classification applies. User prompts and media references are transmitted to Apixly. Optional result bytes are downloaded from signed Apixly content endpoints. The plugin does not execute commands, access a filesystem/database, crawl arbitrary URLs, or fetch arbitrary input URLs.
 - Manual API-key headers and OAuth connection-token headers are created internally and sent only to their fixed Apixly API/relay routes. OAuth client proof is sent only to the fixed token endpoint; credentials are never emitted as tool outputs. The static Python safety check may flag `_headers()` returning an Authorization dictionary; this return value is not emitted as a Dify tool result. Tests assert no Authorization on content downloads, no third-party destinations, and no redirects.
 - Expected domains: `apixly.ai`, `platform.apixly.ai`. The latter was observed in real image result URLs and is only allowed for signed content downloads.
 - `meta.minimum_dify_version` remains unset: Community 1.17.1 was tested, but this does not establish the oldest supported release. The official validator treats the missing minimum as a recommendation warning.
@@ -31,7 +31,7 @@ The package must exclude development state according to `.difyignore`. Inspect t
 2. Publish the public source, English README, MIT license, Apixly icon and privacy notice under the authorized organization. Confirm support@apixly.ai is monitored and the organization's publisher identity is controlled by the owner.
 3. Install/remote-debug the exact package in a real Dify Cloud or current Community Edition workspace. Confirm credential validation, tool discovery, task ID variable output, bounded polling and result file output. Disable Dify retries on every submit node.
 4. Reconcile the authorized real API probes to unique usage/billing records and revoke the temporary test key. Keep billing/cleanup evidence in private release records.
-5. Complete the **current** `langgenius/dify-plugins` PR template from the official repository, declare Medium risk and data flow, provide source and validation evidence, and submit one `.difypkg` per PR. Do not claim a signed/verified Marketplace release until approval/merge and installation are confirmed.
+5. Complete the **current** `langgenius/dify-plugins` PR template from the official repository, declare High risk and authentication/data flow, provide source and validation evidence, and submit one `.difypkg` per PR. Do not claim a signed/verified Marketplace release until approval/merge and installation are confirmed.
 6. Register a Creator Center publisher organization and monitor feedback, failures and API changes. Plugin installation remains free; Apixly API usage follows the customer's own account billing.
 
 ## Released 0.1.x verification baseline on 2026-10-23
