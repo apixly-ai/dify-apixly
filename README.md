@@ -42,16 +42,18 @@ Each DSL submits once per stage, checks the returned task ID, polls within a lim
 
 ## Creative controls, with a free first step
 
-Install the separate [Apixly Creative Controls companion](https://github.com/apixly-ai/dify-apixly-creative) to preview angle, lighting and camera/lens-look instructions inside Dify without an account, Key or generation call. **Enable a group → choose its preset or values → inspect `final_prompt` → connect Generate/Edit when ready.** All groups default off; the original prompt is preserved exactly when no instruction is added. These are AI art-direction instructions.
+Install the separate [Apixly Creative Controls companion](https://github.com/apixly-ai/dify-apixly-creative) to preview angle, lighting and camera/lens-look instructions inside Dify without an account, Key or generation call. **Enable a group → choose its preset or values → inspect `final_prompt` → connect Generate/Edit when ready.** The recommended Studio flows use separate **Viewpoint**, **Lighting**, **Camera & Lens**, and a small **Compose prompt** card. Each control card shows only its own fields. All groups default off; the original prompt is preserved exactly when no instruction is added. These are AI art-direction instructions.
 
 | Additional workflow | What it does | Billable submissions |
 | --- | --- | --- |
-| [Free creative preview](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-creative-preview-workflow.yml) | Compose and show the final prompt; companion only | 0 |
-| [Creative image](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-creative-image-workflow.yml) | Compose → validate → generate → retrieve files | 1 image |
-| [Creative reference edit](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-creative-edit-workflow.yml) | Compose an edit instruction preserving unrelated subject details | 1 edit |
-| [Creative text video](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-creative-video-workflow.yml) | Compose → validate → create video → retrieve files | 1 video |
+| [Free creative preview](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-studio-preview-workflow.yml) | Compose and show the final prompt; companion only | 0 |
+| [Creative image](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-studio-image-workflow.yml) | Compose → validate → generate → retrieve files | 1 image |
+| [Creative reference edit](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-studio-edit-workflow.yml) | Compose an edit instruction preserving unrelated subject details | 1 edit |
+| [Creative text video](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-studio-video-workflow.yml) | Compose → validate → create video → retrieve files | 1 video |
 
 The three media examples require both exact plugin packages. Invalid composition stops before the paid node. Structured sections remain available on the compose node for downstream wiring; the preview result shows the prompt or its safe validation error.
+
+The original all-in-one creative tool and its four earlier creative workflows remain available for compatibility, alongside the four original media workflows. Lighting chooses Named direction or explicit Coordinates; blank coordinates never become zero automatically.
 
 ## Setup and connection requirements
 

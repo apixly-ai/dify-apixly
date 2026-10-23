@@ -42,16 +42,18 @@
 
 ## 创作控制：先免费预览
 
-另行安装 [Apixly Creative Controls](https://github.com/apixly-ai/dify-apixly-creative)，即可在 Dify 中免费预览角度、打光和相机镜头观感，无需账号或 Key，不发起生成。**启用所需组 → 选择预设或数值 → 查看 final_prompt → 确认后连接生成/编辑。** 三组默认关闭；没有有效指令时逐字保留原文。这些参数形成 AI 创作指令。
+另行安装 [Apixly Creative Controls](https://github.com/apixly-ai/dify-apixly-creative)，即可在 Dify 中免费预览角度、打光和相机镜头观感，无需账号或 Key，不发起生成。**启用所需组 → 选择预设或数值 → 查看 final_prompt → 确认后连接生成/编辑。** 推荐 Studio 流程拆为 **视角、打光、相机与镜头** 三张小卡，再连接 **组合提示词**，每张卡只显示自身字段。三组默认关闭；没有有效指令时逐字保留原文。这些参数形成 AI 创作指令。
 
 | 新增工作流 | 作用 | 生成提交 |
 | --- | --- | --- |
-| [免费创作预览](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-creative-preview-workflow.yml) | 只展示最终提示词；仅依赖免费伴随插件 | 0 |
-| [创作生图](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-creative-image-workflow.yml) | 合成指令 → 校验 → 生图 → 返回文件 | 1 次生图 |
-| [创作编辑](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-creative-edit-workflow.yml) | 明确修改要求，并保留未请求修改的主体细节 | 1 次编辑 |
-| [创作视频](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-creative-video-workflow.yml) | 合成指令 → 校验 → 视频 → 返回文件 | 1 次视频 |
+| [免费创作预览](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-studio-preview-workflow.yml) | 只展示最终提示词；仅依赖免费伴随插件 | 0 |
+| [创作生图](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-studio-image-workflow.yml) | 合成指令 → 校验 → 生图 → 返回文件 | 1 次生图 |
+| [创作编辑](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-studio-edit-workflow.yml) | 明确修改要求，并保留未请求修改的主体细节 | 1 次编辑 |
+| [创作视频](https://github.com/apixly-ai/dify-apixly/blob/apixly/examples/apixly-studio-video-workflow.yml) | 合成指令 → 校验 → 视频 → 返回文件 | 1 次视频 |
 
 后三份依赖两个精确版本的插件。无效指令在收费节点前停止；结构化分组仍保留在预览节点供后续接线，用户结果页只显示最终提示词或安全错误提示。
+
+原单面板创作工具及其四份旧创作流程继续兼容，原四份媒体流程也保留。打光明确选择命名光向或坐标模式，空坐标不会自动变成 0。
 
 ## 安装和连接
 

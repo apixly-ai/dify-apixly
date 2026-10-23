@@ -845,6 +845,139 @@ def build_creative_workflow(
     return document
 
 
+def build_studio_workflow(
+    kind: str,
+    plugin_checksum: str,
+    version: str = "0.2.0",
+    *,
+    creative_checksum: str,
+    creative_version: str = "0.1.0",
+) -> dict:
+    """Three small control cards feed one validated composition and media phase."""
+    document = build_creative_workflow(
+        kind,
+        plugin_checksum,
+        version,
+        creative_checksum=creative_checksum,
+        creative_version=creative_version,
+    )
+    graph = document["workflow"]["graph"]
+    lookup = {node["id"]: node for node in graph["nodes"]}
+    for node in graph["nodes"]:
+        if node["id"] != "start" and not node.get("parentId"):
+            node["position"]["x"] += 360
+            node["positionAbsolute"]["x"] += 360
+    for node in graph["nodes"]:
+        if node.get("parentId"):
+            parent = lookup[node["parentId"]]
+            node["positionAbsolute"] = {
+                "x": parent["positionAbsolute"]["x"] + node["position"]["x"],
+                "y": parent["positionAbsolute"]["y"] + node["position"]["y"],
+            }
+    composer = lookup["creative_compose"]
+    template = copy.deepcopy(composer)
+    composer["data"].update(
+        title="Compose prompt",
+        tool_name="compose_prompt",
+        tool_label="Compose prompt",
+        tool_description="Combine the three free control cards once. Stop on invalid settings.",
+        tool_parameters={
+            "prompt": string_binding(["start", "prompt"]),
+            "mode": constant("edit" if kind == "edit" else "generate"),
+            "viewpoint_settings": string_binding(["studio_viewpoint", "settings"]),
+            "lighting_settings": string_binding(["studio_lighting", "settings"]),
+            "camera_settings": string_binding(["studio_camera", "settings"]),
+        },
+    )
+    panels = [
+        (
+            "studio_viewpoint",
+            "viewpoint",
+            "Viewpoint",
+            40,
+            {"enabled": False, "preset": "custom", "yaw": 0, "pitch": 0, "shot": "none"},
+        ),
+        (
+            "studio_lighting",
+            "lighting",
+            "Lighting",
+            240,
+            {
+                "enabled": False,
+                "preset": "__none__",
+                "brightness": 50,
+                "color": "",
+                "direction_mode": "named",
+                "key_light": "__none__",
+                "rim_light": False,
+                "smart_text": "",
+            },
+        ),
+        (
+            "studio_camera",
+            "camera_lens",
+            "Camera & Lens",
+            440,
+            {"enabled": False, "body": "__none__", "lens": "__none__", "aperture": "__none__"},
+        ),
+    ]
+    for node_id, tool_name, title, y, values in panels:
+        node = copy.deepcopy(template)
+        node.update(id=node_id, position={"x": 340, "y": y}, positionAbsolute={"x": 340, "y": y})
+        node["data"].update(
+            title=title,
+            tool_name=tool_name,
+            tool_label=title,
+            tool_description="Free control settings. Disabled by default. No generation or key.",
+            tool_parameters={
+                name: {
+                    "type": "mixed" if name in {"color", "smart_text"} else "constant",
+                    "value": value,
+                }
+                for name, value in values.items()
+            },
+        )
+        graph["nodes"].append(node)
+    graph["edges"] = [
+        edge
+        for edge in graph["edges"]
+        if not (edge["source"] == "start" and edge["target"] == "creative_compose")
+    ]
+    route = ["start", "studio_viewpoint", "studio_lighting", "studio_camera", "creative_compose"]
+    # Serial settings stages are cheap and make the one-compose/one-submit path
+    # explicit. Variable bindings carry each prior panel's complete packet.
+    for source, target in zip(route, route[1:]):
+        graph["edges"].append(
+            {
+                "id": source + "-" + target,
+                "type": "custom",
+                "source": source,
+                "sourceHandle": "source",
+                "target": target,
+                "targetHandle": "target",
+                "zIndex": 0,
+                "data": {
+                    "sourceType": "start" if source == "start" else "tool",
+                    "targetType": "tool",
+                    "isInLoop": False,
+                    "isInIteration": False,
+                },
+            }
+        )
+    label = {
+        "preview": "free preview",
+        "image": "image",
+        "edit": "reference edit",
+        "video": "text video",
+    }[kind]
+    document["app"].update(
+        name=f"Apixly Studio · {label} · controls OFF",
+        description="Viewpoint, Lighting and Camera & Lens each have their own free control card. All default OFF. One Compose validates every settings packet; invalid controls stop before any media submission. https://apixly.ai",
+    )
+    graph["viewport"] = {"x": 0, "y": 0, "zoom": 0.35 if kind == "preview" else 0.25}
+    return document
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -872,6 +1005,20 @@ def main():
         (args.output / f"apixly-creative-{kind}-workflow.yml").write_text(
             yaml.safe_dump(
                 build_creative_workflow(
+                    kind,
+                    args.checksum,
+                    args.version,
+                    creative_checksum=args.creative_checksum,
+                    creative_version=args.creative_version,
+                ),
+                sort_keys=False,
+                allow_unicode=True,
+            )
+        )
+    for kind in ("preview", "image", "edit", "video"):
+        (args.output / f"apixly-studio-{kind}-workflow.yml").write_text(
+            yaml.safe_dump(
+                build_studio_workflow(
                     kind,
                     args.checksum,
                     args.version,

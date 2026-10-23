@@ -21,11 +21,12 @@ class CandidateVersionTests(unittest.TestCase):
             build_workflows.build_workflow,
             build_workflows.build_image_to_video,
             build_workflows.build_creative_workflow,
+            build_workflows.build_studio_workflow,
         ]:
             with self.subTest(builder=builder.__name__):
                 self.assertEqual(inspect.signature(builder).parameters["version"].default, "0.2.0")
 
-    def test_cli_emits_eight_dsl_dependencies_for_the_same_candidate_version(self):
+    def test_cli_emits_twelve_dsl_dependencies_for_the_same_candidate_version(self):
         with tempfile.TemporaryDirectory(dir="validation") as directory:
             subprocess.run(
                 [
@@ -41,14 +42,16 @@ class CandidateVersionTests(unittest.TestCase):
                 check=True,
             )
             files = list(Path(directory).glob("*.yml"))
-            self.assertEqual(len(files), 8)
+            self.assertEqual(len(files), 12)
             for file in files:
                 with self.subTest(file=file.name):
                     document = yaml.safe_load(file.read_text())
                     identifier = document["dependencies"][0]["value"]["plugin_unique_identifier"]
                     expected = (
                         "apixly-ai/apixly_creative:0.1.0@" + "b" * 64
-                        if "creative-preview" in file.name
+                        if any(
+                            marker in file.name for marker in ["creative-preview", "studio-preview"]
+                        )
                         else "apixly-ai/apixly_media:0.2.0@" + "a" * 64
                     )
                     self.assertEqual(identifier, expected)
