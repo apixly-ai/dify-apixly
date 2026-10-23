@@ -22,6 +22,7 @@ resource:
 plugins:
   tools:
   - provider/apixly.yaml
+  - provider/creative.yaml
 meta:
   version: 0.0.1
   arch:

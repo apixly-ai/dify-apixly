@@ -630,6 +630,199 @@ def build_image_to_video(plugin_checksum: str, version: str = "0.1.1") -> dict:
     return document
 
 
+def build_creative_workflow(kind: str, plugin_checksum: str, version: str = "0.1.1") -> dict:
+    """Add free, default-off composition before one existing media phase."""
+    if kind not in {"preview", "image", "edit", "video"}:
+        raise ValueError("kind must be preview, image, edit, or video")
+    document = build_workflow("image" if kind == "preview" else kind, plugin_checksum, version)
+    graph = document["workflow"]["graph"]
+    lookup = {n["id"]: n for n in graph["nodes"]}
+    start = lookup["start"]
+    if kind == "preview":
+        start["data"]["variables"] = [
+            variable(
+                "prompt",
+                "Base prompt / 原始提示词",
+                "A red toy car with a blue roof on a studio table.",
+                False,
+                "paragraph",
+            )
+        ]
+    next(v for v in start["data"]["variables"] if v["variable"] == "prompt")["max_length"] = 20000
+    definition = yaml.safe_load(
+        (Path(__file__).resolve().parents[1] / "tools/compose_creative_prompt.yaml").read_text()
+    )
+    parameters = {}
+    for parameter in definition["parameters"]:
+        name = parameter["name"]
+        if name == "prompt":
+            parameters[name] = string_binding(["start", "prompt"])
+        elif name == "mode":
+            parameters[name] = constant("edit" if kind == "edit" else "generate")
+        elif "default" in parameter:
+            parameters[name] = {
+                "type": "mixed" if parameter["type"] == "string" else "constant",
+                "value": parameter["default"],
+            }
+    composer = copy.deepcopy(lookup["submit"])
+    composer.update(
+        id="creative_compose", position={"x": 340, "y": 260}, positionAbsolute={"x": 340, "y": 260}
+    )
+    composer["data"].update(
+        title="Free prompt preview · 免费提示词预览",
+        provider_id=f"{AUTHOR}/{PLUGIN}/apixly_creative",
+        provider_name=f"{AUTHOR}/{PLUGIN}/apixly_creative",
+        tool_name="compose_creative_prompt",
+        tool_label="Preview creative prompt",
+        tool_description="Local composition only; no key or generation. Controls default OFF.",
+        tool_parameters=parameters,
+    )
+
+    def make_node(node_id, typ, title, x, y, **data):
+        node = {
+            "id": node_id,
+            "type": "custom",
+            "width": 244,
+            "height": 110,
+            "position": {"x": x, "y": y},
+            "positionAbsolute": {"x": x, "y": y},
+            "sourcePosition": "right",
+            "targetPosition": "left",
+            "selected": False,
+            "data": {"type": typ, "title": title, "desc": "", "selected": False, **data},
+        }
+        return node
+
+    def output(name, selector, typ="string"):
+        return {"variable": name, "value_selector": selector, "value_type": typ}
+
+    def edge(source, target, handle="source"):
+        nodes = {n["id"]: n for n in graph["nodes"]}
+        return {
+            "id": f"{source}-{handle}-{target}",
+            "type": "custom",
+            "source": source,
+            "sourceHandle": handle,
+            "target": target,
+            "targetHandle": "target",
+            "zIndex": 0,
+            "data": {
+                "sourceType": nodes[source]["data"]["type"],
+                "targetType": nodes[target]["data"]["type"],
+                "isInLoop": False,
+                "isInIteration": False,
+            },
+        }
+
+    preview_fields = [
+        ("final_prompt", "string"),
+        ("sections", "array[object]"),
+        ("applied_tools", "array[string]"),
+        ("changed", "boolean"),
+        ("success", "boolean"),
+        ("result_state", "string"),
+        ("error_path", "string"),
+        ("error", "string"),
+    ]
+    if kind == "preview":
+        end = make_node(
+            "creative_result",
+            "end",
+            "Prompt only · 仅预览不生成",
+            650,
+            260,
+            outputs=[output(name, ["creative_compose", name], typ) for name, typ in preview_fields],
+        )
+        graph["nodes"] = [start, composer, end]
+        graph["edges"] = [
+            edge("start", "creative_compose"),
+            edge("creative_compose", "creative_result"),
+        ]
+        document["app"].update(
+            name="Apixly · FREE creative preview · 免费创作预览",
+            description="FREE offline prompt preview: no API key, generation or network call. All three control groups default OFF. Enable a group in the compose node, choose its preset/values, and inspect final_prompt. https://apixly.ai",
+        )
+    else:
+        # Keep the existing safe submit/poll/file phase intact, shifting it right.
+        for node in graph["nodes"]:
+            if node["id"] != "start" and "parentId" not in node:
+                node["position"]["x"] += 680
+                node["positionAbsolute"]["x"] += 680
+        for node in graph["nodes"]:
+            if node.get("parentId"):
+                parent = lookup[node["parentId"]]
+                node["positionAbsolute"] = {
+                    "x": parent["positionAbsolute"]["x"] + node["position"]["x"],
+                    "y": parent["positionAbsolute"]["y"] + node["position"]["y"],
+                }
+        lookup["submit"]["data"]["tool_parameters"]["prompt"] = string_binding(
+            ["creative_compose", "final_prompt"]
+        )
+        ready = make_node(
+            "creative_ready",
+            "if-else",
+            "Valid creative prompt? · 创作指令有效？",
+            650,
+            260,
+            cases=[
+                {
+                    "id": "true",
+                    "case_id": "true",
+                    "logical_operator": "and",
+                    "conditions": [
+                        {
+                            "id": "composition-valid",
+                            "varType": "boolean",
+                            "variable_selector": ["creative_compose", "success"],
+                            "comparison_operator": "is",
+                            "value": True,
+                        }
+                    ],
+                }
+            ],
+        )
+        stop = make_node(
+            "creative_error",
+            "end",
+            "STOP: fix controls · 修正控制项",
+            970,
+            80,
+            outputs=[
+                output("creative_error_state", ["creative_compose", "result_state"]),
+                output("creative_error_path", ["creative_compose", "error_path"]),
+                output("creative_error_message", ["creative_compose", "error"]),
+            ],
+        )
+        graph["nodes"] += [composer, ready, stop]
+        graph["edges"] = [
+            e for e in graph["edges"] if not (e["source"] == "start" and e["target"] == "submit")
+        ]
+        graph["edges"] += [
+            edge("start", "creative_compose"),
+            edge("creative_compose", "creative_ready"),
+            edge("creative_ready", "submit", "true"),
+            edge("creative_ready", "creative_error", "false"),
+        ]
+        lookup["result"]["data"]["outputs"] += [
+            output("final_prompt", ["creative_compose", "final_prompt"]),
+            output("creative_sections", ["creative_compose", "sections"], "array[object]"),
+            output(
+                "creative_applied_tools", ["creative_compose", "applied_tools"], "array[string]"
+            ),
+            output("creative_changed", ["creative_compose", "changed"], "boolean"),
+        ]
+        lookup["submit_error"]["data"]["outputs"] += [
+            output("submission_final_prompt", ["creative_compose", "final_prompt"])
+        ]
+        label = {"image": "image generation", "edit": "reference edit", "video": "text video"}[kind]
+        document["app"].update(
+            name=f"Apixly · Creative {label} · controls OFF",
+            description=f"Preview typed creative controls locally, then explicitly submit one billed {label} task with your own key. Controls default OFF. Invalid composition stops before submission. Original task polling/files are reused. https://apixly.ai",
+        )
+    graph["viewport"] = {"x": 0, "y": 0, "zoom": 0.4 if kind == "preview" else 0.3}
+    return document
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -649,6 +842,14 @@ def main():
             build_image_to_video(args.checksum, args.version), sort_keys=False, allow_unicode=True
         )
     )
+    for kind in ("preview", "image", "edit", "video"):
+        (args.output / f"apixly-creative-{kind}-workflow.yml").write_text(
+            yaml.safe_dump(
+                build_creative_workflow(kind, args.checksum, args.version),
+                sort_keys=False,
+                allow_unicode=True,
+            )
+        )
 
 
 if __name__ == "__main__":

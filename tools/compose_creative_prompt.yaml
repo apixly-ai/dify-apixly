@@ -1,0 +1,554 @@
+identity:
+  name: compose_creative_prompt
+  author: apixly-ai
+  label:
+    en_US: Preview creative prompt · free
+    zh_Hans: 预览创作提示词 · 免费
+description:
+  human:
+    en_US: Enable a group, choose its preset or values, then preview final_prompt
+      for free. Connect a separate Generate/Edit/Create video step only when ready.
+      No key or generation call; AI art direction rather than physical camera control.
+    zh_Hans: 启用所需组 → 选择预设或数值 → 免费预览 final_prompt → 确认后连接独立生成或编辑节点。无需 Key、不创建生成任务；这是
+      AI 创作指令，而非精确物理相机控制。
+  llm: Compile and preview typed AI art-direction controls without any API call. Does
+    not simulate real camera matrices, physical lights or EXIF. Use mode edit for
+    reference edits. Keep submit-node retries disabled downstream.
+parameters:
+- name: prompt
+  type: string
+  required: false
+  label:
+    en_US: Base prompt
+    zh_Hans: 原始提示词
+  human_description:
+    en_US: Original text, preserved exactly when controls add no instruction. Empty
+      text is allowed for a style-only preview.
+    zh_Hans: 没有有效指令时逐字保留原文；仅预览风格时可留空。
+  llm_description: Original text, preserved exactly when controls add no instruction.
+    Empty text is allowed for a style-only preview.
+  form: llm
+  default: ''
+- name: mode
+  type: select
+  required: false
+  label:
+    en_US: Instruction mode
+    zh_Hans: 指令模式
+  human_description:
+    en_US: Generate adds labeled cues. Edit uses explicit change instructions and
+      preserves unrelated subject/scene details.
+    zh_Hans: 生成模式添加分组指令；编辑模式明确要求保留未请求修改的主体与场景细节。
+  llm_description: Generate adds labeled cues. Edit uses explicit change instructions
+    and preserves unrelated subject/scene details.
+  form: llm
+  default: generate
+  options:
+  - value: generate
+    label:
+      en_US: Generate a new image or video
+      zh_Hans: 生成新图片或视频
+  - value: edit
+    label:
+      en_US: Edit the same subject
+      zh_Hans: 编辑同一主体
+- name: angle_enabled
+  type: boolean
+  required: false
+  label:
+    en_US: Angle · enable
+    zh_Hans: 角度 · 启用
+  human_description:
+    en_US: Off by default. Enable to add viewpoint instructions.
+    zh_Hans: 默认关闭；启用后添加机位指令。
+  llm_description: Off by default. Enable to add viewpoint instructions.
+  form: llm
+  default: false
+- name: angle_preset
+  type: select
+  required: false
+  label:
+    en_US: Angle · preset
+    zh_Hans: 角度 · 预设
+  human_description:
+    en_US: Directional presets replace yaw and pitch. Fisheye/tilted styles combine
+      with the numeric direction.
+    zh_Hans: 方位预设替代水平/垂直角度；鱼眼和倾斜预设可叠加数值方位。
+  llm_description: Directional presets replace yaw and pitch. Fisheye/tilted styles
+    combine with the numeric direction.
+  form: llm
+  default: custom
+  options:
+  - value: custom
+    label:
+      en_US: Custom direction
+      zh_Hans: 自定义方位
+  - value: fisheye
+    label:
+      en_US: Fisheye
+      zh_Hans: 鱼眼
+  - value: dutch
+    label:
+      en_US: Dutch / tilted
+      zh_Hans: 倾斜机位
+  - value: front_high
+    label:
+      en_US: Front high angle
+      zh_Hans: 正面俯拍
+  - value: front_low
+    label:
+      en_US: Front low angle
+      zh_Hans: 正面仰拍
+  - value: aerial_top_down
+    label:
+      en_US: Aerial top-down
+      zh_Hans: 鸟瞰俯拍
+  - value: back
+    label:
+      en_US: Back view
+      zh_Hans: 背面
+- name: angle_yaw
+  type: number
+  required: false
+  label:
+    en_US: Angle · horizontal direction (degrees)
+    zh_Hans: 角度 · 水平方位（度）
+  human_description:
+    en_US: 0 front, 90 subject right, 180 back, 270 left; wraps modulo 360.
+    zh_Hans: 0 正面、90 右侧、180 背面、270 左侧，按 360 度环绕。
+  llm_description: 0 front, 90 subject right, 180 back, 270 left; wraps modulo 360.
+  form: llm
+  default: 0
+  min: -360000
+  max: 360000
+- name: angle_pitch
+  type: number
+  required: false
+  label:
+    en_US: Angle · elevation (degrees)
+    zh_Hans: 角度 · 高低机位（度）
+  human_description:
+    en_US: Positive means camera above the subject, looking down; negative means below,
+      looking up.
+    zh_Hans: 正数表示机位在主体上方俯拍，负数表示在下方仰拍。
+  llm_description: Positive means camera above the subject, looking down; negative
+    means below, looking up.
+  form: llm
+  default: 0
+  min: -90
+  max: 90
+- name: angle_shot
+  type: select
+  required: false
+  label:
+    en_US: Angle · framing
+    zh_Hans: 角度 · 景别
+  human_description:
+    en_US: Optional shot size. Unspecified adds no framing phrase.
+    zh_Hans: 可选景别；不指定时不额外添加景别指令。
+  llm_description: Optional shot size. Unspecified adds no framing phrase.
+  form: llm
+  default: none
+  options:
+  - value: none
+    label:
+      en_US: Unspecified
+      zh_Hans: 不指定
+  - value: extreme_long
+    label:
+      en_US: Extreme long shot
+      zh_Hans: 远景
+  - value: long
+    label:
+      en_US: Long / full body
+      zh_Hans: 全景
+  - value: medium
+    label:
+      en_US: Medium shot
+      zh_Hans: 中景
+  - value: medium_close_up
+    label:
+      en_US: Medium close-up
+      zh_Hans: 近景
+  - value: close_up
+    label:
+      en_US: Close-up
+      zh_Hans: 特写
+- name: lighting_enabled
+  type: boolean
+  required: false
+  label:
+    en_US: Lighting · enable
+    zh_Hans: 打光 · 启用
+  human_description:
+    en_US: Off by default. Enable to add lighting instructions.
+    zh_Hans: 默认关闭；启用后添加打光指令。
+  llm_description: Off by default. Enable to add lighting instructions.
+  form: llm
+  default: false
+- name: lighting_preset
+  type: select
+  required: false
+  label:
+    en_US: Lighting · preset
+    zh_Hans: 打光 · 预设
+  human_description:
+    en_US: Optional lighting or color-grade preset.
+    zh_Hans: 可选打光或色调预设。
+  llm_description: Optional lighting or color-grade preset.
+  form: llm
+  default: ''
+  options:
+  - value: ''
+    label:
+      en_US: Unspecified
+      zh_Hans: 不指定
+  - value: overexposedFilm
+    label:
+      en_US: Overexposed film
+      zh_Hans: 胶片过曝
+  - value: blueBacklight
+    label:
+      en_US: Blue backlight
+      zh_Hans: 蓝色逆光
+  - value: rembrandt
+    label:
+      en_US: Rembrandt
+      zh_Hans: 伦勃朗光
+  - value: cyberpunk
+    label:
+      en_US: Cyberpunk
+      zh_Hans: 赛博霓虹
+  - value: psychedelicSunset
+    label:
+      en_US: Psychedelic sunset
+      zh_Hans: 迷幻落日
+  - value: mysteriousDark
+    label:
+      en_US: Mysterious low-key
+      zh_Hans: 神秘暗调
+  - value: goldenHour
+    label:
+      en_US: Golden hour
+      zh_Hans: 黄金时刻
+  - value: nolanGray
+    label:
+      en_US: Cool cinematic gray
+      zh_Hans: 冷灰电影色调
+- name: lighting_brightness
+  type: number
+  required: false
+  label:
+    en_US: Lighting · brightness
+    zh_Hans: 打光 · 亮度
+  human_description:
+    en_US: 0–100. The neutral 40–60 range adds no brightness phrase.
+    zh_Hans: 0–100；40–60 为中性区，不额外添加亮度指令。
+  llm_description: 0–100. The neutral 40–60 range adds no brightness phrase.
+  form: llm
+  default: 50
+  min: 0
+  max: 100
+- name: lighting_color
+  type: string
+  required: false
+  label:
+    en_US: Lighting · light color
+    zh_Hans: 打光 · 光色
+  human_description:
+    en_US: 'Optional #RGB or #RRGGBB. Empty means unspecified. Black is not a light
+      color; lower brightness instead.'
+    zh_Hans: '可选 #RGB 或 #RRGGBB；留空不指定光色。不要用黑色作光色，应调低亮度。'
+  llm_description: 'Optional #RGB or #RRGGBB. Empty means unspecified. Black is not
+    a light color; lower brightness instead.'
+  form: llm
+  default: ''
+- name: lighting_key_light
+  type: select
+  required: false
+  label:
+    en_US: Lighting · named direction
+    zh_Hans: 打光 · 主光方向
+  human_description:
+    en_US: Used only while both optional light direction numbers are blank.
+    zh_Hans: 只有水平和垂直光源角度都留空时才使用命名方向。
+  llm_description: Used only while both optional light direction numbers are blank.
+  form: llm
+  default: ''
+  options:
+  - value: ''
+    label:
+      en_US: Unspecified
+      zh_Hans: 不指定
+  - value: left
+    label:
+      en_US: Camera left
+      zh_Hans: 相机左侧
+  - value: top
+    label:
+      en_US: Overhead
+      zh_Hans: 顶光
+  - value: right
+    label:
+      en_US: Camera right
+      zh_Hans: 相机右侧
+  - value: front
+    label:
+      en_US: Front
+      zh_Hans: 正面
+  - value: bottom
+    label:
+      en_US: Below
+      zh_Hans: 底光
+  - value: back
+    label:
+      en_US: Behind
+      zh_Hans: 逆光
+- name: lighting_yaw
+  type: number
+  required: false
+  label:
+    en_US: Lighting · horizontal direction (optional)
+    zh_Hans: 打光 · 水平方位（可选）
+  human_description:
+    en_US: Leave blank to keep the named direction. Explicit zero is a real continuous-coordinate
+      setting.
+    zh_Hans: 留空保留命名方向；明确填写 0 会启用连续方位设置。
+  llm_description: Leave blank to keep the named direction. Explicit zero is a real
+    continuous-coordinate setting.
+  form: llm
+  min: -360000
+  max: 360000
+- name: lighting_pitch
+  type: number
+  required: false
+  label:
+    en_US: Lighting · elevation (optional)
+    zh_Hans: 打光 · 光源高低（可选）
+  human_description:
+    en_US: Positive means light above the subject. Leave blank unless continuous positioning
+      is intended.
+    zh_Hans: 正数表示光源在主体上方；不需要连续定位时请留空。
+  llm_description: Positive means light above the subject. Leave blank unless continuous
+    positioning is intended.
+  form: llm
+  min: -90
+  max: 90
+- name: lighting_rim_light
+  type: boolean
+  required: false
+  label:
+    en_US: Lighting · rim light
+    zh_Hans: 打光 · 轮廓光
+  human_description:
+    en_US: Add a rim-light direction cue when lighting is enabled.
+    zh_Hans: 打光启用时增加轮廓光指令。
+  llm_description: Add a rim-light direction cue when lighting is enabled.
+  form: llm
+  default: false
+- name: lighting_smart_text
+  type: string
+  required: false
+  label:
+    en_US: Lighting · additional direction
+    zh_Hans: 打光 · 补充描述
+  human_description:
+    en_US: Optional lighting style, at most 1000 UTF-16 units. This text alone is
+      trimmed.
+    zh_Hans: 可选打光描述，最多 1000 个 UTF-16 单位；只有这段自由文本会去除首尾空白。
+  llm_description: Optional lighting style, at most 1000 UTF-16 units. This text alone
+    is trimmed.
+  form: llm
+  default: ''
+- name: camera_enabled
+  type: boolean
+  required: false
+  label:
+    en_US: Camera look · enable
+    zh_Hans: 相机观感 · 启用
+  human_description:
+    en_US: Off by default. Enable to add camera and lens-look instructions.
+    zh_Hans: 默认关闭；启用后添加机身与镜头观感指令。
+  llm_description: Off by default. Enable to add camera and lens-look instructions.
+  form: llm
+  default: false
+- name: camera_body
+  type: select
+  required: false
+  label:
+    en_US: Camera look · body
+    zh_Hans: 相机观感 · 机身
+  human_description:
+    en_US: Optional camera-look reference. Leave unspecified to add no body phrase.
+    zh_Hans: 可选机身观感参考；不指定时不添加机身描述。
+  llm_description: Optional camera-look reference. Leave unspecified to add no body
+    phrase.
+  form: llm
+  default: ''
+  options:
+  - value: ''
+    label:
+      en_US: Unspecified
+      zh_Hans: 不指定
+  - value: arri-alexa-35
+    label:
+      en_US: ARRI Alexa 35
+      zh_Hans: ARRI Alexa 35
+  - value: sony-venice
+    label:
+      en_US: Sony Venice
+      zh_Hans: Sony Venice
+  - value: red-v-raptor
+    label:
+      en_US: RED V-Raptor
+      zh_Hans: RED V-Raptor
+  - value: panavision-dxl2
+    label:
+      en_US: Panavision Millennium DXL2
+      zh_Hans: Panavision Millennium DXL2
+  - value: imax-film
+    label:
+      en_US: IMAX 70mm film camera
+      zh_Hans: IMAX 70mm film camera
+  - value: leica-m11
+    label:
+      en_US: Leica M11
+      zh_Hans: Leica M11
+- name: camera_lens
+  type: select
+  required: false
+  label:
+    en_US: Camera look · lens
+    zh_Hans: 相机观感 · 镜头
+  human_description:
+    en_US: Optional lens-look reference.
+    zh_Hans: 可选镜头观感参考。
+  llm_description: Optional lens-look reference.
+  form: llm
+  default: ''
+  options:
+  - value: ''
+    label:
+      en_US: Unspecified
+      zh_Hans: 不指定
+  - value: cooke-anamorphic-sf
+    label:
+      en_US: Cooke Anamorphic/i SF 1.8x lens
+      zh_Hans: Cooke Anamorphic/i SF 1.8x lens
+  - value: panavision-c-series
+    label:
+      en_US: Panavision C-Series anamorphic lens
+      zh_Hans: Panavision C-Series anamorphic lens
+  - value: zeiss-master-prime
+    label:
+      en_US: Zeiss Master Prime lens
+      zh_Hans: Zeiss Master Prime lens
+  - value: canon-k35
+    label:
+      en_US: vintage Canon K-35 lens
+      zh_Hans: vintage Canon K-35 lens
+  - value: helios-44-2
+    label:
+      en_US: vintage Helios 44-2 lens
+      zh_Hans: vintage Helios 44-2 lens
+  - value: lensbaby
+    label:
+      en_US: Lensbaby lens
+      zh_Hans: Lensbaby lens
+- name: camera_focal
+  type: number
+  required: false
+  label:
+    en_US: Camera look · focal length (mm)
+    zh_Hans: 相机观感 · 焦距（mm）
+  human_description:
+    en_US: Optional integer 8–800 mm. Blank adds no focal-length phrase.
+    zh_Hans: 可选整数 8–800 mm；留空不添加焦距描述。
+  llm_description: Optional integer 8–800 mm. Blank adds no focal-length phrase.
+  form: llm
+  min: 8
+  max: 800
+- name: camera_aperture
+  type: select
+  required: false
+  label:
+    en_US: Camera look · aperture
+    zh_Hans: 相机观感 · 光圈
+  human_description:
+    en_US: Optional f-stop look. Wide apertures request shallow depth of field; f/8
+      and smaller request deep focus.
+    zh_Hans: 可选光圈观感；大光圈请求浅景深，f/8 及更小光圈请求深焦。
+  llm_description: Optional f-stop look. Wide apertures request shallow depth of field;
+    f/8 and smaller request deep focus.
+  form: llm
+  default: ''
+  options:
+  - value: ''
+    label:
+      en_US: Unspecified
+      zh_Hans: 不指定
+  - value: f/1.4
+    label:
+      en_US: f/1.4
+      zh_Hans: f/1.4
+  - value: f/1.8
+    label:
+      en_US: f/1.8
+      zh_Hans: f/1.8
+  - value: f/2.8
+    label:
+      en_US: f/2.8
+      zh_Hans: f/2.8
+  - value: f/4
+    label:
+      en_US: f/4
+      zh_Hans: f/4
+  - value: f/5.6
+    label:
+      en_US: f/5.6
+      zh_Hans: f/5.6
+  - value: f/8
+    label:
+      en_US: f/8
+      zh_Hans: f/8
+  - value: f/11
+    label:
+      en_US: f/11
+      zh_Hans: f/11
+  - value: f/16
+    label:
+      en_US: f/16
+      zh_Hans: f/16
+output_schema:
+  type: object
+  properties:
+    final_prompt:
+      type: string
+    sections:
+      type: array
+      items:
+        type: object
+        properties:
+          tool:
+            type: string
+          label:
+            type: string
+          text:
+            type: string
+    applied_tools:
+      type: array
+      items:
+        type: string
+    changed:
+      type: boolean
+    success:
+      type: boolean
+    result_state:
+      type: string
+    error_path:
+      type: string
+    error:
+      type: string
+extra:
+  python:
+    source: tools/compose_creative_prompt.py
