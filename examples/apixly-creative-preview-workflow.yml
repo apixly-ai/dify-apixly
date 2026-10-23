@@ -1,0 +1,241 @@
+app:
+  name: Apixly · FREE creative preview · 免费创作预览
+  description: 'FREE offline prompt preview: no API key, generation or network call.
+    All three control groups default OFF. Enable a group in the compose node, choose
+    its preset/values, and inspect final_prompt. https://apixly.ai'
+  icon: 🎨
+  icon_background: '#2e8fff'
+  icon_type: emoji
+  mode: workflow
+  use_icon_as_answer_icon: false
+kind: app
+version: 0.7.0
+dependencies:
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@7b87a1e1957680672bd77ee225537e07fda7473fb51fffdcaaa28e4967b7ef33
+    version: null
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: false
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+  graph:
+    nodes:
+    - id: start
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 30
+        y: 260
+      positionAbsolute:
+        x: 30
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: start
+        title: Start · 开始
+        desc: ''
+        selected: false
+        variables:
+        - variable: prompt
+          label: Base prompt / 原始提示词
+          type: paragraph
+          required: false
+          default: A red toy car with a blue roof on a studio table.
+          max_length: 20000
+          options: []
+    - id: creative_compose
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 340
+        y: 260
+      positionAbsolute:
+        x: 340
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Free prompt preview · 免费提示词预览
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_media/apixly_creative
+        provider_name: apixly-ai/apixly_media/apixly_creative
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_media
+        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@7b87a1e1957680672bd77ee225537e07fda7473fb51fffdcaaa28e4967b7ef33
+        tool_name: compose_creative_prompt
+        tool_label: Preview creative prompt
+        tool_description: Local composition only; no key or generation. Controls default
+          OFF.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          prompt:
+            type: mixed
+            value: '{{#start.prompt#}}'
+          mode:
+            type: constant
+            value: generate
+          angle_enabled:
+            type: constant
+            value: false
+          angle_preset:
+            type: constant
+            value: custom
+          angle_yaw:
+            type: constant
+            value: 0
+          angle_pitch:
+            type: constant
+            value: 0
+          angle_shot:
+            type: constant
+            value: none
+          lighting_enabled:
+            type: constant
+            value: false
+          lighting_preset:
+            type: constant
+            value: ''
+          lighting_brightness:
+            type: constant
+            value: 50
+          lighting_color:
+            type: mixed
+            value: ''
+          lighting_key_light:
+            type: constant
+            value: ''
+          lighting_rim_light:
+            type: constant
+            value: false
+          lighting_smart_text:
+            type: mixed
+            value: ''
+          camera_enabled:
+            type: constant
+            value: false
+          camera_body:
+            type: constant
+            value: ''
+          camera_lens:
+            type: constant
+            value: ''
+          camera_aperture:
+            type: constant
+            value: ''
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: creative_result
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 650
+        y: 260
+      positionAbsolute:
+        x: 650
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: end
+        title: Prompt only · 仅预览不生成
+        desc: ''
+        selected: false
+        outputs:
+        - variable: final_prompt
+          value_selector:
+          - creative_compose
+          - final_prompt
+          value_type: string
+        - variable: sections
+          value_selector:
+          - creative_compose
+          - sections
+          value_type: array[object]
+        - variable: applied_tools
+          value_selector:
+          - creative_compose
+          - applied_tools
+          value_type: array[string]
+        - variable: changed
+          value_selector:
+          - creative_compose
+          - changed
+          value_type: boolean
+        - variable: success
+          value_selector:
+          - creative_compose
+          - success
+          value_type: boolean
+        - variable: result_state
+          value_selector:
+          - creative_compose
+          - result_state
+          value_type: string
+        - variable: error_path
+          value_selector:
+          - creative_compose
+          - error_path
+          value_type: string
+        - variable: error
+          value_selector:
+          - creative_compose
+          - error
+          value_type: string
+    edges:
+    - id: start-source-creative_compose
+      type: custom
+      source: start
+      sourceHandle: source
+      target: creative_compose
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: start
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    - id: creative_compose-source-creative_result
+      type: custom
+      source: creative_compose
+      sourceHandle: source
+      target: creative_result
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: end
+        isInLoop: false
+        isInIteration: false
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.4
