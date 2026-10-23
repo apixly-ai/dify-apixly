@@ -1,0 +1,437 @@
+app:
+  name: Apixly Studio · free preview · controls OFF
+  description: Viewpoint, Lighting and Camera & Lens each have their own free control
+    card. All default OFF. One Compose validates every settings packet; invalid controls
+    stop before any media submission. https://apixly.ai
+  icon: 🎨
+  icon_background: '#2e8fff'
+  icon_type: emoji
+  mode: workflow
+  use_icon_as_answer_icon: false
+kind: app
+version: 0.7.0
+dependencies:
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
+    version: null
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: false
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+  graph:
+    nodes:
+    - id: start
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 30
+        y: 260
+      positionAbsolute:
+        x: 30
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: start
+        title: Start · 开始
+        desc: ''
+        selected: false
+        variables:
+        - variable: prompt
+          label: Base prompt / 原始提示词
+          type: paragraph
+          required: false
+          default: A red toy car with a blue roof on a studio table.
+          max_length: 20000
+          options: []
+    - id: creative_compose
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 700
+        y: 260
+      positionAbsolute:
+        x: 700
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Compose prompt
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_creative/apixly_creative
+        provider_name: apixly-ai/apixly_creative/apixly_creative
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_creative
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
+        tool_name: compose_prompt
+        tool_label: Compose prompt
+        tool_description: Combine the three free control cards once. Stop on invalid
+          settings.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          prompt:
+            type: mixed
+            value: '{{#start.prompt#}}'
+          mode:
+            type: constant
+            value: generate
+          viewpoint_settings:
+            type: mixed
+            value: '{{#studio_viewpoint.settings#}}'
+          lighting_settings:
+            type: mixed
+            value: '{{#studio_lighting.settings#}}'
+          camera_settings:
+            type: mixed
+            value: '{{#studio_camera.settings#}}'
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: creative_ready
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 1010
+        y: 260
+      positionAbsolute:
+        x: 1010
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: if-else
+        title: Valid prompt?
+        desc: ''
+        selected: false
+        cases:
+        - id: 'true'
+          case_id: 'true'
+          logical_operator: and
+          conditions:
+          - id: composition-valid
+            varType: boolean
+            variable_selector:
+            - creative_compose
+            - success
+            comparison_operator: is
+            value: true
+    - id: creative_result
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 1330
+        y: 260
+      positionAbsolute:
+        x: 1330
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: end
+        title: Prompt
+        desc: ''
+        selected: false
+        outputs:
+        - variable: final_prompt
+          value_selector:
+          - creative_compose
+          - final_prompt
+          value_type: string
+    - id: creative_error
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 1330
+        y: 80
+      positionAbsolute:
+        x: 1330
+        y: 80
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: end
+        title: Check controls
+        desc: ''
+        selected: false
+        outputs:
+        - variable: creative_error_message
+          value_selector:
+          - creative_compose
+          - error
+          value_type: string
+    - id: studio_viewpoint
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 340
+        y: 40
+      positionAbsolute:
+        x: 340
+        y: 40
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Viewpoint
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_creative/apixly_creative
+        provider_name: apixly-ai/apixly_creative/apixly_creative
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_creative
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
+        tool_name: viewpoint
+        tool_label: Viewpoint
+        tool_description: Free control settings. Disabled by default. No generation
+          or key.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          enabled:
+            type: constant
+            value: false
+          preset:
+            type: constant
+            value: custom
+          yaw:
+            type: constant
+            value: 0
+          pitch:
+            type: constant
+            value: 0
+          shot:
+            type: constant
+            value: none
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: studio_lighting
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 340
+        y: 240
+      positionAbsolute:
+        x: 340
+        y: 240
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Lighting
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_creative/apixly_creative
+        provider_name: apixly-ai/apixly_creative/apixly_creative
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_creative
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
+        tool_name: lighting
+        tool_label: Lighting
+        tool_description: Free control settings. Disabled by default. No generation
+          or key.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          enabled:
+            type: constant
+            value: false
+          preset:
+            type: constant
+            value: __none__
+          brightness:
+            type: constant
+            value: 50
+          color:
+            type: mixed
+            value: ''
+          direction_mode:
+            type: constant
+            value: named
+          key_light:
+            type: constant
+            value: __none__
+          rim_light:
+            type: constant
+            value: false
+          smart_text:
+            type: mixed
+            value: ''
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: studio_camera
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 340
+        y: 440
+      positionAbsolute:
+        x: 340
+        y: 440
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Camera & Lens
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_creative/apixly_creative
+        provider_name: apixly-ai/apixly_creative/apixly_creative
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_creative
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
+        tool_name: camera_lens
+        tool_label: Camera & Lens
+        tool_description: Free control settings. Disabled by default. No generation
+          or key.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          enabled:
+            type: constant
+            value: false
+          body:
+            type: constant
+            value: __none__
+          lens:
+            type: constant
+            value: __none__
+          aperture:
+            type: constant
+            value: __none__
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    edges:
+    - id: creative_compose-source-creative_ready
+      type: custom
+      source: creative_compose
+      sourceHandle: source
+      target: creative_ready
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: if-else
+        isInLoop: false
+        isInIteration: false
+    - id: creative_ready-true-creative_result
+      type: custom
+      source: creative_ready
+      sourceHandle: 'true'
+      target: creative_result
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
+        targetType: end
+        isInLoop: false
+        isInIteration: false
+    - id: creative_ready-false-creative_error
+      type: custom
+      source: creative_ready
+      sourceHandle: 'false'
+      target: creative_error
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
+        targetType: end
+        isInLoop: false
+        isInIteration: false
+    - id: start-studio_viewpoint
+      type: custom
+      source: start
+      sourceHandle: source
+      target: studio_viewpoint
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: start
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    - id: studio_viewpoint-studio_lighting
+      type: custom
+      source: studio_viewpoint
+      sourceHandle: source
+      target: studio_lighting
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    - id: studio_lighting-studio_camera
+      type: custom
+      source: studio_lighting
+      sourceHandle: source
+      target: studio_camera
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    - id: studio_camera-creative_compose
+      type: custom
+      source: studio_camera
+      sourceHandle: source
+      target: creative_compose
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.35

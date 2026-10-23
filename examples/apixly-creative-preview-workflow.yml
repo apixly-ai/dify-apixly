@@ -14,7 +14,7 @@ dependencies:
 - current_identifier: null
   type: package
   value:
-    plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@0bd2d210de65a1d2852af8284cd2b28a9b3001aebfa511a0005442d6d634e49f
+    plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
     version: null
 workflow:
   conversation_variables: []
@@ -84,7 +84,7 @@ workflow:
         provider_name: apixly-ai/apixly_creative/apixly_creative
         provider_type: builtin
         plugin_id: apixly-ai/apixly_creative
-        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@0bd2d210de65a1d2852af8284cd2b28a9b3001aebfa511a0005442d6d634e49f
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
         tool_name: compose_creative_prompt
         tool_label: Preview creative prompt
         tool_description: Free preview inside Dify. No key or generation. Controls

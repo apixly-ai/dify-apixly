@@ -1,0 +1,932 @@
+app:
+  name: Apixly Studio · reference edit · controls OFF
+  description: Viewpoint, Lighting and Camera & Lens each have their own free control
+    card. All default OFF. One Compose validates every settings packet; invalid controls
+    stop before any media submission. https://apixly.ai
+  icon: 🎨
+  icon_background: '#2e8fff'
+  icon_type: emoji
+  mode: workflow
+  use_icon_as_answer_icon: false
+kind: app
+version: 0.7.0
+dependencies:
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@82a2247b3602e9d6c83252efbf8e27e6f87ea55bc5e47be4b0c1c66cef707908
+    version: null
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
+    version: null
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: false
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+  graph:
+    nodes:
+    - id: start
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 30
+        y: 260
+      positionAbsolute:
+        x: 30
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: start
+        title: Start · 开始
+        desc: ''
+        selected: false
+        variables:
+        - variable: model
+          label: Exact model ID / 精确模型 ID
+          type: text-input
+          required: true
+          default: gemini-3.1-flash-image
+          max_length: 256
+          options: []
+        - variable: prompt
+          label: Prompt / 提示词
+          type: paragraph
+          required: true
+          default: Keep the product unchanged and replace only its background with
+            a soft gray studio backdrop.
+          max_length: 20000
+          options: []
+        - variable: advanced_parameters
+          label: Advanced JSON / 高级参数
+          type: paragraph
+          required: false
+          default: '{}'
+          max_length: 12000
+          options: []
+        - variable: reference_image
+          label: Reference URL or data URL / 参考图 URL 或 data URL
+          type: paragraph
+          required: true
+          default: ''
+          max_length: 1048576
+          options: []
+        - variable: additional_images
+          label: Additional reference JSON / 更多参考图数组
+          type: paragraph
+          required: false
+          default: '[]'
+          max_length: 1048576
+          options: []
+    - id: submit
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 1380
+        y: 260
+      positionAbsolute:
+        x: 1380
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Submit ONCE · 仅提交一次
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_media/apixly_media
+        provider_name: apixly-ai/apixly_media/apixly_media
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_media
+        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@82a2247b3602e9d6c83252efbf8e27e6f87ea55bc5e47be4b0c1c66cef707908
+        tool_name: edit_image
+        tool_label: Submit ONCE · 仅提交一次
+        tool_description: Apixly media API tool; use the provider's secret credential.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          model:
+            type: mixed
+            value: '{{#start.model#}}'
+          prompt:
+            type: mixed
+            value: '{{#creative_compose.final_prompt#}}'
+          parameters_json:
+            type: mixed
+            value: '{{#start.advanced_parameters#}}'
+          reference_image:
+            type: mixed
+            value: '{{#start.reference_image#}}'
+          reference_images:
+            type: mixed
+            value: '{{#start.additional_images#}}'
+          n:
+            type: constant
+            value: 1
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: has_task
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 1690
+        y: 260
+      positionAbsolute:
+        x: 1690
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: if-else
+        title: Task ID received? · 是否有任务 ID
+        desc: ''
+        selected: false
+        cases:
+        - id: 'true'
+          case_id: 'true'
+          logical_operator: and
+          conditions:
+          - id: task-id-present
+            varType: string
+            variable_selector:
+            - submit
+            - task_id
+            comparison_operator: not empty
+            value: ''
+    - id: poll
+      type: custom
+      width: 940
+      height: 260
+      position:
+        x: 2010
+        y: 260
+      positionAbsolute:
+        x: 2010
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: loop
+        title: Bounded poll · 最多查询 60 次
+        desc: ''
+        selected: false
+        start_node_id: poll_start
+        loop_count: 60
+        logical_operator: and
+        break_conditions:
+        - id: terminal-state
+          varType: boolean
+          variable_selector:
+          - poll
+          - terminal
+          comparison_operator: is
+          value: true
+        loop_variables:
+        - id: loop-terminal
+          label: terminal
+          var_type: boolean
+          value_type: constant
+          value: false
+        - id: loop-state
+          label: last_state
+          var_type: string
+          value_type: constant
+          value: pending
+        error_handle_mode: terminated
+        width: 940
+        height: 260
+      zIndex: 1
+    - id: poll_start
+      type: custom-loop-start
+      width: 44
+      height: 48
+      position:
+        x: 50
+        y: 90
+      positionAbsolute:
+        x: 2060
+        y: 350
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: loop-start
+        title: ''
+        desc: ''
+        selected: false
+        isInLoop: true
+        loop_id: poll
+        isInIteration: false
+      parentId: poll
+      zIndex: 1002
+      draggable: false
+      selectable: false
+    - id: poll_query
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 150
+        y: 70
+      positionAbsolute:
+        x: 2160
+        y: 330
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Wait 5s + query · 等待后只读查询
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_media/apixly_media
+        provider_name: apixly-ai/apixly_media/apixly_media
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_media
+        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@82a2247b3602e9d6c83252efbf8e27e6f87ea55bc5e47be4b0c1c66cef707908
+        tool_name: query_task
+        tool_label: Wait 5s + query · 等待后只读查询
+        tool_description: Apixly media API tool; use the provider's secret credential.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          kind:
+            type: constant
+            value: image
+          task_id:
+            type: mixed
+            value: '{{#submit.task_id#}}'
+          download:
+            type: constant
+            value: false
+          wait_seconds:
+            type: constant
+            value: 5
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+        isInLoop: true
+        loop_id: poll
+        isInIteration: false
+      parentId: poll
+      zIndex: 1002
+    - id: update_poll
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 460
+        y: 70
+      positionAbsolute:
+        x: 2470
+        y: 330
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: assigner
+        title: Remember terminal · 保存终态
+        desc: ''
+        selected: false
+        version: '2'
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - poll_query
+          - terminal
+          variable_selector:
+          - poll
+          - terminal
+          write_mode: over-write
+        - input_type: variable
+          operation: over-write
+          value:
+          - poll_query
+          - result_state
+          variable_selector:
+          - poll
+          - last_state
+          write_mode: over-write
+        isInLoop: true
+        loop_id: poll
+        isInIteration: false
+      parentId: poll
+      zIndex: 1002
+    - id: final_query
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 3020
+        y: 260
+      positionAbsolute:
+        x: 3020
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Retrieve existing task · 下载原任务素材
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_media/apixly_media
+        provider_name: apixly-ai/apixly_media/apixly_media
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_media
+        plugin_unique_identifier: apixly-ai/apixly_media:0.2.0@82a2247b3602e9d6c83252efbf8e27e6f87ea55bc5e47be4b0c1c66cef707908
+        tool_name: query_task
+        tool_label: Retrieve existing task · 下载原任务素材
+        tool_description: Apixly media API tool; use the provider's secret credential.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          kind:
+            type: constant
+            value: image
+          task_id:
+            type: mixed
+            value: '{{#submit.task_id#}}'
+          download:
+            type: constant
+            value: true
+          wait_seconds:
+            type: constant
+            value: 0
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: result
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 3330
+        y: 260
+      positionAbsolute:
+        x: 3330
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: end
+        title: Result + files · 结果和文件
+        desc: ''
+        selected: false
+        outputs:
+        - variable: task_id
+          value_type: string
+          value_selector:
+          - final_query
+          - task_id
+        - variable: status
+          value_type: string
+          value_selector:
+          - final_query
+          - status
+        - variable: terminal
+          value_type: boolean
+          value_selector:
+          - final_query
+          - terminal
+        - variable: success
+          value_type: boolean
+          value_selector:
+          - final_query
+          - success
+        - variable: generation_success
+          value_type: boolean
+          value_selector:
+          - final_query
+          - generation_success
+        - variable: result_state
+          value_type: string
+          value_selector:
+          - final_query
+          - result_state
+        - variable: urls
+          value_type: array[string]
+          value_selector:
+          - final_query
+          - urls
+        - variable: files
+          value_type: array[file]
+          value_selector:
+          - final_query
+          - files
+        - variable: json
+          value_type: array[object]
+          value_selector:
+          - final_query
+          - json
+        - variable: final_prompt
+          value_selector:
+          - creative_compose
+          - final_prompt
+          value_type: string
+    - id: submit_error
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 2010
+        y: 620
+      positionAbsolute:
+        x: 2010
+        y: 620
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: end
+        title: 'STOP: inspect submission · 停止并核查提交'
+        desc: ''
+        selected: false
+        outputs:
+        - variable: submission_task_id
+          value_type: string
+          value_selector:
+          - submit
+          - task_id
+        - variable: submission_result_state
+          value_type: string
+          value_selector:
+          - submit
+          - result_state
+        - variable: submission_details
+          value_type: array[object]
+          value_selector:
+          - submit
+          - json
+        - variable: submission_final_prompt
+          value_selector:
+          - creative_compose
+          - final_prompt
+          value_type: string
+    - id: creative_compose
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 700
+        y: 260
+      positionAbsolute:
+        x: 700
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Compose prompt
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_creative/apixly_creative
+        provider_name: apixly-ai/apixly_creative/apixly_creative
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_creative
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
+        tool_name: compose_prompt
+        tool_label: Compose prompt
+        tool_description: Combine the three free control cards once. Stop on invalid
+          settings.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          prompt:
+            type: mixed
+            value: '{{#start.prompt#}}'
+          mode:
+            type: constant
+            value: edit
+          viewpoint_settings:
+            type: mixed
+            value: '{{#studio_viewpoint.settings#}}'
+          lighting_settings:
+            type: mixed
+            value: '{{#studio_lighting.settings#}}'
+          camera_settings:
+            type: mixed
+            value: '{{#studio_camera.settings#}}'
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: creative_ready
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 1010
+        y: 260
+      positionAbsolute:
+        x: 1010
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: if-else
+        title: Valid prompt?
+        desc: ''
+        selected: false
+        cases:
+        - id: 'true'
+          case_id: 'true'
+          logical_operator: and
+          conditions:
+          - id: composition-valid
+            varType: boolean
+            variable_selector:
+            - creative_compose
+            - success
+            comparison_operator: is
+            value: true
+    - id: creative_error
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 1330
+        y: 80
+      positionAbsolute:
+        x: 1330
+        y: 80
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: end
+        title: Check controls
+        desc: ''
+        selected: false
+        outputs:
+        - variable: creative_error_message
+          value_selector:
+          - creative_compose
+          - error
+          value_type: string
+    - id: studio_viewpoint
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 340
+        y: 40
+      positionAbsolute:
+        x: 340
+        y: 40
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Viewpoint
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_creative/apixly_creative
+        provider_name: apixly-ai/apixly_creative/apixly_creative
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_creative
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
+        tool_name: viewpoint
+        tool_label: Viewpoint
+        tool_description: Free control settings. Disabled by default. No generation
+          or key.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          enabled:
+            type: constant
+            value: false
+          preset:
+            type: constant
+            value: custom
+          yaw:
+            type: constant
+            value: 0
+          pitch:
+            type: constant
+            value: 0
+          shot:
+            type: constant
+            value: none
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: studio_lighting
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 340
+        y: 240
+      positionAbsolute:
+        x: 340
+        y: 240
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Lighting
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_creative/apixly_creative
+        provider_name: apixly-ai/apixly_creative/apixly_creative
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_creative
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
+        tool_name: lighting
+        tool_label: Lighting
+        tool_description: Free control settings. Disabled by default. No generation
+          or key.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          enabled:
+            type: constant
+            value: false
+          preset:
+            type: constant
+            value: __none__
+          brightness:
+            type: constant
+            value: 50
+          color:
+            type: mixed
+            value: ''
+          direction_mode:
+            type: constant
+            value: named
+          key_light:
+            type: constant
+            value: __none__
+          rim_light:
+            type: constant
+            value: false
+          smart_text:
+            type: mixed
+            value: ''
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: studio_camera
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 340
+        y: 440
+      positionAbsolute:
+        x: 340
+        y: 440
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Camera & Lens
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_creative/apixly_creative
+        provider_name: apixly-ai/apixly_creative/apixly_creative
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_creative
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@214fb23fa342c028580642712138c90962240acb9aef709d3fb563544226abe6
+        tool_name: camera_lens
+        tool_label: Camera & Lens
+        tool_description: Free control settings. Disabled by default. No generation
+          or key.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          enabled:
+            type: constant
+            value: false
+          body:
+            type: constant
+            value: __none__
+          lens:
+            type: constant
+            value: __none__
+          aperture:
+            type: constant
+            value: __none__
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    edges:
+    - id: submit-source-has_task
+      type: custom
+      source: submit
+      sourceHandle: source
+      target: has_task
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: if-else
+        isInLoop: false
+        isInIteration: false
+    - id: has_task-true-poll
+      type: custom
+      source: has_task
+      sourceHandle: 'true'
+      target: poll
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
+        targetType: loop
+        isInLoop: false
+        isInIteration: false
+    - id: has_task-false-submit_error
+      type: custom
+      source: has_task
+      sourceHandle: 'false'
+      target: submit_error
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
+        targetType: end
+        isInLoop: false
+        isInIteration: false
+    - id: poll_start-source-poll_query
+      type: custom
+      source: poll_start
+      sourceHandle: source
+      target: poll_query
+      targetHandle: target
+      zIndex: 1002
+      data:
+        sourceType: loop-start
+        targetType: tool
+        isInLoop: true
+        isInIteration: false
+        loop_id: poll
+    - id: poll_query-source-update_poll
+      type: custom
+      source: poll_query
+      sourceHandle: source
+      target: update_poll
+      targetHandle: target
+      zIndex: 1002
+      data:
+        sourceType: tool
+        targetType: assigner
+        isInLoop: true
+        isInIteration: false
+        loop_id: poll
+    - id: poll-source-final_query
+      type: custom
+      source: poll
+      sourceHandle: source
+      target: final_query
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: loop
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    - id: final_query-source-result
+      type: custom
+      source: final_query
+      sourceHandle: source
+      target: result
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: end
+        isInLoop: false
+        isInIteration: false
+    - id: creative_compose-source-creative_ready
+      type: custom
+      source: creative_compose
+      sourceHandle: source
+      target: creative_ready
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: if-else
+        isInLoop: false
+        isInIteration: false
+    - id: creative_ready-true-submit
+      type: custom
+      source: creative_ready
+      sourceHandle: 'true'
+      target: submit
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    - id: creative_ready-false-creative_error
+      type: custom
+      source: creative_ready
+      sourceHandle: 'false'
+      target: creative_error
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
+        targetType: end
+        isInLoop: false
+        isInIteration: false
+    - id: start-studio_viewpoint
+      type: custom
+      source: start
+      sourceHandle: source
+      target: studio_viewpoint
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: start
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    - id: studio_viewpoint-studio_lighting
+      type: custom
+      source: studio_viewpoint
+      sourceHandle: source
+      target: studio_lighting
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    - id: studio_lighting-studio_camera
+      type: custom
+      source: studio_lighting
+      sourceHandle: source
+      target: studio_camera
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    - id: studio_camera-creative_compose
+      type: custom
+      source: studio_camera
+      sourceHandle: source
+      target: creative_compose
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.25
