@@ -7,6 +7,7 @@ validation/import is required in addition to the safety regression tests.
 from __future__ import annotations
 
 import argparse
+import copy
 import re
 from pathlib import Path
 
@@ -379,6 +380,225 @@ def build_workflow(kind: str, plugin_checksum: str, version: str = "0.1.0") -> d
     }
 
 
+def build_image_to_video(plugin_checksum: str, version: str = "0.1.0") -> dict:
+    """Connect two existing safe phases without replaying either submission."""
+    document = build_workflow("image", plugin_checksum, version)
+    video = build_workflow("video", plugin_checksum, version)
+
+    def phase(graph, prefix, offset):
+        graph = copy.deepcopy(graph)
+        ids = {node["id"]: prefix + node["id"] for node in graph["nodes"]}
+
+        def selectors(value):
+            if isinstance(value, list):
+                for item in value:
+                    selectors(item)
+            elif isinstance(value, dict):
+                for name in ("value_selector", "variable_selector"):
+                    selector = value.get(name)
+                    if isinstance(selector, list) and selector and selector[0] in ids:
+                        selector[0] = ids[selector[0]]
+                if value.get("type") == "variable" or value.get("input_type") == "variable":
+                    selector = value.get("value")
+                    if isinstance(selector, list) and selector and selector[0] in ids:
+                        selector[0] = ids[selector[0]]
+                for item in value.values():
+                    selectors(item)
+
+        for node in graph["nodes"]:
+            node["id"] = ids[node["id"]]
+            if node.get("parentId"):
+                node["parentId"] = ids[node["parentId"]]
+            else:
+                node["position"]["x"] += offset
+                node["positionAbsolute"]["x"] += offset
+            for name in ("start_node_id", "loop_id"):
+                if node["data"].get(name) in ids:
+                    node["data"][name] = ids[node["data"][name]]
+            selectors(node["data"])
+        lookup = {node["id"]: node for node in graph["nodes"]}
+        for node in graph["nodes"]:
+            if node.get("parentId"):
+                parent = lookup[node["parentId"]]
+                node["positionAbsolute"] = {
+                    "x": parent["positionAbsolute"]["x"] + node["position"]["x"],
+                    "y": parent["positionAbsolute"]["y"] + node["position"]["y"],
+                }
+        for edge in graph["edges"]:
+            edge["id"] = prefix + edge["id"]
+            edge["source"] = ids[edge["source"]]
+            edge["target"] = ids[edge["target"]]
+            if edge["data"].get("loop_id") in ids:
+                edge["data"]["loop_id"] = ids[edge["data"]["loop_id"]]
+        return graph
+
+    image_graph = phase(document["workflow"]["graph"], "image_", 0)
+    video_graph = phase(video["workflow"]["graph"], "video_", 2660)
+    nodes = [node for node in image_graph["nodes"] if node["id"] != "image_result"]
+    nodes += [node for node in video_graph["nodes"] if node["id"] != "video_start"]
+    edges = [edge for edge in image_graph["edges"] if edge["target"] != "image_result"]
+    edges += [edge for edge in video_graph["edges"] if edge["source"] != "video_start"]
+    lookup = {node["id"]: node for node in nodes}
+    lookup["image_start"]["data"]["variables"] = [
+        variable("image_model", "Image model / 图片模型", "grok-imagine-image", True),
+        variable(
+            "image_prompt",
+            "Image prompt / 图片提示词",
+            "A single blue glass vase on a clean white studio table, no text.",
+            True,
+            "paragraph",
+        ),
+        variable(
+            "image_parameters", "Image advanced JSON / 图片高级参数", "{}", False, "paragraph"
+        ),
+        variable("video_model", "Video model / 视频模型", "grok-imagine-video-1.5-preview", True),
+        variable(
+            "video_prompt",
+            "Video prompt / 视频提示词",
+            "Use the reference image as the first frame. Preserve the exact blue vase and composition while the camera moves gently. No text.",
+            True,
+            "paragraph",
+        ),
+        variable("video_seconds", "Video seconds / 视频秒数", 3, True, "number"),
+        variable("video_resolution", "Video resolution / 视频分辨率", "720p"),
+        variable("video_aspect_ratio", "Video aspect ratio / 视频画幅", "16:9"),
+    ]
+    lookup["image_submit"]["data"]["tool_parameters"] = {
+        "model": binding(["image_start", "image_model"]),
+        "prompt": binding(["image_start", "image_prompt"]),
+        "parameters_json": binding(["image_start", "image_parameters"]),
+        "aspect_ratio": constant("1:1"),
+        "n": constant(1),
+    }
+    lookup["video_submit"]["data"]["tool_parameters"] = {
+        "model": binding(["image_start", "video_model"]),
+        "prompt": binding(["image_start", "video_prompt"]),
+        "parameters_json": binding(["video_reference", "output"]),
+        "seconds": binding(["image_start", "video_seconds"]),
+        "resolution": binding(["image_start", "video_resolution"]),
+        "aspect_ratio": binding(["image_start", "video_aspect_ratio"]),
+    }
+
+    def ordinary(node_id, typ, label, x, y, **data):
+        node = {
+            "id": node_id,
+            "type": "custom",
+            "width": 244,
+            "height": 110,
+            "position": {"x": x, "y": y},
+            "positionAbsolute": {"x": x, "y": y},
+            "sourcePosition": "right",
+            "targetPosition": "left",
+            "selected": False,
+            "data": {"type": typ, "title": label, "desc": "", "selected": False, **data},
+        }
+        nodes.append(node)
+        lookup[node_id] = node
+
+    ordinary(
+        "image_ready",
+        "if-else",
+        "Image delivered? · 图片交付成功才继续",
+        2290,
+        260,
+        cases=[
+            {
+                "id": "true",
+                "case_id": "true",
+                "logical_operator": "and",
+                "conditions": [
+                    {
+                        "id": "image-delivered",
+                        "varType": "boolean",
+                        "variable_selector": ["image_final_query", "success"],
+                        "comparison_operator": "is",
+                        "value": True,
+                    }
+                ],
+            }
+        ],
+    )
+    ordinary(
+        "video_reference",
+        "template-transform",
+        "Use generated HTTPS URL · 使用生成图链接",
+        2600,
+        260,
+        variables=[{"variable": "image_urls", "value_selector": ["image_final_query", "urls"]}],
+        template='{"images": {{ image_urls[:1] | tojson }}, "mode": "image2video"}',
+    )
+    ordinary(
+        "image_not_ready",
+        "end",
+        "Stop with original image task · 保留原图任务",
+        2600,
+        620,
+        outputs=[
+            {
+                "variable": "task_id",
+                "value_type": "string",
+                "value_selector": ["image_submit", "task_id"],
+            },
+            {
+                "variable": "result_state",
+                "value_type": "string",
+                "value_selector": ["image_final_query", "result_state"],
+            },
+            {
+                "variable": "details",
+                "value_type": "array[object]",
+                "value_selector": ["image_final_query", "json"],
+            },
+        ],
+    )
+    lookup["video_result"]["data"]["outputs"] += [
+        {
+            "variable": "image_task_id",
+            "value_type": "string",
+            "value_selector": ["image_submit", "task_id"],
+        },
+        {
+            "variable": "image_files",
+            "value_type": "array[file]",
+            "value_selector": ["image_final_query", "files"],
+        },
+    ]
+
+    def connect(source, target, handle="source"):
+        edges.append(
+            {
+                "id": f"{source}-{handle}-{target}",
+                "type": "custom",
+                "source": source,
+                "sourceHandle": handle,
+                "target": target,
+                "targetHandle": "target",
+                "zIndex": 0,
+                "data": {
+                    "sourceType": lookup[source]["data"]["type"],
+                    "targetType": lookup[target]["data"]["type"],
+                    "isInLoop": False,
+                    "isInIteration": False,
+                },
+            }
+        )
+
+    connect("image_final_query", "image_ready")
+    connect("image_ready", "video_reference", "true")
+    connect("image_ready", "image_not_ready", "false")
+    connect("video_reference", "video_submit")
+    document["app"].update(
+        name="Apixly · Image to video · 图片到视频",
+        description="Use your own Apixly key. Two billable API submissions: generate one image, then use its signed HTTPS URL with the explicitly selected reference-video model. Each stage submits once and polls with a bounded loop. https://apixly.ai · https://platform.apixly.ai",
+    )
+    document["workflow"]["graph"] = {
+        "nodes": nodes,
+        "edges": edges,
+        "viewport": {"x": 0, "y": 0, "zoom": 0.3},
+    }
+    return document
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -393,6 +613,11 @@ def main():
         (args.output / f"apixly-{kind}-workflow.yml").write_text(
             yaml.safe_dump(document, sort_keys=False, allow_unicode=True)
         )
+    (args.output / "apixly-image-to-video-workflow.yml").write_text(
+        yaml.safe_dump(
+            build_image_to_video(args.checksum, args.version), sort_keys=False, allow_unicode=True
+        )
+    )
 
 
 if __name__ == "__main__":

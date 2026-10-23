@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from scripts.build_workflows import build_workflow
+from scripts.build_workflows import build_image_to_video, build_workflow
 
 
 class WorkflowSafetyTests(unittest.TestCase):
@@ -81,6 +81,31 @@ class WorkflowSafetyTests(unittest.TestCase):
             any(v["variable"] in {"mask", "mask_url"} for v in nodes["start"]["data"]["variables"])
         )
         self.assertNotIn("mask", nodes["submit"]["data"]["tool_parameters"])
+
+    def test_image_to_video_connects_generated_urls_and_submits_each_stage_once(self):
+        workflow = build_image_to_video(self.checksum)
+        nodes = self.nodes(workflow)
+        submits = [
+            n
+            for n in nodes.values()
+            if n["data"].get("tool_name") in {"generate_image", "create_video"}
+        ]
+        self.assertEqual(len(submits), 2)
+        self.assertTrue(all("parentId" not in n for n in submits))
+        self.assertTrue(all(not n["data"]["retry_config"]["retry_enabled"] for n in submits))
+        self.assertEqual(
+            nodes["video_reference"]["data"]["variables"][0]["value_selector"],
+            ["image_final_query", "urls"],
+        )
+        self.assertIn("tojson", nodes["video_reference"]["data"]["template"])
+        self.assertEqual(
+            nodes["video_submit"]["data"]["tool_parameters"]["parameters_json"]["value"],
+            ["video_reference", "output"],
+        )
+        defaults = {v["variable"]: v["default"] for v in nodes["image_start"]["data"]["variables"]}
+        self.assertEqual(defaults["video_model"], "grok-imagine-video-1.5-preview")
+        self.assertEqual(defaults["video_seconds"], 3)
+        self.assertEqual(len([n for n in nodes.values() if n["data"]["type"] == "loop"]), 2)
 
 
 if __name__ == "__main__":

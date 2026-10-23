@@ -1,0 +1,1175 @@
+app:
+  name: Apixly · Image to video · 图片到视频
+  description: 'Use your own Apixly key. Two billable API submissions: generate one
+    image, then use its signed HTTPS URL with the explicitly selected reference-video
+    model. Each stage submits once and polls with a bounded loop. https://apixly.ai
+    · https://platform.apixly.ai'
+  icon: 🎨
+  icon_background: '#2e8fff'
+  icon_type: emoji
+  mode: workflow
+  use_icon_as_answer_icon: false
+kind: app
+version: 0.7.0
+dependencies:
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@23388df87ab9d3d8cc5d7d77353938a0de7b81abe1a9115b59827942b85105a8
+    version: null
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: false
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+  graph:
+    nodes:
+    - id: image_start
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 30
+        y: 260
+      positionAbsolute:
+        x: 30
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: start
+        title: Start · 开始
+        desc: ''
+        selected: false
+        variables:
+        - variable: image_model
+          label: Image model / 图片模型
+          type: text-input
+          required: true
+          default: grok-imagine-image
+          max_length: 256
+          options: []
+        - variable: image_prompt
+          label: Image prompt / 图片提示词
+          type: paragraph
+          required: true
+          default: A single blue glass vase on a clean white studio table, no text.
+          max_length: 12000
+          options: []
+        - variable: image_parameters
+          label: Image advanced JSON / 图片高级参数
+          type: paragraph
+          required: false
+          default: '{}'
+          max_length: 12000
+          options: []
+        - variable: video_model
+          label: Video model / 视频模型
+          type: text-input
+          required: true
+          default: grok-imagine-video-1.5-preview
+          max_length: 256
+          options: []
+        - variable: video_prompt
+          label: Video prompt / 视频提示词
+          type: paragraph
+          required: true
+          default: Use the reference image as the first frame. Preserve the exact
+            blue vase and composition while the camera moves gently. No text.
+          max_length: 12000
+          options: []
+        - variable: video_seconds
+          label: Video seconds / 视频秒数
+          type: number
+          required: true
+          default: 3
+          max_length: 256
+          options: []
+        - variable: video_resolution
+          label: Video resolution / 视频分辨率
+          type: text-input
+          required: false
+          default: 720p
+          max_length: 256
+          options: []
+        - variable: video_aspect_ratio
+          label: Video aspect ratio / 视频画幅
+          type: text-input
+          required: false
+          default: '16:9'
+          max_length: 256
+          options: []
+    - id: image_submit
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 340
+        y: 260
+      positionAbsolute:
+        x: 340
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Submit ONCE · 仅提交一次
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_media/apixly_media
+        provider_name: apixly-ai/apixly_media/apixly_media
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_media
+        plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@23388df87ab9d3d8cc5d7d77353938a0de7b81abe1a9115b59827942b85105a8
+        tool_name: generate_image
+        tool_label: Submit ONCE · 仅提交一次
+        tool_description: Apixly media API tool; use the provider's secret credential.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          model:
+            type: variable
+            value:
+            - image_start
+            - image_model
+          prompt:
+            type: variable
+            value:
+            - image_start
+            - image_prompt
+          parameters_json:
+            type: variable
+            value:
+            - image_start
+            - image_parameters
+          aspect_ratio:
+            type: constant
+            value: '1:1'
+          n:
+            type: constant
+            value: 1
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: image_has_task
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 650
+        y: 260
+      positionAbsolute:
+        x: 650
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: if-else
+        title: Task ID received? · 是否有任务 ID
+        desc: ''
+        selected: false
+        cases:
+        - id: 'true'
+          case_id: 'true'
+          logical_operator: and
+          conditions:
+          - id: task-id-present
+            varType: string
+            variable_selector:
+            - image_submit
+            - task_id
+            comparison_operator: not empty
+            value: ''
+    - id: image_poll
+      type: custom
+      width: 940
+      height: 260
+      position:
+        x: 970
+        y: 260
+      positionAbsolute:
+        x: 970
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: loop
+        title: Bounded poll · 最多查询 60 次
+        desc: ''
+        selected: false
+        start_node_id: image_poll_start
+        loop_count: 60
+        logical_operator: and
+        break_conditions:
+        - id: terminal-state
+          varType: boolean
+          variable_selector:
+          - image_poll
+          - terminal
+          comparison_operator: is
+          value: true
+        loop_variables:
+        - id: loop-terminal
+          label: terminal
+          var_type: boolean
+          value_type: constant
+          value: false
+        - id: loop-state
+          label: last_state
+          var_type: string
+          value_type: constant
+          value: pending
+        error_handle_mode: terminated
+        width: 940
+        height: 260
+      zIndex: 1
+    - id: image_poll_start
+      type: custom-loop-start
+      width: 44
+      height: 48
+      position:
+        x: 50
+        y: 90
+      positionAbsolute:
+        x: 1020
+        y: 350
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: loop-start
+        title: ''
+        desc: ''
+        selected: false
+        isInLoop: true
+        loop_id: image_poll
+        isInIteration: false
+      parentId: image_poll
+      zIndex: 1002
+      draggable: false
+      selectable: false
+    - id: image_poll_query
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 150
+        y: 70
+      positionAbsolute:
+        x: 1120
+        y: 330
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Wait 5s + query · 等待后只读查询
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_media/apixly_media
+        provider_name: apixly-ai/apixly_media/apixly_media
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_media
+        plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@23388df87ab9d3d8cc5d7d77353938a0de7b81abe1a9115b59827942b85105a8
+        tool_name: query_task
+        tool_label: Wait 5s + query · 等待后只读查询
+        tool_description: Apixly media API tool; use the provider's secret credential.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          kind:
+            type: constant
+            value: image
+          task_id:
+            type: variable
+            value:
+            - image_submit
+            - task_id
+          download:
+            type: constant
+            value: false
+          wait_seconds:
+            type: constant
+            value: 5
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+        isInLoop: true
+        loop_id: image_poll
+        isInIteration: false
+      parentId: image_poll
+      zIndex: 1002
+    - id: image_update_poll
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 460
+        y: 70
+      positionAbsolute:
+        x: 1430
+        y: 330
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: assigner
+        title: Remember terminal · 保存终态
+        desc: ''
+        selected: false
+        version: '2'
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - image_poll_query
+          - terminal
+          variable_selector:
+          - image_poll
+          - terminal
+          write_mode: over-write
+        - input_type: variable
+          operation: over-write
+          value:
+          - image_poll_query
+          - result_state
+          variable_selector:
+          - image_poll
+          - last_state
+          write_mode: over-write
+        isInLoop: true
+        loop_id: image_poll
+        isInIteration: false
+      parentId: image_poll
+      zIndex: 1002
+    - id: image_final_query
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 1980
+        y: 260
+      positionAbsolute:
+        x: 1980
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Retrieve existing task · 下载原任务素材
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_media/apixly_media
+        provider_name: apixly-ai/apixly_media/apixly_media
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_media
+        plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@23388df87ab9d3d8cc5d7d77353938a0de7b81abe1a9115b59827942b85105a8
+        tool_name: query_task
+        tool_label: Retrieve existing task · 下载原任务素材
+        tool_description: Apixly media API tool; use the provider's secret credential.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          kind:
+            type: constant
+            value: image
+          task_id:
+            type: variable
+            value:
+            - image_submit
+            - task_id
+          download:
+            type: constant
+            value: true
+          wait_seconds:
+            type: constant
+            value: 0
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: image_submit_error
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 970
+        y: 620
+      positionAbsolute:
+        x: 970
+        y: 620
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: end
+        title: 'STOP: inspect submission · 停止并核查提交'
+        desc: ''
+        selected: false
+        outputs:
+        - variable: task_id
+          value_type: string
+          value_selector:
+          - image_submit
+          - task_id
+        - variable: result_state
+          value_type: string
+          value_selector:
+          - image_submit
+          - result_state
+        - variable: details
+          value_type: array[object]
+          value_selector:
+          - image_submit
+          - json
+    - id: video_submit
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 3000
+        y: 260
+      positionAbsolute:
+        x: 3000
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Submit ONCE · 仅提交一次
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_media/apixly_media
+        provider_name: apixly-ai/apixly_media/apixly_media
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_media
+        plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@23388df87ab9d3d8cc5d7d77353938a0de7b81abe1a9115b59827942b85105a8
+        tool_name: create_video
+        tool_label: Submit ONCE · 仅提交一次
+        tool_description: Apixly media API tool; use the provider's secret credential.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          model:
+            type: variable
+            value:
+            - image_start
+            - video_model
+          prompt:
+            type: variable
+            value:
+            - image_start
+            - video_prompt
+          parameters_json:
+            type: variable
+            value:
+            - video_reference
+            - output
+          seconds:
+            type: variable
+            value:
+            - image_start
+            - video_seconds
+          resolution:
+            type: variable
+            value:
+            - image_start
+            - video_resolution
+          aspect_ratio:
+            type: variable
+            value:
+            - image_start
+            - video_aspect_ratio
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: video_has_task
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 3310
+        y: 260
+      positionAbsolute:
+        x: 3310
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: if-else
+        title: Task ID received? · 是否有任务 ID
+        desc: ''
+        selected: false
+        cases:
+        - id: 'true'
+          case_id: 'true'
+          logical_operator: and
+          conditions:
+          - id: task-id-present
+            varType: string
+            variable_selector:
+            - video_submit
+            - task_id
+            comparison_operator: not empty
+            value: ''
+    - id: video_poll
+      type: custom
+      width: 940
+      height: 260
+      position:
+        x: 3630
+        y: 260
+      positionAbsolute:
+        x: 3630
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: loop
+        title: Bounded poll · 最多查询 60 次
+        desc: ''
+        selected: false
+        start_node_id: video_poll_start
+        loop_count: 60
+        logical_operator: and
+        break_conditions:
+        - id: terminal-state
+          varType: boolean
+          variable_selector:
+          - video_poll
+          - terminal
+          comparison_operator: is
+          value: true
+        loop_variables:
+        - id: loop-terminal
+          label: terminal
+          var_type: boolean
+          value_type: constant
+          value: false
+        - id: loop-state
+          label: last_state
+          var_type: string
+          value_type: constant
+          value: pending
+        error_handle_mode: terminated
+        width: 940
+        height: 260
+      zIndex: 1
+    - id: video_poll_start
+      type: custom-loop-start
+      width: 44
+      height: 48
+      position:
+        x: 50
+        y: 90
+      positionAbsolute:
+        x: 3680
+        y: 350
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: loop-start
+        title: ''
+        desc: ''
+        selected: false
+        isInLoop: true
+        loop_id: video_poll
+        isInIteration: false
+      parentId: video_poll
+      zIndex: 1002
+      draggable: false
+      selectable: false
+    - id: video_poll_query
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 150
+        y: 70
+      positionAbsolute:
+        x: 3780
+        y: 330
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Wait 5s + query · 等待后只读查询
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_media/apixly_media
+        provider_name: apixly-ai/apixly_media/apixly_media
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_media
+        plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@23388df87ab9d3d8cc5d7d77353938a0de7b81abe1a9115b59827942b85105a8
+        tool_name: query_task
+        tool_label: Wait 5s + query · 等待后只读查询
+        tool_description: Apixly media API tool; use the provider's secret credential.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          kind:
+            type: constant
+            value: video
+          task_id:
+            type: variable
+            value:
+            - video_submit
+            - task_id
+          download:
+            type: constant
+            value: false
+          wait_seconds:
+            type: constant
+            value: 5
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+        isInLoop: true
+        loop_id: video_poll
+        isInIteration: false
+      parentId: video_poll
+      zIndex: 1002
+    - id: video_update_poll
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 460
+        y: 70
+      positionAbsolute:
+        x: 4090
+        y: 330
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: assigner
+        title: Remember terminal · 保存终态
+        desc: ''
+        selected: false
+        version: '2'
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - video_poll_query
+          - terminal
+          variable_selector:
+          - video_poll
+          - terminal
+          write_mode: over-write
+        - input_type: variable
+          operation: over-write
+          value:
+          - video_poll_query
+          - result_state
+          variable_selector:
+          - video_poll
+          - last_state
+          write_mode: over-write
+        isInLoop: true
+        loop_id: video_poll
+        isInIteration: false
+      parentId: video_poll
+      zIndex: 1002
+    - id: video_final_query
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 4640
+        y: 260
+      positionAbsolute:
+        x: 4640
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: tool
+        title: Retrieve existing task · 下载原任务素材
+        desc: ''
+        selected: false
+        provider_id: apixly-ai/apixly_media/apixly_media
+        provider_name: apixly-ai/apixly_media/apixly_media
+        provider_type: builtin
+        plugin_id: apixly-ai/apixly_media
+        plugin_unique_identifier: apixly-ai/apixly_media:0.1.0@23388df87ab9d3d8cc5d7d77353938a0de7b81abe1a9115b59827942b85105a8
+        tool_name: query_task
+        tool_label: Retrieve existing task · 下载原任务素材
+        tool_description: Apixly media API tool; use the provider's secret credential.
+        tool_node_version: '2'
+        tool_configurations: {}
+        tool_parameters:
+          kind:
+            type: constant
+            value: video
+          task_id:
+            type: variable
+            value:
+            - video_submit
+            - task_id
+          download:
+            type: constant
+            value: true
+          wait_seconds:
+            type: constant
+            value: 0
+        is_team_authorization: true
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: video_result
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 4950
+        y: 260
+      positionAbsolute:
+        x: 4950
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: end
+        title: Result + files · 结果和文件
+        desc: ''
+        selected: false
+        outputs:
+        - variable: task_id
+          value_type: string
+          value_selector:
+          - video_final_query
+          - task_id
+        - variable: status
+          value_type: string
+          value_selector:
+          - video_final_query
+          - status
+        - variable: terminal
+          value_type: boolean
+          value_selector:
+          - video_final_query
+          - terminal
+        - variable: success
+          value_type: boolean
+          value_selector:
+          - video_final_query
+          - success
+        - variable: generation_success
+          value_type: boolean
+          value_selector:
+          - video_final_query
+          - generation_success
+        - variable: result_state
+          value_type: string
+          value_selector:
+          - video_final_query
+          - result_state
+        - variable: urls
+          value_type: array[string]
+          value_selector:
+          - video_final_query
+          - urls
+        - variable: files
+          value_type: array[file]
+          value_selector:
+          - video_final_query
+          - files
+        - variable: json
+          value_type: array[object]
+          value_selector:
+          - video_final_query
+          - json
+        - variable: image_task_id
+          value_type: string
+          value_selector:
+          - image_submit
+          - task_id
+        - variable: image_files
+          value_type: array[file]
+          value_selector:
+          - image_final_query
+          - files
+    - id: video_submit_error
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 3630
+        y: 620
+      positionAbsolute:
+        x: 3630
+        y: 620
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: end
+        title: 'STOP: inspect submission · 停止并核查提交'
+        desc: ''
+        selected: false
+        outputs:
+        - variable: task_id
+          value_type: string
+          value_selector:
+          - video_submit
+          - task_id
+        - variable: result_state
+          value_type: string
+          value_selector:
+          - video_submit
+          - result_state
+        - variable: details
+          value_type: array[object]
+          value_selector:
+          - video_submit
+          - json
+    - id: image_ready
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 2290
+        y: 260
+      positionAbsolute:
+        x: 2290
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: if-else
+        title: Image delivered? · 图片交付成功才继续
+        desc: ''
+        selected: false
+        cases:
+        - id: 'true'
+          case_id: 'true'
+          logical_operator: and
+          conditions:
+          - id: image-delivered
+            varType: boolean
+            variable_selector:
+            - image_final_query
+            - success
+            comparison_operator: is
+            value: true
+    - id: video_reference
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 2600
+        y: 260
+      positionAbsolute:
+        x: 2600
+        y: 260
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: template-transform
+        title: Use generated HTTPS URL · 使用生成图链接
+        desc: ''
+        selected: false
+        variables:
+        - variable: image_urls
+          value_selector:
+          - image_final_query
+          - urls
+        template: '{"images": {{ image_urls[:1] | tojson }}, "mode": "image2video"}'
+    - id: image_not_ready
+      type: custom
+      width: 244
+      height: 110
+      position:
+        x: 2600
+        y: 620
+      positionAbsolute:
+        x: 2600
+        y: 620
+      sourcePosition: right
+      targetPosition: left
+      selected: false
+      data:
+        type: end
+        title: Stop with original image task · 保留原图任务
+        desc: ''
+        selected: false
+        outputs:
+        - variable: task_id
+          value_type: string
+          value_selector:
+          - image_submit
+          - task_id
+        - variable: result_state
+          value_type: string
+          value_selector:
+          - image_final_query
+          - result_state
+        - variable: details
+          value_type: array[object]
+          value_selector:
+          - image_final_query
+          - json
+    edges:
+    - id: image_start-source-submit
+      type: custom
+      source: image_start
+      sourceHandle: source
+      target: image_submit
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: start
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    - id: image_submit-source-has_task
+      type: custom
+      source: image_submit
+      sourceHandle: source
+      target: image_has_task
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: if-else
+        isInLoop: false
+        isInIteration: false
+    - id: image_has_task-true-poll
+      type: custom
+      source: image_has_task
+      sourceHandle: 'true'
+      target: image_poll
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
+        targetType: loop
+        isInLoop: false
+        isInIteration: false
+    - id: image_has_task-false-submit_error
+      type: custom
+      source: image_has_task
+      sourceHandle: 'false'
+      target: image_submit_error
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
+        targetType: end
+        isInLoop: false
+        isInIteration: false
+    - id: image_poll_start-source-poll_query
+      type: custom
+      source: image_poll_start
+      sourceHandle: source
+      target: image_poll_query
+      targetHandle: target
+      zIndex: 1002
+      data:
+        sourceType: loop-start
+        targetType: tool
+        isInLoop: true
+        isInIteration: false
+        loop_id: image_poll
+    - id: image_poll_query-source-update_poll
+      type: custom
+      source: image_poll_query
+      sourceHandle: source
+      target: image_update_poll
+      targetHandle: target
+      zIndex: 1002
+      data:
+        sourceType: tool
+        targetType: assigner
+        isInLoop: true
+        isInIteration: false
+        loop_id: image_poll
+    - id: image_poll-source-final_query
+      type: custom
+      source: image_poll
+      sourceHandle: source
+      target: image_final_query
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: loop
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    - id: video_submit-source-has_task
+      type: custom
+      source: video_submit
+      sourceHandle: source
+      target: video_has_task
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: if-else
+        isInLoop: false
+        isInIteration: false
+    - id: video_has_task-true-poll
+      type: custom
+      source: video_has_task
+      sourceHandle: 'true'
+      target: video_poll
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
+        targetType: loop
+        isInLoop: false
+        isInIteration: false
+    - id: video_has_task-false-submit_error
+      type: custom
+      source: video_has_task
+      sourceHandle: 'false'
+      target: video_submit_error
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
+        targetType: end
+        isInLoop: false
+        isInIteration: false
+    - id: video_poll_start-source-poll_query
+      type: custom
+      source: video_poll_start
+      sourceHandle: source
+      target: video_poll_query
+      targetHandle: target
+      zIndex: 1002
+      data:
+        sourceType: loop-start
+        targetType: tool
+        isInLoop: true
+        isInIteration: false
+        loop_id: video_poll
+    - id: video_poll_query-source-update_poll
+      type: custom
+      source: video_poll_query
+      sourceHandle: source
+      target: video_update_poll
+      targetHandle: target
+      zIndex: 1002
+      data:
+        sourceType: tool
+        targetType: assigner
+        isInLoop: true
+        isInIteration: false
+        loop_id: video_poll
+    - id: video_poll-source-final_query
+      type: custom
+      source: video_poll
+      sourceHandle: source
+      target: video_final_query
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: loop
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    - id: video_final_query-source-result
+      type: custom
+      source: video_final_query
+      sourceHandle: source
+      target: video_result
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: end
+        isInLoop: false
+        isInIteration: false
+    - id: image_final_query-source-image_ready
+      type: custom
+      source: image_final_query
+      sourceHandle: source
+      target: image_ready
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: tool
+        targetType: if-else
+        isInLoop: false
+        isInIteration: false
+    - id: image_ready-true-video_reference
+      type: custom
+      source: image_ready
+      sourceHandle: 'true'
+      target: video_reference
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
+        targetType: template-transform
+        isInLoop: false
+        isInIteration: false
+    - id: image_ready-false-image_not_ready
+      type: custom
+      source: image_ready
+      sourceHandle: 'false'
+      target: image_not_ready
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: if-else
+        targetType: end
+        isInLoop: false
+        isInIteration: false
+    - id: video_reference-source-video_submit
+      type: custom
+      source: video_reference
+      sourceHandle: source
+      target: video_submit
+      targetHandle: target
+      zIndex: 0
+      data:
+        sourceType: template-transform
+        targetType: tool
+        isInLoop: false
+        isInIteration: false
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.3

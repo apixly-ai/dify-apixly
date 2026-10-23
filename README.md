@@ -35,9 +35,11 @@ Successful query outputs include the complete normalized JSON plus named workflo
 
 ## Importable workflows
 
-The source includes three workflows in `examples/`: image generation, reference editing, and video generation. Install the matching plugin package and authorize its provider, then import a `.yml` using Dify's **Import DSL file** action. Each workflow submits once with retries disabled, stops if no task ID is returned, and queries that same task at most 60 times with a five-second delay. A final query returns Dify files and explicit status variables. At the attempt limit, the original task state is returned; no new generation is started.
+The source includes four workflows in `examples/`: image generation, reference editing, video generation, and a connected image-to-video workflow. Install the matching plugin package and authorize its provider, then import a `.yml` using Dify's **Import DSL file** action. Each workflow submits once with retries disabled, stops if no task ID is returned, and queries that same task at most 60 times with a five-second delay. A final query returns Dify files and explicit status variables. At the attempt limit, the original task state is returned; no new generation is started.
 
 Examples reference the exact identifier produced by `dify plugin checksum`, which differs from ZIP SHA256. Regenerate them after package changes. Native host import/run status is recorded in `PUBLISHING.md`; parsing YAML or passing safety tests alone is not described as a successful host run.
+
+The connected image-to-video workflow generates an image, takes its signed HTTPS URL through a JSON-safe template, and explicitly submits `grok-imagine-video-1.5-preview` at 3 seconds/720p. It stops if the image is not delivered. This workflow makes two billable generation calls, each attempted once; neither stage silently substitutes a model.
 
 Named fields cover image count, aspect ratio, size and quality; video seconds, resolution and aspect ratio; a single reference image URL/data URL and additional references. Advanced JSON remains available for model-specific fields. Conflicting values stop before submission. Visible default model IDs are never substituted on failure. Query offers a 0–15 second delay before its single read for bounded loops.
 
@@ -80,7 +82,7 @@ For **Create video**, choose an exact enabled ID and supported parameters. For e
 }
 ```
 
-This video example is text-to-video. For a model whose capabilities include reference images, `images` accepts HTTPS image URLs or image data URLs. Reference `videos` and `audios`, if the chosen model supports them, use HTTPS URLs. All values retain their JSON types. Inspect `GET /v1/video/config` with your own API client for model capability details; unsupported combinations are reported by the gateway. The plugin does not silently replace IDs, durations, resolutions, reference count or other parameters. Public `effective_parameters` and `parameter_adjustments`, when returned by the gateway, are preserved in the JSON output. Decode actual media to verify delivered dimensions: one live test requested 480p but received a 1280×720 video without adjustment metadata.
+This video example is text-to-video. The default `grok-imagine-video` is text-only. For `grok-imagine-video-1.5-preview`, reference images must be public HTTPS URLs; inline base64 data URLs are rejected before submission on that route. For a model whose capabilities include reference images, `images` accepts HTTPS image URLs or image data URLs. Reference `videos` and `audios`, if the chosen model supports them, use HTTPS URLs. All values retain their JSON types. Inspect `GET /v1/video/config` with your own API client for model capability details; unsupported combinations are reported by the gateway. The plugin does not silently replace IDs, durations, resolutions, reference count or other parameters. Public `effective_parameters` and `parameter_adjustments`, when returned by the gateway, are preserved in the JSON output. Decode actual media to verify delivered dimensions: one live test requested 480p but received a 1280×720 video without adjustment metadata.
 
 ## Known use case
 

@@ -6,13 +6,16 @@ identity:
     zh_Hans: 生成视频
 description:
   human:
-    en_US: Submit one asynchronous video generation. Use flat seconds, resolution,
-      aspect_ratio and optional images/videos/audios arrays in parameters JSON. Returns
-      a task ID. Never automatically retry this paid action.
-    zh_Hans: 一次提交异步视频任务；返回任务 ID，之后有界查询同一任务。
-  llm: Submit one asynchronous video generation. Use flat seconds, resolution, aspect_ratio
-    and optional images/videos/audios arrays in parameters JSON. Returns a task ID.
-    Never automatically retry this paid action.
+    en_US: Submit one asynchronous video task. The default grok-imagine-video is text-only.
+      For grok-imagine-video-1.5-preview references, images must be public HTTPS URLs,
+      not inline base64. Models and URLs are sent unchanged; never automatically retry
+      a paid submission.
+    zh_Hans: 一次提交异步视频。默认 grok-imagine-video 只支持文生视频；grok-imagine-video-1.5-preview
+      参考图必须使用公开 HTTPS URL，不支持内联 base64。模型与链接原样发送，不自动重试收费提交。
+  llm: Submit one asynchronous video task. The default grok-imagine-video is text-only.
+    For grok-imagine-video-1.5-preview references, images must be public HTTPS URLs,
+    not inline base64. Models and URLs are sent unchanged; never automatically retry
+    a paid submission.
 parameters:
 - name: model
   type: string
@@ -87,12 +90,12 @@ parameters:
     en_US: Advanced parameters (JSON)
     zh_Hans: 高级参数（JSON）
   human_description:
-    en_US: JSON object of parameters supported by this exact model. Preserve numeric
-      and boolean types. Do not include model, prompt, async, credentials or callback_url.
-    zh_Hans: 可选 JSON 对象，传入此模型支持的额外参数；不可与上方同名字段冲突。不要填写模型、提示词、Key 或 callback_url。
-  llm_description: JSON object of parameters supported by this exact model. Preserve
-    numeric and boolean types. Do not include model, prompt, async, credentials or
-    callback_url.
+    en_US: Optional model-specific JSON. Reference images require a supporting model.
+      Grok 1.5 preview accepts public HTTPS image URLs only; do not use data URLs.
+    zh_Hans: 可选模型专属参数。参考图须选支持的型号；Grok 1.5 preview 只接收公开 HTTPS 图片 URL，不接受 data URL。
+  llm_description: Optional model-specific JSON. Reference images require a supporting
+    model. Grok 1.5 preview accepts public HTTPS image URLs only; do not use data
+    URLs.
   form: llm
   default: '{}'
 output_schema:

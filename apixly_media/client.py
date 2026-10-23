@@ -239,6 +239,20 @@ class MediaClient:
         payload.update(
             model=required_text(model, "Exact model ID"), prompt=required_text(prompt, "Prompt")
         )
+        if model == "grok-imagine-video" and any(
+            payload.get(name) for name in ("images", "videos", "audios")
+        ):
+            raise MediaError(
+                "grok-imagine-video supports text-to-video only. Select an exact model with "
+                "reference support; the plugin will not replace the model automatically."
+            )
+        if model == "grok-imagine-video-1.5-preview" and any(
+            not reference.startswith("https://") for reference in payload.get("images", [])
+        ):
+            raise MediaError(
+                "grok-imagine-video-1.5-preview requires public HTTPS reference image URLs. "
+                "Inline base64 data URLs are not supported on this route."
+            )
         return self._submit("/videos", payload, "video")
 
     def query_task(self, kind: str, task_id: str) -> dict[str, Any]:

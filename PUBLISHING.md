@@ -30,7 +30,7 @@ The package must exclude development state according to `.difyignore`. Inspect t
 1. Run tests and inspect the final `.difypkg`; verify no credentials or development assets.
 2. Publish the public source, English README, MIT license, Apixly icon and privacy notice under the authorized organization. Confirm support@apixly.ai is monitored and the organization's publisher identity is controlled by the owner.
 3. Install/remote-debug the exact package in a real Dify Cloud or current Community Edition workspace. Confirm credential validation, tool discovery, task ID variable output, bounded polling and result file output. Disable Dify retries on every submit node.
-4. Reconcile the authorized real API probes to unique usage/billing records and revoke the temporary test key. SDK test receipts identify the jobs/request IDs below; billing evidence is maintained separately by the root agent.
+4. Reconcile the authorized real API probes to unique usage/billing records and revoke the temporary test key. Keep billing/cleanup evidence in private release records.
 5. Complete the **current** `langgenius/dify-plugins` PR template from the official repository, declare Medium risk and data flow, provide source and validation evidence, and submit one `.difypkg` per PR. Do not claim a signed/verified Marketplace release until approval/merge and installation are confirmed.
 6. Register a Creator Center publisher organization and monitor feedback, failures and API changes. Plugin installation remains free; Apixly API usage follows the customer's own account billing.
 

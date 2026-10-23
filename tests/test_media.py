@@ -292,6 +292,36 @@ class MediaContractTests(unittest.TestCase):
         with self.assertRaisesRegex(MediaError, "supported"):
             client.download_result("https://apixly.ai/v1/images/content?ref=x")
 
+    def test_text_only_grok_does_not_accept_reference_images(self):
+        client = self.client(lambda _: httpx.Response(200, json={"id": "unexpected"}))
+        with self.assertRaisesRegex(MediaError, "text-to-video"):
+            client.create_video(
+                "grok-imagine-video",
+                "Move",
+                {"images": ["https://apixly.ai/v1/images/content?ref=x"]},
+            )
+        self.assertEqual(len(self.calls), 0)
+
+    def test_grok_preview_inline_reference_is_rejected_before_post(self):
+        client = self.client(lambda _: httpx.Response(200, json={"id": "unexpected"}))
+        with self.assertRaisesRegex(MediaError, "HTTPS"):
+            client.create_video(
+                "grok-imagine-video-1.5-preview", "Move", {"images": ["data:image/png;base64,QQ=="]}
+            )
+        self.assertEqual(len(self.calls), 0)
+
+    def test_grok_preview_public_reference_url_is_preserved(self):
+        client = self.client(
+            lambda _: httpx.Response(200, json={"id": "video-22", "status": "queued"})
+        )
+        url = "https://platform.apixly.ai/v1/images/content?ref=Ab_C-123%2B"
+        client.create_video(
+            "grok-imagine-video-1.5-preview",
+            "Move",
+            {"images": [url], "mode": "image2video", "seconds": 3, "resolution": "720p"},
+        )
+        self.assertEqual(json.loads(self.calls[0].content)["images"], [url])
+
 
 if __name__ == "__main__":
     unittest.main()
