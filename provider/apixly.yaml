@@ -1,0 +1,37 @@
+identity:
+  author: apixly-ai
+  name: apixly_media
+  label:
+    en_US: Apixly Media
+    zh_Hans: Apixly 媒体
+  description:
+    en_US: Generate images, edit references, submit videos and query Apixly media
+      tasks.
+    zh_Hans: 使用自己的 Apixly API Key 生成/编辑图片、创建视频和查询任务。插件免费，API 按量计费。
+  icon: icon.png
+  tags:
+  - image
+  - videos
+credentials_for_provider:
+  api_key:
+    type: secret-input
+    required: true
+    label:
+      en_US: Apixly API key
+      zh_Hans: Apixly API Key
+    placeholder:
+      en_US: Enter an Apixly API key with media access
+      zh_Hans: 填写具有图片/视频权限的 Apixly API Key
+    help:
+      en_US: Create a key in Apixly. API usage is billed to your Apixly account; plugin
+        installation is free.
+      zh_Hans: 在 platform.apixly.ai/keys 创建 Key。插件免费，模型 API 调用按 Apixly 账号实际用量计费。
+    url: https://platform.apixly.ai/keys
+tools:
+- tools/generate_image.yaml
+- tools/edit_image.yaml
+- tools/create_video.yaml
+- tools/query_task.yaml
+extra:
+  python:
+    source: provider/apixly.py

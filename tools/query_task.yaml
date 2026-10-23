@@ -1,0 +1,97 @@
+identity:
+  name: query_task
+  author: apixly-ai
+  label:
+    en_US: Query media task
+    zh_Hans: 查询媒体任务
+description:
+  human:
+    en_US: Read the existing image or video task once. Returns explicit pending, completed,
+      failed, unavailable or unknown state. This tool never submits generation.
+    zh_Hans: 只读查询原任务一次，清晰返回等待、成功、失败及素材文件；不会重新生成。
+  llm: Read the existing image or video task once. Returns explicit pending, completed,
+    failed, unavailable or unknown state. This tool never submits generation.
+parameters:
+- name: kind
+  type: select
+  required: true
+  label:
+    en_US: Task kind
+    zh_Hans: 任务类型
+  human_description:
+    en_US: Choose the kind used for submission.
+    zh_Hans: 选择提交任务时使用的类型。
+  llm_description: Choose the kind used for submission.
+  form: llm
+  options:
+  - value: image
+    label:
+      en_US: Image
+      zh_Hans: 图片
+  - value: video
+    label:
+      en_US: Video
+      zh_Hans: 视频
+- name: task_id
+  type: string
+  required: true
+  label:
+    en_US: Task ID
+    zh_Hans: 原任务 ID
+  human_description:
+    en_US: Use the exact ID returned by the original submission.
+    zh_Hans: 原样填写提交时返回的任务 ID；查询不会重新生成。
+  llm_description: Use the exact ID returned by the original submission.
+  form: llm
+- name: download
+  type: boolean
+  required: false
+  label:
+    en_US: Download result as Dify file
+    zh_Hans: 返回 Dify 文件
+  human_description:
+    en_US: When successful, download signed Apixly media URLs into Dify files, up
+      to 32 MiB each. Download failure does not regenerate the task.
+    zh_Hans: 成功时下载签名素材并返回 Dify 文件，每个文件最多 32 MiB。下载失败不会重新生成。
+  llm_description: When successful, download signed Apixly media URLs into Dify files,
+    up to 32 MiB each. Download failure does not regenerate the task.
+  form: llm
+  default: false
+- name: wait_seconds
+  type: number
+  required: false
+  label:
+    en_US: Delay before query (seconds)
+    zh_Hans: 查询前等待（秒）
+  human_description:
+    en_US: Optional delay before this single status read. Useful inside a bounded
+      workflow loop; never triggers generation.
+    zh_Hans: 可选，在本次只读查询前短暂等待，便于工作流有界轮询；不会触发生成。
+  llm_description: Optional delay before this single status read. Useful inside a
+    bounded workflow loop; never triggers generation.
+  form: llm
+  min: 0
+  max: 15
+  default: 0
+output_schema:
+  type: object
+  properties:
+    task_id:
+      type: string
+    status:
+      type: string
+    terminal:
+      type: boolean
+    success:
+      type: boolean
+    result_state:
+      type: string
+    urls:
+      type: array
+      items:
+        type: string
+    generation_success:
+      type: boolean
+extra:
+  python:
+    source: tools/query_task.py

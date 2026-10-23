@@ -1,0 +1,119 @@
+identity:
+  name: create_video
+  author: apixly-ai
+  label:
+    en_US: Create video
+    zh_Hans: 生成视频
+description:
+  human:
+    en_US: Submit one asynchronous video generation. Use flat seconds, resolution,
+      aspect_ratio and optional images/videos/audios arrays in parameters JSON. Returns
+      a task ID. Never automatically retry this paid action.
+    zh_Hans: 一次提交异步视频任务；返回任务 ID，之后有界查询同一任务。
+  llm: Submit one asynchronous video generation. Use flat seconds, resolution, aspect_ratio
+    and optional images/videos/audios arrays in parameters JSON. Returns a task ID.
+    Never automatically retry this paid action.
+parameters:
+- name: model
+  type: string
+  required: true
+  label:
+    en_US: Exact model ID
+    zh_Hans: 精确模型 ID
+  human_description:
+    en_US: Exact Apixly model ID available to your key. Sent unchanged. The plugin
+      never substitutes another model.
+    zh_Hans: 使用当前 API Key 可用的完整模型 ID。原样发送，不自动替换。
+  llm_description: Exact Apixly model ID available to your key. Sent unchanged. The
+    plugin never substitutes another model.
+  form: llm
+  default: grok-imagine-video
+- name: prompt
+  type: string
+  required: true
+  label:
+    en_US: Prompt
+    zh_Hans: 提示词
+  human_description:
+    en_US: Describe the desired output or edit.
+    zh_Hans: 描述想要生成的内容或对参考图的修改要求。
+  llm_description: Describe the desired output or edit.
+  form: llm
+- name: seconds
+  type: number
+  required: false
+  label:
+    en_US: Duration (seconds)
+    zh_Hans: 视频时长（秒）
+  human_description:
+    en_US: 'Exact duration supported by your selected model. Grok example: 1 second.'
+    zh_Hans: 按所选模型能力填写；Grok 示例为 1 秒。
+  llm_description: 'Exact duration supported by your selected model. Grok example:
+    1 second.'
+  form: llm
+  min: 1
+  max: 30
+  default: 1
+- name: resolution
+  type: string
+  required: false
+  label:
+    en_US: Resolution
+    zh_Hans: 视频分辨率
+  human_description:
+    en_US: Exact model resolution, for example 720p. Inspect delivered file dimensions
+      as providers may return different dimensions.
+    zh_Hans: 按模型能力填写，如 720p；下载后核验实际尺寸，供应商实际输出可能不同。
+  llm_description: Exact model resolution, for example 720p. Inspect delivered file
+    dimensions as providers may return different dimensions.
+  form: llm
+  default: 720p
+- name: aspect_ratio
+  type: string
+  required: false
+  label:
+    en_US: Aspect ratio
+    zh_Hans: 画面比例
+  human_description:
+    en_US: Exact model aspect ratio, for example 16:9 or 9:16.
+    zh_Hans: 按模型能力填写，如 16:9 或 9:16。
+  llm_description: Exact model aspect ratio, for example 16:9 or 9:16.
+  form: llm
+  default: '16:9'
+- name: parameters_json
+  type: string
+  required: false
+  label:
+    en_US: Advanced parameters (JSON)
+    zh_Hans: 高级参数（JSON）
+  human_description:
+    en_US: JSON object of parameters supported by this exact model. Preserve numeric
+      and boolean types. Do not include model, prompt, async, credentials or callback_url.
+    zh_Hans: 可选 JSON 对象，传入此模型支持的额外参数；不可与上方同名字段冲突。不要填写模型、提示词、Key 或 callback_url。
+  llm_description: JSON object of parameters supported by this exact model. Preserve
+    numeric and boolean types. Do not include model, prompt, async, credentials or
+    callback_url.
+  form: llm
+  default: '{}'
+output_schema:
+  type: object
+  properties:
+    task_id:
+      type: string
+    status:
+      type: string
+    terminal:
+      type: boolean
+    success:
+      type: boolean
+    result_state:
+      type: string
+    urls:
+      type: array
+      items:
+        type: string
+    generation_success:
+      type: boolean
+extra:
+  python:
+    source: tools/create_video.py

@@ -1,0 +1,128 @@
+identity:
+  name: generate_image
+  author: apixly-ai
+  label:
+    en_US: Generate image
+    zh_Hans: 生成图片
+description:
+  human:
+    en_US: Submit one asynchronous image generation. Returns a task ID, not a finished
+      image. Never automatically retry this paid action.
+    zh_Hans: 一次提交异步文生图，返回任务 ID；之后用查询工具获取图片。
+  llm: Submit one asynchronous image generation. Returns a task ID, not a finished
+    image. Never automatically retry this paid action.
+parameters:
+- name: model
+  type: string
+  required: true
+  label:
+    en_US: Exact model ID
+    zh_Hans: 精确模型 ID
+  human_description:
+    en_US: Exact Apixly model ID available to your key. Sent unchanged. The plugin
+      never substitutes another model.
+    zh_Hans: 使用当前 API Key 可用的完整模型 ID。原样发送，不自动替换。
+  llm_description: Exact Apixly model ID available to your key. Sent unchanged. The
+    plugin never substitutes another model.
+  form: llm
+  default: grok-imagine-image
+- name: prompt
+  type: string
+  required: true
+  label:
+    en_US: Prompt
+    zh_Hans: 提示词
+  human_description:
+    en_US: Describe the desired output or edit.
+    zh_Hans: 描述想要生成的内容或对参考图的修改要求。
+  llm_description: Describe the desired output or edit.
+  form: llm
+- name: aspect_ratio
+  type: string
+  required: false
+  label:
+    en_US: Aspect ratio
+    zh_Hans: 画面比例
+  human_description:
+    en_US: Optional ratio supported by this exact model, for example 1:1 or 16:9.
+      Leave empty to use the model default.
+    zh_Hans: 按模型能力填写，如 1:1、16:9；留空使用模型默认值。
+  llm_description: Optional ratio supported by this exact model, for example 1:1 or
+    16:9. Leave empty to use the model default.
+  form: llm
+  default: '1:1'
+- name: size
+  type: string
+  required: false
+  label:
+    en_US: Image size
+    zh_Hans: 图片尺寸
+  human_description:
+    en_US: Optional exact model size, for example 1024x1024. Leave empty for the model
+      default.
+    zh_Hans: 可选具体尺寸，如 1024x1024；留空使用模型默认值。
+  llm_description: Optional exact model size, for example 1024x1024. Leave empty for
+    the model default.
+  form: llm
+- name: quality
+  type: string
+  required: false
+  label:
+    en_US: Quality
+    zh_Hans: 生成质量
+  human_description:
+    en_US: Optional quality value supported by the exact model.
+    zh_Hans: 可选质量档位，须是当前模型真实支持的值。
+  llm_description: Optional quality value supported by the exact model.
+  form: llm
+- name: n
+  type: number
+  required: false
+  label:
+    en_US: Number of images
+    zh_Hans: 图片数量
+  human_description:
+    en_US: Number of images; individual model limits apply.
+    zh_Hans: 生成张数，各模型支持上限不同。
+  llm_description: Number of images; individual model limits apply.
+  form: llm
+  min: 1
+  max: 10
+  default: 1
+- name: parameters_json
+  type: string
+  required: false
+  label:
+    en_US: Advanced parameters (JSON)
+    zh_Hans: 高级参数（JSON）
+  human_description:
+    en_US: JSON object of parameters supported by this exact model. Preserve numeric
+      and boolean types. Do not include model, prompt, async, credentials or callback_url.
+    zh_Hans: 可选 JSON 对象，传入此模型支持的额外参数；不可与上方同名字段冲突。不要填写模型、提示词、Key 或 callback_url。
+  llm_description: JSON object of parameters supported by this exact model. Preserve
+    numeric and boolean types. Do not include model, prompt, async, credentials or
+    callback_url.
+  form: llm
+  default: '{}'
+output_schema:
+  type: object
+  properties:
+    task_id:
+      type: string
+    status:
+      type: string
+    terminal:
+      type: boolean
+    success:
+      type: boolean
+    result_state:
+      type: string
+    urls:
+      type: array
+      items:
+        type: string
+    generation_success:
+      type: boolean
+extra:
+  python:
+    source: tools/generate_image.py
