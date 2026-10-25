@@ -6,9 +6,11 @@
 
 Generate images, edit references and create videos inside Dify. Connect an Apixly account or use your own API key, submit a task once, and retrieve its result as a native Dify file.
 
-**[Download plugin and workflows](https://github.com/apixly-ai/dify-apixly/releases/latest)** · **[Create an API key](https://platform.apixly.ai/keys)** · **[Models and prices](https://platform.apixly.ai/models)** · **[Open the console](https://platform.apixly.ai/)**
+**One Apixly platform for GPT, Gemini, Claude, images and video.** Get reliable API access at low prices, with **selected GPT text models from 10% of official API rates**. Model, token tier and Key pricing vary; checked 2026-10-25.
 
-[Website](https://apixly.ai/) · [API documentation](https://apixly.ai/docs) · [Chinese documentation](readme/README_zh_Hans.md) · [Support](mailto:support@apixly.ai) · [Marketplace submission](https://github.com/langgenius/dify-plugins/pull/3481)
+**[apixly.ai](https://apixly.ai/)** · **[platform.apixly.ai](https://platform.apixly.ai/)** · [Prices](https://platform.apixly.ai/models) · [API keys](https://platform.apixly.ai/keys) · [API docs](https://apixly.ai/docs)
+
+[Download plugin and workflows](https://github.com/apixly-ai/dify-apixly/releases/latest) · [Chinese documentation](readme/README_zh_Hans.md) · [Support](mailto:support@apixly.ai) · [Marketplace submission](https://github.com/langgenius/dify-plugins/pull/3506)
 
 The plugin is free. API usage is billed to your Apixly account. Maintained by Apixly; this integration is not affiliated with the underlying model developers.
 
@@ -78,8 +80,6 @@ Users choose **Authorize**, sign in through the normal Apixly website and select
 Open a media node to load the catalog for its selected credential. Choose **Model catalog**, or enter **Manual exact ID (overrides picker)**. A nonempty manual ID takes explicit precedence and is sent unchanged. Both blank returns a clear error before submission; existing example DSLs supply explicit model IDs.
 
 **Refresh model catalog** is a separate read-only tool. It updates model options and reports stale/error status without generating media. Reopen the media node to view refreshed options. Catalogs refresh lazily with a ten-minute cache and background refresh; saved options remain marked when a refresh fails. Image models use the API's explicit type. Video models without capability data remain visible with that limitation; the plugin does not invent supported parameters. Caches are credential-scoped and process-local; other plugin workers refresh independently.
-
-For a checked price example, `gemini-3.1-flash-image` 1K image generation was US$0.02 per image on 2026-10-23. Consult the [current model catalog](https://platform.apixly.ai/models) for your selected model and parameters.
 
 Runtime: Python 3.12, `dify-plugin==0.10.2`. Community 1.17.1 verification covered the five media/catalog tools, five independent creative tools, twelve imported examples, real account consent and owned-Key selection, and successful account-mode image, reference-edit and video files. Other versions and Dify Cloud remain unverified. See [QA scope and limits](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/QA.md).
 

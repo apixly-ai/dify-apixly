@@ -6,9 +6,11 @@
 
 用自己的 Apixly API Key 在 Dify 中生图、编辑参考图和生成视频。每个生成阶段只提交一次，再查询原任务，将成品作为 Dify 文件交给后续节点。
 
-**[下载插件与工作流](https://github.com/apixly-ai/dify-apixly/releases/latest)** · **[创建 API Key](https://platform.apixly.ai/keys)** · **[模型与价格](https://platform.apixly.ai/models)** · **[打开控制台](https://platform.apixly.ai/)**
+**GPT、Gemini、Claude 与图片、视频，一个 Apixly 平台统一接入。** 稳定、低成本的 AI API，**指定 GPT 文本模型低至官方 1 折**。价格按型号、Token 档位和 Key 确定；2026-10-25 核验。
 
-[官网](https://apixly.ai/) · [API 文档](https://apixly.ai/docs) · [English](../README.md) · [支持邮箱](mailto:support@apixly.ai) · [Marketplace 提交记录](https://github.com/langgenius/dify-plugins/pull/3481)
+**[apixly.ai](https://apixly.ai/)** · **[platform.apixly.ai](https://platform.apixly.ai/)** · [价格](https://platform.apixly.ai/models) · [API Key](https://platform.apixly.ai/keys) · [文档](https://apixly.ai/docs)
+
+[下载插件与工作流](https://github.com/apixly-ai/dify-apixly/releases/latest) · [English](../README.md) · [支持邮箱](mailto:support@apixly.ai) · [Marketplace 提交记录](https://github.com/langgenius/dify-plugins/pull/3506)
 
 **插件免费，API 按 Apixly 账号实际用量计费。** 本插件由 Apixly 维护，不代表底层模型开发商。
 
@@ -77,8 +79,6 @@
 打开媒体节点时，按当前凭据加载 **模型目录**；也可以填写 **手填精确 ID（优先于下拉）**。手填非空时明确优先、原样发送；两个都未填则在提交前报错。现有示例 DSL 始终显式指定型号。
 
 独立 **刷新模型目录** 工具只读更新型号和能力，返回旧数据/错误状态，不创建生成任务；刷新后重新打开媒体节点可查看新选项。目录按需加载，十分钟缓存并后台更新，失败时保留并标明旧数据。图片按 API 的明确类型筛选；缺少能力数据的视频型号仍显示该限制，不编造参数支持。缓存按凭据隔离、每个进程独立，其他工作进程各自更新。
-
-价格示例：2026-10-23 核验的 `gemini-3.1-flash-image` 1K 生图为每张 US$0.02。请按所选模型与参数查看[当前模型价格](https://platform.apixly.ai/models)。
 
 Community 1.17.1 验收覆盖五个媒体/目录工具、五个独立创作工具、十二份示例导入、真实账号授权与自有 Key 选择，以及账号模式生图、参考图编辑和视频的实际文件交付。其他版本和 Dify Cloud 未验收。运行时为 Python 3.12、`dify-plugin==0.10.2`；详见 [QA 范围与限制](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/QA.md)。
 
