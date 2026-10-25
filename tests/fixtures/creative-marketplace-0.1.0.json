@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-25T03:20:17.715335+00:00",
+  "provenance": {
+    "version_url": "https://marketplace.dify.ai/api/v1/plugins/apixly-ai/apixly_creative/0.1.0",
+    "package_download_url": "https://marketplace.dify.ai/api/v1/plugins/download?unique_identifier=apixly-ai%2Fapixly_creative%3A0.1.0%404a912551810fdf4df18314e316600376b01e5b43fbf230fd067d9c9ef4e802c6",
+    "signature_cli": "Official Dify CLI0.6.11, built-in official public key; explicit key and independent OpenSSL also verified",
+    "verified_qualified_payload_files": 27,
+    "qualified_payload_bytes_unchanged": true
+  },
+  "version_response": {
+    "code": 0,
+    "data": {
+      "version": {
+        "plugin_org": "apixly-ai",
+        "plugin_name": "apixly_creative",
+        "version": "0.1.0",
+        "plugin_tuple": "apixly-ai/apixly_creative:0.1.0",
+        "change_log": "Five deterministic tools format viewpoint, lighting and camera-look instructions: three small control cards, Compose prompt and the compatibility formatter. Original Studio presets and eight inline lighting swatches are reused inside Dify's native widgets. Groups default off, preserving the base prompt exactly. Failed/malformed settings stop composition; edit mode adds its preservation instruction once.\n\nThis formatter stands alone without any Apixly API/auth dependency and can feed a user's generation tool. The optional Media workflows use a separately installed authenticated plugin. It does not duplicate Media's API/auth behavior. This PR adds only `apixly-ai/apixly_creative/apixly_creative-0.1.0.difypkg`.",
+        "checksum": "4a912551810fdf4df18314e316600376b01e5b43fbf230fd067d9c9ef4e802c6",
+        "created_at": "2026-10-25T02:44:01.462551Z",
+        "unique_identifier": "apixly-ai/apixly_creative:0.1.0@4a912551810fdf4df18314e316600376b01e5b43fbf230fd067d9c9ef4e802c6",
+        "minimum_dify_version_major": 1,
+        "minimum_dify_version_minor": 0,
+        "minimum_dify_version_patch": 0,
+        "status": "active"
+      }
+    },
+    "msg": "ok"
+  },
+  "marketplace_download": {
+    "plugin_unique_identifier": "apixly-ai/apixly_creative:0.1.0@4a912551810fdf4df18314e316600376b01e5b43fbf230fd067d9c9ef4e802c6",
+    "http_status": 200,
+    "bytes": 52532,
+    "sha256": "b7da73e6b452f9c20114b039ce64a5ad6a8fe82ac8b5a06747118e9467ac7278",
+    "content_checksum": "4a912551810fdf4df18314e316600376b01e5b43fbf230fd067d9c9ef4e802c6",
+    "official_signature_verified": true
+  },
+  "unavailable_original_marketplace_uid": {
+    "plugin_unique_identifier": "apixly-ai/apixly_creative:0.1.0@ae48835fc3312d9cda51966d1a70e8987df37a82b4934070963ae2657b27e12e",
+    "http_status": 404,
+    "response": {
+      "code": -1,
+      "data": null,
+      "msg": "plugin package not found"
+    }
+  },
+  "manual_media_package": {
+    "plugin_unique_identifier": "apixly-ai/apixly_media:0.2.0@be310e3089f7ff5d0d4a85eaeef1a5622749e16da7fb00bd7c03a713b15cb077",
+    "sha256": "ba631854afcd9b1e3d0ba02c66b3a975a5bf6dd7611e8d31d34666d6720ad4b8",
+    "installation_source": "GitHub Release v0.2.0; unchanged until its own official Marketplace listing exists"
+  }
+}

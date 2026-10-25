@@ -19,7 +19,7 @@ dependencies:
 - current_identifier: null
   type: package
   value:
-    plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@ae48835fc3312d9cda51966d1a70e8987df37a82b4934070963ae2657b27e12e
+    plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@4a912551810fdf4df18314e316600376b01e5b43fbf230fd067d9c9ef4e802c6
     version: null
 workflow:
   conversation_variables: []
@@ -517,7 +517,7 @@ workflow:
         provider_name: apixly-ai/apixly_creative/apixly_creative
         provider_type: builtin
         plugin_id: apixly-ai/apixly_creative
-        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@ae48835fc3312d9cda51966d1a70e8987df37a82b4934070963ae2657b27e12e
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@4a912551810fdf4df18314e316600376b01e5b43fbf230fd067d9c9ef4e802c6
         tool_name: compose_prompt
         tool_label: Compose prompt
         tool_description: Combine the three free control cards once. Stop on invalid
@@ -621,7 +621,7 @@ workflow:
         provider_name: apixly-ai/apixly_creative/apixly_creative
         provider_type: builtin
         plugin_id: apixly-ai/apixly_creative
-        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@ae48835fc3312d9cda51966d1a70e8987df37a82b4934070963ae2657b27e12e
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@4a912551810fdf4df18314e316600376b01e5b43fbf230fd067d9c9ef4e802c6
         tool_name: viewpoint
         tool_label: Viewpoint
         tool_description: Free control settings. Disabled by default. No generation
@@ -671,7 +671,7 @@ workflow:
         provider_name: apixly-ai/apixly_creative/apixly_creative
         provider_type: builtin
         plugin_id: apixly-ai/apixly_creative
-        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@ae48835fc3312d9cda51966d1a70e8987df37a82b4934070963ae2657b27e12e
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@4a912551810fdf4df18314e316600376b01e5b43fbf230fd067d9c9ef4e802c6
         tool_name: lighting
         tool_label: Lighting
         tool_description: Free control settings. Disabled by default. No generation
@@ -730,7 +730,7 @@ workflow:
         provider_name: apixly-ai/apixly_creative/apixly_creative
         provider_type: builtin
         plugin_id: apixly-ai/apixly_creative
-        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@ae48835fc3312d9cda51966d1a70e8987df37a82b4934070963ae2657b27e12e
+        plugin_unique_identifier: apixly-ai/apixly_creative:0.1.0@4a912551810fdf4df18314e316600376b01e5b43fbf230fd067d9c9ef4e802c6
         tool_name: camera_lens
         tool_label: Camera & Lens
         tool_description: Free control settings. Disabled by default. No generation
