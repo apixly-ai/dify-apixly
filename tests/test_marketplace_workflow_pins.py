@@ -24,6 +24,9 @@ class MarketplaceWorkflowPinTests(unittest.TestCase):
         )
         cls.version = cls.receipt["version_response"]["data"]["version"]
         cls.creative_uid = cls.version["unique_identifier"]
+        cls.media_receipt = json.loads(
+            (ROOT / "tests/fixtures/media-marketplace-0.2.0.json").read_text()
+        )
         cls.documents = {
             path.name: yaml.safe_load(path.read_text())
             for path in sorted((ROOT / "examples").glob("*.yml"))
@@ -73,8 +76,26 @@ class MarketplaceWorkflowPinTests(unittest.TestCase):
                         self.assertIn(data["plugin_unique_identifier"], dependencies)
         self.assertEqual(count, 20)
 
-    def test_media_pins_keep_the_qualified_manual_package_identity(self):
-        expected = self.receipt["manual_media_package"]["plugin_unique_identifier"]
+    def test_media_identity_is_active_signed_and_publicly_downloadable(self):
+        version = self.media_receipt["version_response"]["data"]["version"]
+        download = self.media_receipt["marketplace_download"]
+        self.assertEqual(self.media_receipt["version_response"]["code"], 0)
+        self.assertEqual(version["status"], "active")
+        self.assertEqual(version["plugin_org"], "apixly-ai")
+        self.assertEqual(version["plugin_name"], "apixly_media")
+        self.assertEqual(version["version"], "0.2.0")
+        self.assertEqual(
+            version["unique_identifier"], f"{MEDIA}:0.2.0@{download['content_checksum']}"
+        )
+        self.assertEqual(download["plugin_unique_identifier"], version["unique_identifier"])
+        self.assertEqual(download["http_status"], 200)
+        self.assertIs(download["official_signature_verified"], True)
+        unavailable = self.media_receipt["unavailable_original_marketplace_uid"]
+        self.assertEqual(unavailable["http_status"], 404)
+        self.assertNotEqual(unavailable["plugin_unique_identifier"], version["unique_identifier"])
+
+    def test_media_dependencies_and_nodes_use_verified_marketplace_identity(self):
+        expected = self.media_receipt["marketplace_download"]["plugin_unique_identifier"]
         identifiers = []
         self.assertEqual(len(self.documents), 12)
         for filename, document in self.documents.items():
@@ -88,6 +109,13 @@ class MarketplaceWorkflowPinTests(unittest.TestCase):
                 for node in document["workflow"]["graph"]["nodes"]
                 if node["data"].get("plugin_id") == MEDIA
             )
+            dependencies = {
+                item["value"]["plugin_unique_identifier"] for item in document["dependencies"]
+            }
+            for node in document["workflow"]["graph"]["nodes"]:
+                if node["data"].get("plugin_id") == MEDIA:
+                    with self.subTest(workflow=filename, node=node["id"]):
+                        self.assertIn(node["data"]["plugin_unique_identifier"], dependencies)
         self.assertEqual(len(identifiers), 43)
         for filename, identifier in identifiers:
             with self.subTest(workflow=filename):

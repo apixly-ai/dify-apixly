@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-26T03:18:12.682617+00:00",
+  "provenance": {
+    "version_url": "https://marketplace.dify.ai/api/v1/plugins/apixly-ai/apixly_media/0.2.0",
+    "download_url": "https://marketplace.dify.ai/api/v1/plugins/download?unique_identifier=apixly-ai%2Fapixly_media%3A0.2.0%40eb3120042ccd0132f0162fcbc7d8dc9b77fab0b1c2d21965b3d20c136f39701f",
+    "official_CLI": "v0.6.11 official bundled public key; explicit pinned official key and independent OpenSSL also passed",
+    "original_payload_files_byte_exact": 29
+  },
+  "version_response": {
+    "code": 0,
+    "data": {
+      "version": {
+        "plugin_org": "apixly-ai",
+        "plugin_name": "apixly_media",
+        "version": "0.2.0",
+        "plugin_tuple": "apixly-ai/apixly_media:0.2.0",
+        "change_log": "Five tools provide asynchronous image generation, reference editing, video creation, original-task/file retrieval and read-only model catalog refresh. Users can authorize their existing Apixly account through a registered confidential OAuth client or supply their own secret API key. Authorization selects their Studixly Key by default or another owned active Key. Dify selects saved connections; binding another Key requires a new authorization. Model IDs are passed through unchanged, and the typed live catalog refreshes lazily with an explicit refresh option. Compatibility depends on the selected model's supported API and parameters.\n\nTwelve source workflows include ordinary media examples and optional free Creative Controls composition. Each media stage submits once with retries disabled, then queries its original task; invalid composition stops before submission. Creative Controls is a separate credential-free formatter, now [available on the Marketplace](https://marketplace.dify.ai/plugin/apixly-ai/apixly_creative). Media installation is free; external API usage is charged to the user's own Apixly account. This PR adds only `apixly-ai/apixly_media/apixly_media-0.2.0.difypkg`.",
+        "checksum": "eb3120042ccd0132f0162fcbc7d8dc9b77fab0b1c2d21965b3d20c136f39701f",
+        "created_at": "2026-10-26T00:42:59.785061Z",
+        "unique_identifier": "apixly-ai/apixly_media:0.2.0@eb3120042ccd0132f0162fcbc7d8dc9b77fab0b1c2d21965b3d20c136f39701f",
+        "minimum_dify_version_major": 1,
+        "minimum_dify_version_minor": 0,
+        "minimum_dify_version_patch": 0,
+        "status": "active"
+      }
+    },
+    "msg": "ok"
+  },
+  "marketplace_download": {
+    "plugin_unique_identifier": "apixly-ai/apixly_media:0.2.0@eb3120042ccd0132f0162fcbc7d8dc9b77fab0b1c2d21965b3d20c136f39701f",
+    "http_status": 200,
+    "bytes": 69092,
+    "sha256": "50e653229a7985412ca5f8429a5990a1b7c9da0d615dcca9e114831759f94dcc",
+    "content_checksum": "eb3120042ccd0132f0162fcbc7d8dc9b77fab0b1c2d21965b3d20c136f39701f",
+    "official_signature_verified": true
+  },
+  "unavailable_original_marketplace_uid": {
+    "plugin_unique_identifier": "apixly-ai/apixly_media:0.2.0@be310e3089f7ff5d0d4a85eaeef1a5622749e16da7fb00bd7c03a713b15cb077",
+    "http_status": 404,
+    "response": {
+      "code": -1,
+      "data": null,
+      "msg": "plugin package not found"
+    }
+  }
+}
