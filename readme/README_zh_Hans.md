@@ -10,7 +10,7 @@
 
 **[apixly.ai](https://apixly.ai/)** · **[platform.apixly.ai](https://platform.apixly.ai/)** · [价格](https://platform.apixly.ai/models) · [API Key](https://platform.apixly.ai/keys) · [文档](https://apixly.ai/docs)
 
-[下载插件与工作流](https://github.com/apixly-ai/dify-apixly/releases/latest) · [English](../README.md) · [支持邮箱](mailto:support@apixly.ai) · [Marketplace 提交记录](https://github.com/langgenius/dify-plugins/pull/3506)
+**[从 Dify Marketplace 安装](https://marketplace.dify.ai/plugin/apixly-ai/apixly_media)** · [下载插件与工作流](https://github.com/apixly-ai/dify-apixly/releases/latest) · [English](../README.md) · [支持邮箱](mailto:support@apixly.ai) · [已合并的提交记录](https://github.com/langgenius/dify-plugins/pull/3506)
 
 **插件免费，API 按 Apixly 账号实际用量计费。** 本插件由 Apixly 维护，不代表底层模型开发商。
 

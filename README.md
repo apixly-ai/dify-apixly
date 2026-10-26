@@ -10,7 +10,7 @@ Generate images, edit references and create videos inside Dify. Connect an Apixl
 
 **[apixly.ai](https://apixly.ai/)** · **[platform.apixly.ai](https://platform.apixly.ai/)** · [Prices](https://platform.apixly.ai/models) · [API keys](https://platform.apixly.ai/keys) · [API docs](https://apixly.ai/docs)
 
-[Download plugin and workflows](https://github.com/apixly-ai/dify-apixly/releases/latest) · [Chinese documentation](readme/README_zh_Hans.md) · [Support](mailto:support@apixly.ai) · [Marketplace submission](https://github.com/langgenius/dify-plugins/pull/3506)
+**[Install from Dify Marketplace](https://marketplace.dify.ai/plugin/apixly-ai/apixly_media)** · [Download plugin and workflows](https://github.com/apixly-ai/dify-apixly/releases/latest) · [Chinese documentation](readme/README_zh_Hans.md) · [Support](mailto:support@apixly.ai) · [Approved submission](https://github.com/langgenius/dify-plugins/pull/3506)
 
 The plugin is free. API usage is billed to your Apixly account. Maintained by Apixly; this integration is not affiliated with the underlying model developers.
 
