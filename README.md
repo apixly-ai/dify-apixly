@@ -2,17 +2,21 @@
   <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/cover.png" alt="Apixly Media for Dify: generate images, edit references, create video and retrieve task files" width="1200" />
 </p>
 
-# Apixly Media for Dify
+# Apixly AI API for Dify: images, reference edits and video
 
-Generate images, edit references and create videos inside Dify. Connect an Apixly account or use your own API key, submit a task once, and retrieve its result as a native Dify file.
-
-**One Apixly platform for GPT, Gemini, Claude, images and video.** Get reliable API access at low prices, with **selected GPT text models from 10% of official API rates**. Model, token tier and Key pricing vary; checked 2026-10-25.
+Connect Dify workflows to the [Apixly AI API](https://apixly.ai/) for image generation, reference-image editing and video tasks. Authorize your Apixly account or use your own API key, submit once, then retrieve the original result as a native Dify file.
 
 **[apixly.ai](https://apixly.ai/)** · **[platform.apixly.ai](https://platform.apixly.ai/)** · [Prices](https://platform.apixly.ai/models) · [API keys](https://platform.apixly.ai/keys) · [API docs](https://apixly.ai/docs)
 
 **[Install from Dify Marketplace](https://marketplace.dify.ai/plugin/apixly-ai/apixly_media)** · [Download plugin and workflows](https://github.com/apixly-ai/dify-apixly/releases/latest) · [Chinese documentation](readme/README_zh_Hans.md) · [Support](mailto:support@apixly.ai) · [Approved submission](https://github.com/langgenius/dify-plugins/pull/3506)
 
 The plugin is free. API usage is billed to your Apixly account. Maintained by Apixly; this integration is not affiliated with the underlying model developers.
+
+## About Apixly AI API
+
+[Apixly AI API](https://apixly.ai/) is the service behind this integration. The Dify provider is named **Apixly Media** (`apixly-ai/apixly_media`). It submits supported image/video requests and retrieves their task files; it is not a text-model provider.
+
+Use the [API quickstart](https://apixly.ai/docs), [image API guide](https://apixly.ai/docs/images) and [video task guide](https://apixly.ai/docs/video) for the underlying request formats. Manage credentials and model access in the [console](https://platform.apixly.ai/). The [platform and pricing guide](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/ABOUT_APIXLY.md) separates the wider Apixly catalog from this plugin's media tools.
 
 ## From a product photo to a finished asset
 
@@ -173,6 +177,28 @@ This video example is text-to-video. The default `grok-imagine-video` is text-on
 ## Known use case
 
 An e-commerce workflow can take a product photo and campaign brief, edit the product image, let a person review the resulting image, create a short video from the approved image, query the same task until terminal, and save the resulting media. The tools cover generation and retrieval; publishing to advertising/social platforms is a separate workflow step. The included minimal workflows make each generation type independently testable before combining them; native host import/run evidence is recorded separately in PUBLISHING.md.
+
+## FAQ
+
+### Does this plugin provide GPT, Gemini or Claude text chat?
+
+No. The Apixly platform also offers text APIs, but this package exposes five image/video and catalog tools. Separate text integrations should follow the [OpenAI-compatible API guide](https://apixly.ai/docs/openai) or [Anthropic-compatible API guide](https://apixly.ai/docs/anthropic). A model appearing in a catalog does not prove support for every reference, duration or resolution option.
+
+### Do I need an account or API key?
+
+Media requests need your own Apixly credential: either the account connection documented below or a secret API key from the [console Key page](https://platform.apixly.ai/keys). Keep credentials in Dify's provider settings, outside prompts and exported workflows. The independent Creative Controls preview needs neither.
+
+### What is free, and where are prices listed?
+
+The plugin is free. Generation calls use your account's API balance; see the [current model prices](https://platform.apixly.ai/models) for the chosen model, tier and Key. Read-only task queries do not submit another generation. Pricing for text models on the wider platform is separate from this media integration.
+
+### Why do the example workflows pin exact approved packages?
+
+The checked-in DSLs pin approved Marketplace Media **0.2.0** and Creative Controls **0.1.0**, including their signed content checksums. A documentation update does not change those identities. A GitHub ZIP checksum must not be substituted for a Marketplace identifier; use the exact approved dependencies requested during import.
+
+### What should I do if a result is pending or expired?
+
+Keep the original task ID and query that task within a bounded loop. Do not replay an unknown submission automatically. Temporary image results were observed to expire about ten minutes after completion, so download them promptly to Dify or your own storage. An expired result is not evidence that the original generation failed.
 
 ## Errors, privacy and limits
 

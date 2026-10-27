@@ -2,17 +2,21 @@
   <img src="https://raw.githubusercontent.com/apixly-ai/dify-apixly/apixly/docs/assets/cover.png" alt="Apixly 媒体插件：在 Dify 中生成图片、编辑参考图、创建视频并下载原任务文件" width="1200" />
 </p>
 
-# Apixly Media：把图片和视频接进 Dify 工作流
+# Apixly AI API for Dify：图片、参考图编辑与视频
 
-用自己的 Apixly API Key 在 Dify 中生图、编辑参考图和生成视频。每个生成阶段只提交一次，再查询原任务，将成品作为 Dify 文件交给后续节点。
-
-**GPT、Gemini、Claude 与图片、视频，一个 Apixly 平台统一接入。** 稳定、低成本的 AI API，**指定 GPT 文本模型低至官方 1 折**。价格按型号、Token 档位和 Key 确定；2026-10-25 核验。
+将 Dify 工作流连接到 [Apixly AI API](https://apixly.ai/)，用于生图、参考图编辑和视频任务。授权已有 Apixly 账号或使用自己的 API Key，每阶段只提交一次，再把原任务结果作为 Dify 文件交给后续节点。
 
 **[apixly.ai](https://apixly.ai/)** · **[platform.apixly.ai](https://platform.apixly.ai/)** · [价格](https://platform.apixly.ai/models) · [API Key](https://platform.apixly.ai/keys) · [文档](https://apixly.ai/docs)
 
 **[从 Dify Marketplace 安装](https://marketplace.dify.ai/plugin/apixly-ai/apixly_media)** · [下载插件与工作流](https://github.com/apixly-ai/dify-apixly/releases/latest) · [English](../README.md) · [支持邮箱](mailto:support@apixly.ai) · [已合并的提交记录](https://github.com/langgenius/dify-plugins/pull/3506)
 
 **插件免费，API 按 Apixly 账号实际用量计费。** 本插件由 Apixly 维护，不代表底层模型开发商。
+
+## 关于 Apixly AI API
+
+[Apixly AI API](https://apixly.ai/) 是本集成连接的 API 服务。Dify 中的提供商名称为 **Apixly Media**（`apixly-ai/apixly_media`），负责提交受支持的图片、视频请求并取回原任务文件，不是文本模型提供商。
+
+底层请求格式见 [API 快速入门](https://apixly.ai/docs)、[图片 API 指南](https://apixly.ai/docs/images)和[视频任务指南](https://apixly.ai/docs/video)。凭据与模型权限在[控制台](https://platform.apixly.ai/)管理。[平台与价格说明](https://github.com/apixly-ai/dify-apixly/blob/apixly/docs/ABOUT_APIXLY_zh_Hans.md)区分 Apixly 完整目录与本插件的媒体能力。
 
 ## 看实际效果
 
@@ -135,6 +139,28 @@ Community 1.17.1 验收覆盖五个媒体/目录工具、五个独立创作工�
 文件输出支持 PNG、JPEG、WebP、MP4、WebM，每个最多 32 MiB。只下载 Apixly 签名素材地址，不附 API Key、不跟随重定向。当前图片临时结果约在终态后保留十分钟，请及时下载为 Dify 文件或保存到自己的存储；服务保留期可能调整。模型目录缓存与素材保留期各自独立。
 
 视频参数原样发送。一次真实测试请求 `480p`，实际给出 `1280×720`，且网关没有调整说明；应以下载文件解码结果核验交付，不以任务成功推断分辨率。网关返回 `effective_parameters` 或 `parameter_adjustments` 时，插件会保留。
+
+## 常见问题
+
+### 本插件能提供 GPT、Gemini 或 Claude 文本对话吗？
+
+不能。Apixly 平台也提供文本 API，但本包只暴露五个图片、视频及目录工具。独立文本集成请参考 [OpenAI 兼容 API](https://apixly.ai/docs/openai)或 [Anthropic 兼容 API](https://apixly.ai/docs/anthropic)指南。型号出现在目录中，不代表它支持所有参考图、时长或分辨率参数。
+
+### 是否需要账号或 API Key？
+
+媒体请求需要自己的 Apixly 凭据：使用下文账号授权，或从[控制台 Key 页面](https://platform.apixly.ai/keys)创建 secret API Key。凭据保存在 Dify 提供商设置中，不要放进提示词或导出的工作流。独立 Creative Controls 免费预览不需要这些凭据。
+
+### 哪些部分免费，在哪里查看费用？
+
+插件免费，生成调用使用自己账号的 API 余额；按型号、档位和 Key 查看[当前模型价格](https://platform.apixly.ai/models)。只读任务查询不会重新生成。平台文本模型的价格与本媒体集成的费用范围不同。
+
+### 为什么示例工作流固定了已发布版本？
+
+仓库 DSL 继续固定已批准的 Marketplace Media **0.2.0** 与 Creative Controls **0.1.0**，包含各自的签名内容校验值。文档更新不会改变这些身份。GitHub ZIP 校验值不能替代 Marketplace 标识；导入时使用工作流要求的精确已批准依赖。
+
+### 结果一直等待或已经过期时怎么办？
+
+保留原任务 ID，在有界循环中查询该任务，不要自动重放结果未知的提交。当前观察到临时图片结果在完成约十分钟后过期，请及时下载到 Dify 或自己的存储。结果过期不代表原始生成失败。
 
 ## 数据与支持
 
