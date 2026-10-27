@@ -10,6 +10,8 @@ Connect Dify workflows to the [Apixly AI API](https://apixly.ai/) for image gene
 
 **[Install from Dify Marketplace](https://marketplace.dify.ai/plugin/apixly-ai/apixly_media)** · [Download plugin and workflows](https://github.com/apixly-ai/dify-apixly/releases/latest) · [Chinese documentation](readme/README_zh_Hans.md) · [Support](mailto:support@apixly.ai) · [Approved submission](https://github.com/langgenius/dify-plugins/pull/3506)
 
+[Apixly plugin setup guide](https://apixly.ai/guides/en/apixly-ai-api-plugins) compares installation and credential flows across ComfyUI, VS Code and Dify.
+
 The plugin is free. API usage is billed to your Apixly account. Maintained by Apixly; this integration is not affiliated with the underlying model developers.
 
 ## About Apixly AI API

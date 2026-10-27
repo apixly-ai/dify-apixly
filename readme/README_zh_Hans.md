@@ -10,6 +10,8 @@
 
 **[从 Dify Marketplace 安装](https://marketplace.dify.ai/plugin/apixly-ai/apixly_media)** · [下载插件与工作流](https://github.com/apixly-ai/dify-apixly/releases/latest) · [English](../README.md) · [支持邮箱](mailto:support@apixly.ai) · [已合并的提交记录](https://github.com/langgenius/dify-plugins/pull/3506)
 
+[Apixly 插件安装与接入指南](https://apixly.ai/guides/zh/apixly-ai-api-plugins)介绍 ComfyUI、VS Code 和 Dify 的安装、凭据与免费/付费边界。
+
 **插件免费，API 按 Apixly 账号实际用量计费。** 本插件由 Apixly 维护，不代表底层模型开发商。
 
 ## 关于 Apixly AI API
